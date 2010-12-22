@@ -88,8 +88,8 @@ HISTIGNORE="&:[bf]g:exit" export HISTIGNORE
 HISTSIZE=5000 export HISTSIZE
 # I prefer less as a pager, if it exists
 if [ -z "$PAGER" ] ; then PAGER=less ; export PAGER ; fi
-# Get less to display a useful prompt
-LESS="-M" export LESS
+# Get less to display a useful prompt, and quit if there's only one screen
+LESS="-M -F" export LESS
 # Set USER and HOSTNAME if they aren't set
 if [ -z "$USER" -a ! -z "$LOGNAME" ] ; then
   USER=$LOGNAME export USER
