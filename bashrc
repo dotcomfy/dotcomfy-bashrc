@@ -66,7 +66,7 @@ fi
 ###
 toolsbase="http://dotcomfy.net/tools" # location of traceroute, ping, etc tools
 dlbase="http://dl.dotcomfy.net" # where files are downloaded from
-githubbase="http://github.com/dotcomfy/dotcomfy-bashrc/raw/master/"
+githubbase="https://github.com/dotcomfy/dotcomfy-bashrc/raw/master/"
 shrc_url="$githubbase/bashrc" # download location of .bashrc
 dotprofile_url="$dlbase/bash_profile" # download location of .bash_profile
 shrc_age_file="$HOME/.shrc_age_file" # file where a time stamp is stored
