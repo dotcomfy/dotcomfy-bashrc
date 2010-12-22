@@ -100,6 +100,12 @@ fi
 CVS_RSH=/usr/bin/ssh ; export CVS_RSH
 
 
+BLACK="\033[0;30m"
+RED="\033[0;31m"
+GREEN="\033[0;32m"
+YELLOW="\033[0;33m"
+BLUE="\033[0;34m"
+
 
 
 
@@ -2445,13 +2451,37 @@ if [ "$TERM" = "tgtelnet" ]; then
 #  exit
 fi
 
+#
+## Git stuff
+#
+
+# Find the git branch we're in, to include in PS1
+parse_git_branch(){
+  if ref=$(git symbolic-ref HEAD 2>/dev/null) ; then
+    printf "$BLUE("${ref#refs/heads/}")$BLACK"
+  else
+    return 1
+  fi
+}
+
+# Echo an asterisk to indicate that there are files that aren't committed
+git_status(){
+  if current_git_status=$(git status | grep 'added to commit' 2>/dev/null); then
+    printf "$RED*$BLACK"
+  fi
+}
+
+# Set a prompt for when inside a git repo
+git_prompt(){
+  parse_git_branch && git_status
+}
+
 # Special cases for different shells
-# not extremely useful, actually
 case "$SHELL" in
     */bash) 
         set -o notify 
         set -o emacs
-        PS1='\u@\h:\w\$ '
+        PS1="\u@\h:\w\$(git_prompt)\$ "
         ;;
     */ksh)
         set -o notify 
