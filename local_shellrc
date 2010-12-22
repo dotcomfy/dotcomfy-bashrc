@@ -30,6 +30,8 @@
 # Stuff that should only run once
 if [ -z "$local_shellrc_run" ] ; then
   # Run-once stuff goes here...
+  # For example, set up ssh aliases for a few hosts
+  # mksshalias host1.example.com host2.example.com
   true # Replace me with actual commands
 else
   # Stuff that only works after .bashrc has been loaded
