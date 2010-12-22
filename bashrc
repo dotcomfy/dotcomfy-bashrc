@@ -68,6 +68,7 @@ toolsbase="http://dotcomfy.net/tools" # location of traceroute, ping, etc tools
 dlbase="http://dl.dotcomfy.net" # where files are downloaded from
 githubbase="https://github.com/dotcomfy/dotcomfy-bashrc/raw/master/"
 shrc_url="$githubbase/bashrc" # download location of .bashrc
+backup_url="http://www.dotcomfy.net/dotcomfy_bashrc" # For non-SSL clients
 dotprofile_url="$dlbase/bash_profile" # download location of .bash_profile
 shrc_age_file="$HOME/.shrc_age_file" # file where a time stamp is stored
 shrc_max_age=30 # warn if .bashrc age is older than this (in days)
@@ -1671,7 +1672,7 @@ shrcinfo() {
 
 # Updates the base .bashrc (or whatever it's stored as locally)
 shrcupd() {
-  updatefile $shrc_home $shrc_url
+  updatefile $shrc_home $shrc_url || updatefile $shrc_home $backup_url
 }
 
 # Updates a file from the web repository
