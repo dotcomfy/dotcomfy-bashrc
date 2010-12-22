@@ -1,0 +1,47 @@
+#
+# Copyright (c) 1999-2010 Linus / Dotcomfy
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+#
+
+# A template .local_shellrc
+# To use this, save it as ~/.local_shellrc, and add the commands you need
+
+# To disable automatic updating of .bashrc
+# noupdateshrc=1
+
+
+# Stuff that should only run once
+if [ -z "$local_shellrc_run" ] ; then
+  # Run-once stuff goes here...
+  true # Replace me with actual commands
+else
+  # Stuff that only works after .bashrc has been loaded
+  # For example:
+  # pathadd -q ~/my_great_app/bin
+  true # Replace me with actual commands
+fi
+
+# Stuff that should run every time the file is loaded, below
+
+# If using the .bashrc as root
+# PS1="$(hostname -s):\$PWD# "
+# or
+# PSCH='#'
+
