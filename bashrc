@@ -2489,4 +2489,5 @@ motd_done=1 ; export motd_done
 # source .local_shellrc if existent, last in file, to override globals 
 [ -f ~/.local_shellrc ] && . ~/.local_shellrc
 
+# This version of the file was downloaded from github
 # EOF
