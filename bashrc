@@ -100,7 +100,7 @@ if [ -z "$HOSTNAME" ] ; then
 fi
 CVS_RSH=/usr/bin/ssh ; export CVS_RSH
 
-
+# Colours - used in prompts, etc
 BLACK="\033[0;30m"
 RED="\033[0;31m"
 GREEN="\033[0;32m"
@@ -2455,26 +2455,24 @@ fi
 #
 ## Git stuff
 #
+# I think I might start organising things more by subject, rather than functions and aliases separately
 
-# Find the git branch we're in, to include in PS1
-parse_git_branch(){
-  if ref=$(git symbolic-ref HEAD 2>/dev/null) ; then
-    printf "$BLUE("${ref#refs/heads/}")$BLACK"
-  else
-    return 1
-  fi
-}
-
-# Echo an asterisk to indicate that there are files that aren't committed
-git_status(){
-  if current_git_status=$(git status | grep 'added to commit' 2>/dev/null); then
-    printf "$RED*$BLACK"
-  fi
-}
+# git commit & push
+alias gcp="git commit -a ; git push origin master"
 
 # Set a prompt for when inside a git repo
 git_prompt(){
-  parse_git_branch && git_status
+  if ref=$(git symbolic-ref HEAD 2>/dev/null) ; then
+    # Colour it red if there are changes to be committed, otherwise green
+    if current_git_status=$(git status | grep 'added to commit' 2>/dev/null); then
+      COLOUR=$RED
+    else
+      COLOUR=$GREEN
+    fi
+    printf "$COLOUR("${ref#refs/heads/}")$BLACK"
+  else
+    return 1
+  fi
 }
 
 # Special cases for different shells
