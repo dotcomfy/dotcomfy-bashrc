@@ -197,7 +197,8 @@ checklockf() {
 ###
 ### CVS Stuff
 ###
-# For some reason, I once did this at one place where I worked - guessing that ssh wasn't always installed in /usr/bin
+# For some reason, I once did this at one place where I worked - guessing that
+# ssh wasn't always installed in /usr/bin - left it here for reference
 # Find ssh binary, and point CVS_RSH to it
 #ssh_guess_dirs=`echo $PATH | sed 's/:/ /g'`
 #for dir in $ssh_guess_dirs ; do
@@ -323,7 +324,8 @@ duf(){
   if [ -z "$1" ] ; then dirs=. ; else dirs=$* ; fi
   for dir in $dirs ; do
     echo "Working on: $dir"
-    # The final sed is there to strip out the leading "./" from file names when running on the current dir
+    # The final sed is there to strip out the leading "./" from file names when 
+    # running on the current dir
     find $dir $args -exec du -sk {} \; | sort -n | perl -ne '($s,$f)=split(m{\t});for (qw(K M G)) {if($s<1024) {printf("%.1f",$s);print "$_\t$f"; last};$s=$s/1024}' | sed 's/\.\///'
   done
 }
@@ -388,7 +390,7 @@ ENDOFSHREDPERL
 # End of shredfile
 
 # Strip out XML tags from text read on stdin
-# Used by xmldiff, but can also be used to read a Word XML file in a terminal window
+# Used by xmldiff, but can also be used to read a Word XML file in a terminal
 xmlstrip() {
    # Replace XML tags with newlines (so that output isn't all on one line)
    # Use grep to exclude blank lines, and lines with only digits and dots
@@ -396,8 +398,9 @@ xmlstrip() {
 }
 
 # Do a diff of only the text portions of an XML file
-# Used for diffing XML versions of my CV
-# it won't necessarily work well for all XML/HTML files, especially if tags span several lines
+# Used for diffing XML based word docs, for example
+# It won't necessarily work well for all XML/HTML files,
+# especially if tags span several lines
 # this might help:
 # sed -e :a -e 's/<[^>]*>//g;/</N;//ba'
 xmldiff() {
@@ -419,8 +422,10 @@ xmldiff() {
 
 # mailshot - send the same email to a number of recipients
 # Poor man's mailing list ;-)
-# Takes one argument, which is a file name containing email addresses, one per line
-# reads an RFC822 formatted message from stdin, expanding the string "__RECIPIENT__"
+# Takes one argument, which is a file name containing email addresses,
+# one per line
+# Reads an RFC822 formatted message from stdin,
+# expanding the string "__RECIPIENT__"
 mailshot() {
   if [ -z "$1" ] ; then
     echo "Usage: $FUNCNAME messagefile"
@@ -470,7 +475,8 @@ dosh() {
 # Looks at time stamps of files in the current directory, creating one
 # directory per day, and moves the files into the daily directory
 # This function is written entirely in Perl
-# if the first argument is a date format, beginning with "+", use that format, otherwise use default
+# If the first argument is a date format, beginning with "+",
+# use that format, otherwise use default
 datedir() {
   $perl -w -e'
   use strict;
