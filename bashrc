@@ -521,6 +521,7 @@ datedir() {
 # Generates and prints a random PIN number
 # I use this to generate PIN codes for various things
 randpin() {
+  # TODO: Should check for and avoid duplicates
   perl -w -e'
   use strict;
   my $pin_length = 4;
@@ -2415,7 +2416,7 @@ fi
 ### OSX / Darwin
 if echo $OSTYPE | grep "darwin" > /dev/null ; then
   top="top -o cpu"
-  alias hibernateon="sudo pmset -a hibernatemode 1 ; echo 'Will now hibernate when closing lid'"
+  alias hibernateon="sudo pmset -a hibernatemode 25 ; echo 'Will now hibernate when closing lid'"
   alias hibernateoff="sudo pmset -a hibernatemode 3 ; echo 'Will just sleep when closing lid'"
 fi
 ### Cygwin
