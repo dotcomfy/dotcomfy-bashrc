@@ -106,6 +106,7 @@ RED="\033[0;31m"
 GREEN="\033[0;32m"
 YELLOW="\033[0;33m"
 BLUE="\033[0;34m"
+ENDCOLOUR="\e[m"
 
 
 
@@ -2406,6 +2407,12 @@ pathadd -q $pathdirs
 # Desktop directory used by gnome, etc
 [ -d ~/Desktop ] && alias dt="cd ~/Desktop"
 
+# Ruby Version Manager
+if [ -f ~/.rvm/scripts/rvm ] ; then
+  echo "Loading rvm..."
+  source ~/.rvm/scripts/rvm
+fi
+
 # This is just so that the Darwin-specific top options work with the top() function later on...
 top="top"
 ### OpenBSD
@@ -2470,7 +2477,7 @@ git_prompt(){
     else
       COLOUR=$GREEN
     fi
-    printf "$COLOUR("${ref#refs/heads/}")$BLACK"
+    printf "$COLOUR("${ref#refs/heads/}")$ENDCOLOUR"
   else
     return 1
   fi
