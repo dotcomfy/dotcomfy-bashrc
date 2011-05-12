@@ -335,6 +335,7 @@ duf(){
     # The final sed is there to strip out the leading "./" from file names when 
     # running on the current dir
     find $dir $args -exec du -sk {} \; | sort -n | perl -ne '($s,$f)=split(m{\t});for (qw(K M G)) {if($s<1024) {printf("%.1f",$s);print "$_\t$f"; last};$s=$s/1024}' | sed 's/\.\///'
+    du -sh $dir
   done
 }
 
