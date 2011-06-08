@@ -23,7 +23,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 #
-#################################################################################
+###############################################################################
+#
+# To see the different sections in this file, run: shrcinfo
 #
 # Despite the name, this code should also work with other Bourne style shells.
 # I've used it in plain old Bourne Shell, Korn, and probably others,
@@ -62,7 +64,8 @@ if ! tty >/dev/null ; then
 fi
 
 ###
-### Settings specific for the usage of the .bashrc and its functions
+##### Settings
+### Specific for the usage of the .bashrc and its functions
 ###
 toolsbase="http://dotcomfy.net/tools" # location of traceroute, ping, etc tools
 dlbase="http://dl.dotcomfy.net" # where files are downloaded from
@@ -77,7 +80,7 @@ shrc_home="$HOME/.bashrc" # could be set to eg ~/.profile in local shellrc"
 jargonfile="$HOME/stuff/jargon.txt"
 
 ###
-### Shell variables
+##### Shell variables
 ### Stuff used by various commands/applications, or the shell itself
 # The One True Text Editor (TM)
 EDITOR=vi export EDITOR
@@ -100,7 +103,10 @@ if [ -z "$HOSTNAME" ] ; then
 fi
 CVS_RSH=/usr/bin/ssh ; export CVS_RSH
 
-# Colours - used in prompts, etc
+###
+##### Colours
+### used in prompts, etc
+###
 BLACK="\033[0;30m"
 RED="\033[0;31m"
 GREEN="\033[0;32m"
@@ -112,7 +118,8 @@ ENDCOLOUR="\e[m"
 
 
 ###
-### Helper functions - used by other functions throughout the .bashrc
+##### Helper functions
+### Used by other functions throughout the .bashrc
 ### These need to be listed early, to make them accessible to others
 
 # Dump a web page to stdout, in a reasonably usable format (HTML removed)
@@ -202,21 +209,10 @@ checklockf() {
     return 0
 }
 
-###
-### CVS Stuff
-###
-# For some reason, I once did this at one place where I worked - guessing that
-# ssh wasn't always installed in /usr/bin - left it here for reference
-# Find ssh binary, and point CVS_RSH to it
-#ssh_guess_dirs=`echo $PATH | sed 's/:/ /g'`
-#for dir in $ssh_guess_dirs ; do
-#  if [ -x $dir/ssh ] ; then
-##    echo "Found ssh binary in $dir"
-#    CVS_RSH=$dir/ssh
-#  fi
-#done
 
 ###
+###
+##### Command aliases
 ### General command aliases - includes a few default flags and stuff
 ###
 alias obsdcvs="cvs -d anoncvs@anoncvs.se.openbsd.org:/cvs"
@@ -286,13 +282,13 @@ alias gtldns="dig @a.gtld-servers.net ns"
 
 ###
 ### Aliases used by root (or not used so frequently, to be precise)
-### Kept mostly for nostalgic reasons ;-) I haven't used ipf or fp in yonks
+### Kept mostly for nostalgic reasons ;-) I haven't used ipf or ftp in yonks
 alias ipfr="sudo ipf -Fa -v -f /etc/ipf.rules > /dev/null"
 alias ftpstart="sudo /usr/libexec/ftpd -D -A -l -l -U -S -h"
 alias ftpstop="sudo kill \`cat /var/run/ftpd.pid\`"
 
 ###
-### Programmable command completion
+##### Programmable command completion
 ###
 
 # Only do this if the complete command exists (BASH 2.04 and later, methinks)
@@ -303,7 +299,7 @@ if complete > /dev/null 2>&1 ; then
 fi
 
 ###
-### Local settings
+### Local config file - local_shellrc
 ###
 # local_shellrc needs to be able to override the above settings
 [ -f ~/.local_shellrc ] && . ~/.local_shellrc
@@ -315,7 +311,9 @@ fi
 # echo "This only gets run the first time"
 local_shellrc_run=1
 
-### General functions
+###
+###
+##### Functions / utils
 ### Some of these are old shell scripts or small perl scripts
 ### that are quite handy to have available on any host I might log in to
 
@@ -1671,6 +1669,8 @@ shrcinfo() {
   echo "Age:             `shrc_check_age` days"
   echo "Update after:    $shrc_max_age days"
   echo "Current version: `shrc_check_ver`"
+  echo "Sections:"
+  grep "^##### " $shrc_home | sed 's/^##### / - /'
 }
 
 # Updates the base .bashrc (or whatever it's stored as locally)
@@ -2137,7 +2137,7 @@ while ( keys (%spawned) ) {
 exit(0);
 
 
-#####                            Sub routines                            ######
+###                            Sub routines                            ###
 sub fetchurl {
     my $url=shift();
 #    debug ("Processing URL: $url->{remote_host}\n");
@@ -2519,7 +2519,7 @@ if [ $shrc_age -gt $shrc_max_age -a -z "$noupdateshrc" ] ; then
     
 fi
 
-# Display users own motd, if one exists
+# Display user's own motd, if one exists
 # But only do this for the first shell, not sub shells
 [ -f ~/.motd -a -z "$motd_done" ] && cat ~/.motd
 motd_done=1 ; export motd_done
