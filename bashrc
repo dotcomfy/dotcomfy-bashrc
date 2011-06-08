@@ -317,6 +317,46 @@ local_shellrc_run=1
 ### Some of these are old shell scripts or small perl scripts
 ### that are quite handy to have available on any host I might log in to
 
+isrunning(){
+  # Check if a pid is running
+  kill -0 $1 > /dev/null 2>&1
+}
+
+slowrun(){
+  # Poor man's scheduling... for when ionice (Linux) doesn't quite work,
+  # or you just don't have access to scheduling for cpu/disk/network
+  # Run, then pause, then run, etc,
+  # to ensure that other processes get some time to run in between
+  local run_cmd=$*
+  local run_time=1
+  local pause_time=2
+
+  # Kick off process in background
+  start_time=$(date)
+  nice $run_cmd &
+
+  # Grab the PID of the process we've just kicked off in the background
+  pid=$!
+
+  echo "$(date) Running $run_cmd with PID: $pid"
+  echo "$(date) Running for $run_time seconds, then pausing for $pause_time seconds, etc"
+
+  while isrunning $pid ; do
+    isrunning $pid || break
+    sleep $run_time
+    isrunning $pid || break
+    echo "$(date) Still running, stopping it for a while"
+    isrunning $pid && kill -STOP $pid
+    isrunning $pid || break
+    sleep $pause_time
+    isrunning $pid || break
+    echo "$(date) Continuing..."
+    isrunning $pid && kill -CONT $pid
+    #ps -p $pid
+  done
+  echo "$(date) Done running $run_cmd, started at $start_time"
+}
+
 # Print disk usage for all files/directories, human readable, sorted by size
 duf(){
   # Never include the directory itself - just the directories beneath
