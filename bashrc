@@ -1274,20 +1274,26 @@ revlookup() {
 }
 
 
-# nmap myself from wasp
+# Find which external IP I'm using (or at least for WWW)
+myip() {
+  local url="$toolsbase/?action=myip"
+  if [ $# -gt 0 ] ; then url="${url}$*" ; fi
+  wwwget -q $url
+}
+# nmap myself from toolsbace
 scanme() {
   local url="$toolsbase/?action=scan"
   if [ $# -gt 0 ] ; then url="${url}$*" ; fi
   wwwget -q $url
 }
 
-# ping myself from wasp
+# ping myself from toolsbase
 pingme() {
   local url="$toolsbase/?action=ping"
   wwwget -q $url
 }
 
-# trace myself from wasp
+# trace myself from toolsbase
 traceme() {
   local url="$toolsbase/?action=trace"
   wwwget -q $url
