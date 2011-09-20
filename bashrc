@@ -618,6 +618,7 @@ randpass() {
   # Seed the random number generator
   srand;
 
+
   for ( my $i=0; $i < $quantity; ) {
     $password = "";
     for (my $j=0; $j < $password_length ; $j++) {
@@ -625,10 +626,12 @@ randpass() {
       $password .= $chars[$_rand];
      }
     # Password must include uppercase, lowercase, digit, otherwise skip
-    if ( $password =~ /^[a-z]+[A-Z]+[0-9]+/ ) {
+    # Also must not contain repeated characters
+    if ( $password =~ /[a-z]/ && $password =~ /[A-Z]/ && $password =~ /[0-9]/ && $password !~ /(.)\1/ ) {
         print "$password\n";
         $i++; # only increase counter if the password was used
     }
+    #else { print "REJECTING: $password\n"; }
   }
   ' $*
 }
