@@ -322,6 +322,12 @@ isrunning(){
   kill -0 $1 > /dev/null 2>&1
 }
 
+# Expand a shortened URL, recursively
+# Follows a chain of HTTP redirects, showing each hop, including the final destination
+expandurl() { curl -sIL $1 | grep ^Location; }
+# An alternative, using wget:
+#expandurl() { wget -S $1 2>&1 | grep ^Location; }
+
 slowrun(){
   # Poor man's scheduling... for when ionice (Linux) doesn't quite work,
   # or you just don't have access to scheduling for cpu/disk/network
