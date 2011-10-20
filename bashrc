@@ -2503,12 +2503,6 @@ perl=perl
 [ -x /usr/local/bin/perl5 ] && perl=/usr/local/bin/perl5
 [ -x /usr/bin/perl5 ] && perl=/usr/bin/perl5
 
-# The "md5" command on BSD is slihgtly different from GNU md5sum
-# set up an md5 alias that behaves like md5
-if type md5sum > /dev/null 2>&1 && ! type md5 > /dev/null 2>&1 ; then
-  alias md5="md5sum -b"
-fi
-
 # Some telnet client that I used to be using on my Palm, I think...
 if [ "$TERM" = "tgtelnet" ]; then
   stty rows 19
