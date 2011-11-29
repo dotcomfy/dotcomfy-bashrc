@@ -1775,7 +1775,7 @@ updatefile() {
     else
       echo "OK, will update later."
       rm $file_tmp
-      return 1
+      return 0
     fi
   fi
   # Register that it's updated
