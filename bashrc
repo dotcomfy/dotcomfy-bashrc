@@ -1775,13 +1775,13 @@ updatefile() {
     else
       echo "OK, will update later."
       rm $file_tmp
-      return 0
     fi
   fi
   # Register that it's updated
   perl -e 'print time();' > $shrc_age_file
   # source the current .${SHELL}rc file
   . $file_home
+  return 0
 }
 
 # Check a file out from RCS, edit, show diff, check back in
