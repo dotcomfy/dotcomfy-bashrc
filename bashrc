@@ -1751,11 +1751,15 @@ updatefile() {
   # TODO: If SSL fails, then fall back on plaintext HTTP, grabbing the file from dotcomfy.net
   wget  -q -O $file_tmp --no-check-certificate $file_www
   if [ $? -ne 0 ] ; then
-    echo "wget failed retrieving file, will try lynx"
-    lynx -dump -source $file_www > $file_tmp
+    echo "wget failed retrieving file, will try cURL"
+    curl  -sL -o $file_tmp $file_www
     if [ $? -ne 0 ] ; then
-      echo "Doh, I couldn't get the new bashrc, giving up"
-      return 1
+      echo "cURL failed retrieving file, will try lynx"
+      lynx -dump -source $file_www > $file_tmp
+      if [ $? -ne 0 ] ; then
+        echo "Doh, I couldn't get the new bashrc, giving up"
+        return 1
+      fi
     fi
   fi
   if diff $file_home $file_tmp ; then
