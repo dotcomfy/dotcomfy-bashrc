@@ -981,7 +981,7 @@ perlmv() {
       # print "Filename after eval: $_\n";
       die $@ if $@;
       unless ( $was eq $_ ) {
-        print "Renaming ($was) to ($_)\n";
+        print "Renaming: <<<$was<<< to >>>$_>>>\n";
         rename ("$was", "$_") unless ( $dry eq "yes" );
       }
     ' "$re" "$file" "$dry"
