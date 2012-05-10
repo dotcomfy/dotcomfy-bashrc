@@ -256,7 +256,6 @@ alias exit='kill -9 $$'
 alias cvs="cvs -q"
 # Compression is almost always a good idea for scp
 alias scp="scp -C"
-alias grep="grep --color=auto"
 
 ### 
 ### File fetching aliases
@@ -2480,6 +2479,10 @@ top="top"
 if echo $OSTYPE | grep "openbsd" > /dev/null ; then
   PKG_PATH=ftp://ftp.sunet.se/pub/OpenBSD/`uname -r`/packages/`uname -m`/
   export PKG_PATH
+fi
+### GNU/Linux
+if [ "$OSTYPE"="linux-gnu" ] ; then
+  alias grep="grep --color=auto"
 fi
 ### OSX / Darwin
 if echo $OSTYPE | grep "darwin" > /dev/null ; then
