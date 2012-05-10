@@ -256,6 +256,7 @@ alias exit='kill -9 $$'
 alias cvs="cvs -q"
 # Compression is almost always a good idea for scp
 alias scp="scp -C"
+alias grep="grep --color=auto"
 
 ### 
 ### File fetching aliases
