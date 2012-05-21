@@ -2481,7 +2481,7 @@ if echo $OSTYPE | grep "openbsd" > /dev/null ; then
   export PKG_PATH
 fi
 ### GNU/Linux
-if [ "$OSTYPE"="linux-gnu" ] ; then
+if [ "$OSTYPE" = "linux-gnu" ] ; then
   alias grep="grep --color=auto"
 fi
 ### OSX / Darwin
