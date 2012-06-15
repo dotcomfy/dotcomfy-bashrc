@@ -317,6 +317,16 @@ local_shellrc_run=1
 ### Some of these are old shell scripts or small perl scripts
 ### that are quite handy to have available on any host I might log in to
 
+# Do a sum of a bunch of numbers. Numbers are expected to be on per line.
+# For example
+# 1
+# 2
+# 4
+# Gives: 7
+sumnum(){
+  awk  '{sum+=$0} END {print sum}'
+}
+
 isrunning(){
   # Check if a pid is running
   kill -0 $1 > /dev/null 2>&1
