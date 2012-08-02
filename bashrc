@@ -2466,9 +2466,9 @@ ENDOFWWWGETPERL
 # Figure out what we want in our $PATH
 # Directories that we'll want in $PATH, if they exist, in order of preference
 # Some of these are specific to a certain environment, such as Iris
-pathdirs="/sbin /usr/sbin /bin /usr/bin /usr/local/sbin /usr/local/bin \
+athdirs="/sbin /usr/sbin /bin /usr/bin /usr/local/sbin /usr/local/bin \
  /usr/X11R6/bin /usr/games /usr/contrib/bin $HOME/bin /usr/java/bin \
- /usr/pkg/bin /usr/ccs/bin /usr/ucb /usr/local/ssh/bin"
+ /usr/pkg/bin /usr/ccs/bin /usr/ucb /usr/local/ssh/bin $HOME/.rvm/bin"
 
 # Add all these dirs
 pathadd -q $pathdirs
