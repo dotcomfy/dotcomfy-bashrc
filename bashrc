@@ -1549,9 +1549,14 @@ screen() {
   xbacktitle
 }
 
-pine() {
+pine(){
   xtitle "PINE - ($USER@$HOSTNAME)"
-  command pine -i $*
+  if [ "$(type -t alpine)" = "file" ] ; then
+    pine=alpine
+  else
+    pine=pine
+  fi
+  command $pine -i $*
   xbacktitle
 }
 
