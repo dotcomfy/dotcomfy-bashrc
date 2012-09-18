@@ -122,6 +122,11 @@ ENDCOLOUR="\e[m"
 ### Used by other functions throughout the .bashrc
 ### These need to be listed early, to make them accessible to others
 
+# Check if a pid is running
+isrunning(){
+  kill -0 $1 > /dev/null 2>&1
+}
+
 # Dump a web page to stdout, in a reasonably usable format (HTML removed)
 # Uses lynx - could be rewritten to use something else
 wwwdump()
@@ -317,6 +322,19 @@ local_shellrc_run=1
 ### Some of these are old shell scripts or small perl scripts
 ### that are quite handy to have available on any host I might log in to
 
+# Print info about the host you're on, who you're logged in as, etc
+wtf(){
+  firstcolumn=20
+  echo "Hostname:     $(hostname)"
+  echo "OS:           $(uname -a)"
+  echo "IP:           $(ifconfig -a | grep inet | grep -v 127.0.0.1 | grep -v inet6 | sed 's/\s*//')"
+  if [ $(uname -s) = "Linux" ] ; then
+    echo
+    echo "Release info:"
+    cat /etc/*release
+  fi
+}
+
 # Do a sum of a bunch of numbers. Numbers are expected to be on per line.
 # For example
 # 1
@@ -325,11 +343,6 @@ local_shellrc_run=1
 # Gives: 7
 sumnum(){
   awk  '{sum+=$0} END {print sum}'
-}
-
-isrunning(){
-  # Check if a pid is running
-  kill -0 $1 > /dev/null 2>&1
 }
 
 # Expand a shortened URL, recursively
