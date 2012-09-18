@@ -322,6 +322,64 @@ local_shellrc_run=1
 ### Some of these are old shell scripts or small perl scripts
 ### that are quite handy to have available on any host I might log in to
 
+
+# A function for concatenating audio files. Supports any input formats that Sox supports, such as wav and MP3
+# Works by converting all input files into raw format, concatenating the raw files,
+# and then converting to the desired format
+audioconcat(){
+  # Put all temp files in their own directory - easy to clean up, and no permission issues as long as we've got temp space
+  local tmpdir=/tmp/audioconcat.$$.tmp
+  
+  # The last argument is the output file
+  eval local outfile=\${$#}
+  
+  # Options for sox, adjust as necessary
+  local soxoptions="--rate 48000 --channels 2 --encoding signed-integer --bits 24"
+  
+  # There should be at least three arguments - two input files and an output file
+  if [ $# -lt 3 ] ; then
+    echo "Usage: audioconcat [ files ] <outfile>"
+    echo "Example: audioconcat input1.wav input2.wav output.wav"
+    return 1
+  fi
+  
+  # Abort if we can't create the temp directory
+  mkdir $tmpdir || ( echo "Failed to create temp dir: $tmpdir" ; return 1)
+  
+  echo "Concatenating all files into $outfile"
+  echo "Using options for sox: $soxoptions"
+  echo
+  
+  count=0
+  while [ $# -gt 1 ] ; do
+    local thisfile=$1 ; shift
+    local count=$(expr $count + 1)
+  
+    # Abort if any of the files don't exist
+    if ! [ -r $thisfile ] ; then
+      echo "File does not exist or is not readable: $thisfile, aborting"
+      rm -rf $tmpdir
+      return 1
+    fi
+  
+    local thistempfile=$tmpdir/outtemp.$count.raw
+    # Store this file in the list of files we've processed, and the name of the temp file for concatenating
+    local inputfiles="$inputfiles $thisfile"
+    local rawtempfiles="$rawtempfiles $thistempfile"
+    echo "Processing: $thisfile ($thistempfile)"
+    sox $thisfile $soxoptions $thistempfile
+  done
+  
+  # Do the actual concatenation of files
+  cat $rawtempfiles > $tmpdir/concatenated.raw
+  
+  echo "Creating output file: $outfile"
+  sox $soxoptions $tmpdir/concatenated.raw $outfile
+  
+  echo "Done, created $outfile from:$inputfiles"
+  #rm -rf $tmpdir
+}
+
 # Print info about the host you're on, who you're logged in as, etc
 wtf(){
   firstcolumn=20
