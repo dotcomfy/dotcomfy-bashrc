@@ -414,20 +414,27 @@ slowrun(){
   # or you just don't have access to scheduling for cpu/disk/network
   # Run, then pause, then run, etc,
   # to ensure that other processes get some time to run in between
-  local run_cmd=$*
-  local run_time=1
-  local pause_time=2
+  local run_time=2
+  local pause_time=1
 
   # Kick off process in background
-  start_time=$(date)
-  nice $run_cmd &
+  local start_time=$(date)
 
-  # Grab the PID of the process we've just kicked off in the background
-  pid=$!
+  if echo $* | grep -E '^[0-9]+$' > /dev/null ; then
+    local pid=$1
+    local run_cmd="Existing PID" 
+    echo "Looks like you've specified a PID of an existing process: $pid"
+  else
+    local run_cmd=$*
+    nice $run_cmd &
+    # Grab the PID of the process we've just kicked off in the background
+    local pid=$!
+  fi
 
   echo "$(date) Running $run_cmd with PID: $pid"
   echo "$(date) Running for $run_time seconds, then pausing for $pause_time seconds, etc"
 
+  # The many "break" are there so that, if the process is no longer running, we exit the while loop as soon as possible
   while isrunning $pid ; do
     isrunning $pid || break
     sleep $run_time
