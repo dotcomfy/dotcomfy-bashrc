@@ -761,7 +761,7 @@ screen_ssh () {
   local host=$1 ; shift
   if [ ! -z "$1" ] ; then title=$1 ; shift ; else title=$host ; fi
   # Any arguments after hostname and title are passed on to ssh
-  sshflags="-C $*"
+  sshflags="-C -o ServerAliveInterval=30 $*"
   # STY is set by screen if it's running
   if [ -z "$STY" ] ; then
     ssh $sshflags $host
