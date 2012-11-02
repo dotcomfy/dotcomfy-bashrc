@@ -1104,7 +1104,8 @@ sectime(){
 # "s// in file", sinfile, do a replace of text in one or several files
 sinfile() {
   if [ $# -lt 2 ] ; then echo "Usage: sinfile perlcode files" ; return 1 ; fi
-  perl -i.old -p -e "$1" $2
+  perlcmd=$1 ; shift
+  perl -i.old -p -e "$perlcmd" $*
 }
 
 # Set prompt(PS1) to s(hort) or long. Default is long
