@@ -336,12 +336,12 @@ local_shellrc_run=1
 # Instead of:
 # "column1","column2"
 # "foo | bar","baz"
-# Touch cheese, but that's just what you get :-)
+# Tough cheese, but that's just what you get :-)
 csvify_table(){
   grep -v '^+' | sed 's/^| */"/; s/  *| *$/"/; s/ * | * /","/g'
 }
 
-# Convert MySQL output to CSV
+# Convert MySQL output to CSV, including column names, which are lost when using 'INTO OUTFILE' to produce CSV
 mysql_dump_csv(){
   # This argument handling probably only works in BASH, but it's a tradeoff for being able to quote just the last argument (the query)
   # The query is the very last argument
