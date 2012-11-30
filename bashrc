@@ -322,6 +322,35 @@ local_shellrc_run=1
 ### Some of these are old shell scripts or small perl scripts
 ### that are quite handy to have available on any host I might log in to
 
+# Take table, such as the output from MySQL, and turn it into CSV
+# If a value in a row contains a space, followed by a pipe, and onother space, it
+# will incorrectly parse it as two values, and make separate columns in the output
+# +-----------+---------+
+# | column1   | column2 |
+# +-----------+---------+
+# | foo | bar | baz     |
+# +-----------+---------+
+# Will incorrectly become:
+# "column1","column2"
+# "foo","bar","baz"
+# Instead of:
+# "column1","column2"
+# "foo | bar","baz"
+# Touch cheese, but that's just what you get :-)
+csvify_table(){
+  grep -v '^+' | sed 's/^| */"/; s/  *| *$/"/; s/ * | * /","/g'
+}
+
+# Convert MySQL output to CSV
+mysql_dump_csv(){
+  # This argument handling probably only works in BASH, but it's a tradeoff for being able to quote just the last argument (the query)
+  # The query is the very last argument
+  local mysql_query="${@: -1}"
+  # The other arguments are passed on as-is to MySQL
+  local mysql_args=${@:1:$(($#-1))}
+  #echo "db args: $mysql_args, query: $mysql_query" >&2
+  mysql --table --column-names $mysql_args -e "$mysql_query" | csvify_table 
+}
 
 # A function for concatenating audio files. Supports any input formats that Sox supports, such as wav and MP3
 # Works by converting all input files into raw format, concatenating the raw files,
