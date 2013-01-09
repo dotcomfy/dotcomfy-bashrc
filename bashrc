@@ -1872,12 +1872,12 @@ updatefile() {
   #wwwget -q $file_www > $file_tmp
   # TODO: Write a retry loop with wget, lynx, wwwget, curl, etc
   # TODO: If SSL fails, then fall back on plaintext HTTP, grabbing the file from dotcomfy.net
-  wget  -q -O $file_tmp --no-check-certificate $file_www
+  curl  -sL -o $file_tmp $file_www
   if [ $? -ne 0 ] ; then
-    echo "wget failed retrieving file, will try cURL"
-    curl  -sL -o $file_tmp $file_www
+    echo "cURL failed retrieving file, will try wget"
+    wget  -q -O $file_tmp --no-check-certificate $file_www
     if [ $? -ne 0 ] ; then
-      echo "cURL failed retrieving file, will try lynx"
+      echo "Failed retrieving file, will try lynx"
       lynx -dump -source $file_www > $file_tmp
       if [ $? -ne 0 ] ; then
         echo "Doh, I couldn't get the new bashrc, giving up"
