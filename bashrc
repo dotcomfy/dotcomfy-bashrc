@@ -103,6 +103,9 @@ if [ -z "$HOSTNAME" ] ; then
 fi
 CVS_RSH=/usr/bin/ssh ; export CVS_RSH
 
+PS4='$0:$LINENO: ' ; export PS4
+
+
 ###
 ##### Colours
 ### used in prompts, etc
