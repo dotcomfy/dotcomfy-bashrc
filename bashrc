@@ -1984,10 +1984,11 @@ my $response;                      # Response from remote SMTP server
 my @mailbody;                      # Array of lines for body (in DATA)
 my $heloname;                      # Name I use in HELO
 my %opts;                          # Command line options
-my $port = 25;                     # Default SMTP port
 
 # Get command-line options.
 getopts('bhH:p:s:', \%opts);
+
+my $port = $opts{'p'} || 25;                     # Default SMTP port
 
 # Need at least 3 arguments, server, from, to
 if ( $#ARGV <2 ) { &usage; }
