@@ -418,6 +418,7 @@ wtf(){
   echo "Hostname:     $(hostname)"
   echo "OS:           $(uname -a)"
   echo "IP:           $(ifconfig -a | grep inet | grep -v 127.0.0.1 | grep -v inet6 | sed 's/\s*//')"
+  echo "External IP:  $(myip | tail -1 | sed 's/.*: //')"
   if [ $(uname -s) = "Linux" ] ; then
     echo
     echo "Release info:"
