@@ -422,7 +422,7 @@ wtf(){
   if [ $(uname -s) = "Linux" ] ; then
     echo
     echo "Release info:"
-    cat /etc/*release
+    cat /etc/*release | sort -u
   fi
 }
 
