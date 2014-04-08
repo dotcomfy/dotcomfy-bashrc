@@ -69,7 +69,7 @@ fi
 ###
 toolsbase="http://dotcomfy.net/tools" # location of traceroute, ping, etc tools
 dlbase="http://dl.dotcomfy.net" # where files are downloaded from
-githubbase="https://github.com/dotcomfy/dotcomfy-bashrc/raw/master/"
+githubbase="https://github.com/dotcomfy/dotcomfy-bashrc/raw/master"
 shrc_url="$githubbase/bashrc" # download location of .bashrc
 backup_url="http://www.dotcomfy.net/dotcomfy_bashrc" # For non-SSL clients
 dotprofile_url="$dlbase/bash_profile" # download location of .bash_profile
