@@ -953,6 +953,16 @@ gbpusd() {
   gcalc $1 gbp in usd
 }
 
+# Replace CR with LF
+replacecr () {
+  if [ -z "$1" ] ; then echo "Usage: replacecr <file>" ; return 1 ; fi
+  local file=$1
+  # backup
+  mv -i $file $file.old || return 1
+  tr -s '\015' '\012' < $file.old > $file
+  echo "Done. Backed up to $file.old"
+}
+
 # Strip out Carriage Return (CR) from a file
 stripcr () {
   if [ -z "$1" ] ; then echo "Usage: stripcr <file>" ; return 1 ; fi
