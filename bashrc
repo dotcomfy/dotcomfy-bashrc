@@ -813,7 +813,8 @@ sssh()
   local hostname=$1 ; shift
   local title=$hostname
   # If the title doesn't look like an IP address, then shorten it, by removing everything after the first '.'
-  echo $hostname | grep -q -E '[[:digit:]]\.[[:digit:]]' || title=`echo $hostname | sed 's/\..*//'`
+  echo $hostname | grep -q -E '[[:digit:]]\.[[:digit:]]' || title=$(echo $hostname | sed 's/\..*//')
+  title=$(echo $title | sed 's/..*@//')
 
   # Run screen_ssh on the hostname, with the name shortened for the screen title
   # pass on any ssh flags as $*
