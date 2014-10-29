@@ -2708,18 +2708,22 @@ alias gcp="git commit -a ; git push origin master"
 
 # Set a prompt for when inside a git repo
 git_prompt(){
-  if ref=$(git symbolic-ref HEAD 2>/dev/null) ; then
-    # Colour it red if there are changes to be committed, otherwise green
-    if current_git_status=$(git status | grep 'added to commit' 2>/dev/null); then
-      COLOUR=$RED
+  if ref=$(git symbolic-ref HEAD 2>/dev/null); then
+    gitstatus="$(git status)"
+    if echo "$gitstatus" | grep -E 'Changes|Changed|Untracked' >/dev/null; then
+      COLOUR=$RED;
+    elif echo "$gitstatus" | grep -E 'Your branch is ahead' >/dev/null; then
+      ahead_by=":$(echo "$gitstatus" | grep 'Your branch is ahead' | awk '{ print $9 }')"
+      COLOUR=$YELLOW;
     else
-      COLOUR=$GREEN
+      COLOUR=$GREEN;
     fi
-    printf "$COLOUR("${ref#refs/heads/}")$ENDCOLOUR"
+    printf "$COLOUR("${ref#refs/heads/}"${ahead_by})$ENDCOLOUR";
   else
-    return 1
+    return 1;
   fi
 }
+
 
 # Special cases for different shells
 case "$SHELL" in
