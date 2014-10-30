@@ -115,6 +115,7 @@ RED="\033[0;31m"
 GREEN="\033[0;32m"
 YELLOW="\033[0;33m"
 BLUE="\033[0;34m"
+PURPLE="\033[0;35m"
 ENDCOLOUR="\e[m"
 
 
@@ -2715,6 +2716,8 @@ git_prompt(){
     elif echo "$gitstatus" | grep -E 'Your branch is ahead' >/dev/null; then
       ahead_by=":$(echo "$gitstatus" | grep 'Your branch is ahead' | awk '{ print $9 }')"
       COLOUR=$YELLOW;
+    elif echo "$gitstatus" | grep -E 'Unmerged paths' >/dev/null; then
+      COLOUR=$PURPLE;
     else
       COLOUR=$GREEN;
     fi
