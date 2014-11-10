@@ -102,8 +102,11 @@ if [ -z "$HOSTNAME" ] ; then
   HOSTNAME=$(hostname) export HOSTNAME
 fi
 CVS_RSH=/usr/bin/ssh ; export CVS_RSH
-
+# Debugger prompt
 PS4='$0:$LINENO: ' ; export PS4
+# MySQL prompt, hostname:databasename
+MYSQL_PS1="$(hostname -s):\d> " export MYSQL_PS1
+
 
 
 ###
