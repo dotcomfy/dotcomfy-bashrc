@@ -269,6 +269,7 @@ alias cvs="cvs -q"
 # Compression is almost always a good idea for scp
 alias scp="scp -C"
 
+
 ### 
 ### File fetching aliases
 ### (only one remaing, because I never used them)
@@ -328,6 +329,24 @@ local_shellrc_run=1
 ##### Functions / utils
 ### Some of these are old shell scripts or small perl scripts
 ### that are quite handy to have available on any host I might log in to
+
+
+# LSOF functions, for some handy sets of commands. Probably only works on Linux.
+list_deleted_open_files(){
+  (
+    # First, a hack to get a header
+    lsof -p 1 | head -1
+    # Then, loop over all running processes, and for each process, look for deleted files
+    # To avoid noise, we grep out /dev/zero
+    for pid in $(ps aux | awk '{print $2}' |  grep -v PID) ; do lsof -p $pid ; done | grep deleted | grep -v '(deleted)/dev/zero (stat: No such file or directory)'
+  ) | column -t
+}
+list_large_open_files(){
+ (
+   echo "Size Path"
+   lsof +D / | awk '{print $7 " " $9}' | grep -v ^SIZE| sort -u | sort -rn 
+ ) | column -t
+}
 
 # Take table, such as the output from MySQL, and turn it into CSV
 # If a value in a row contains a space, followed by a pipe, and onother space, it
