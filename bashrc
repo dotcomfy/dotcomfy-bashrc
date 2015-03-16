@@ -706,6 +706,44 @@ dosh() {
   echo
 }
 
+
+# Renames files to include a date/time stamp
+# If the first argument looks like a date format (begins with +), then use that format, otherwise use default
+datefile() {
+  $perl -w -e'
+  use strict;
+  use POSIX qw(strftime);
+  # By default, using same date format as Android KitKat, because it matches the files from my phone, so sorting by file name looks sensible
+  my $datefmt = "%Y-%m-%d %H.%M.%S";
+
+  if ( $ARGV[0] =~ /^\+/ ) {
+    $datefmt = shift(@ARGV);
+    #$datefmt =~ s/^\+//;
+  }
+
+  if ($#ARGV < 0 ) {
+    print "Usage: datefile [format] <files>\n";
+    print "Format follows stftime\n";
+    exit 1;
+  }
+
+  print "Using date format: $datefmt\n";
+
+  foreach my $file (@ARGV) {
+    if ( -f $file ) {
+      # get last modified time of $file
+      my $mtime = (stat($file))[9];
+      my $datestr = strftime "$datefmt", localtime( $mtime );
+      my $newname = "$datestr $file";
+      print "mtime ($file): $mtime, datestr: $datestr, new name: $newname\n";
+      if ( -f "$newname" ) { warn "File exists: $newname\n" ; next; }
+      rename ("$file", "$newname");
+    }
+  }
+  ' $* # end of Perl code
+}
+
+
 # Looks at time stamps of files in the current directory, creating one
 # directory per day, and moves the files into the daily directory
 # This function is written entirely in Perl
