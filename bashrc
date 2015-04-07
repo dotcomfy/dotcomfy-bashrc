@@ -331,6 +331,12 @@ local_shellrc_run=1
 ### that are quite handy to have available on any host I might log in to
 
 
+# Ping output with a timestamp
+timeping(){
+ ping $* | while read line ; do echo "$(date) $line" ; done
+}
+
+
 # LSOF functions, for some handy sets of commands. Probably only works on Linux.
 list_deleted_open_files(){
   (
