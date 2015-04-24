@@ -331,9 +331,13 @@ local_shellrc_run=1
 ### that are quite handy to have available on any host I might log in to
 
 
+# Put timestamps on the output of any command
+timestamp(){
+  while read line ; do echo "$(date) $line" ; done
+}
 # Ping output with a timestamp
 timeping(){
- ping $* | while read line ; do echo "$(date) $line" ; done
+  ping $* | timestamp
 }
 
 
