@@ -925,12 +925,12 @@ screen_ssh () {
 
 # Bad name, but rymes with wclock... helper function for wclock
 # which can also be used on its own, eg tclock Europe/London
-tclock () {
+tclock(){
   TZ="$1" date
 }
 
 # World clock - prints date for some time zones that I tend to care about
-wclock () {
+wclock(){
   echo -n "California: " ; tclock America/Los_Angeles
   echo -n "New York:   " ; tclock America/New_York
   echo -n "UTC:        " ; tclock UTC
@@ -941,10 +941,18 @@ wclock () {
   echo -n "Auckland:   " ; tclock Pacific/Auckland
 }
 
+# Nano clock - prints the time, including nano seconds, at set interval
+nanoclock(){
+  interval=100000 # Defaults to 10th of a second
+  [ ! -z "$1" ] && interval=$1
+  while usleep $interval ; do printf "\r%s %s" $(date '+%H:%M:%S %N') ; done
+}
+alias clocknano=nanoclock # Just so I can type clock and tab, the day that I've forgotten what I called the function above, but remember that it was something to do with 'clock' :-)
+
 # Calculate something by echo'ing it to bc -l
 # using decimals, so 7/2 = 2.33... rather than 7/2 = 2
 # See man page for bc for more info
-calc () {
+calc(){
   if [ -z "$1" ] ; then
     echo "Usage: $FUNCNAME expression"
     echo "Where expression is anything that bc will understand"
@@ -955,12 +963,12 @@ calc () {
 
 # Check spelling of a word (or bunch of words) passed as argument
 # quicker than "echo word | spell" for checking one word 
-sp () {
+sp(){
   echo $* | spell
 }
 
 # Search for something in Google, and dump the results
-google () {
+google(){
   if [ -z "$1" ] ; then echo "Usage example: $FUNCNAME word" ; return 1 ; fi
   wwwdump "http://www.google.co.uk/search?hl=en&q=${*}" | $PAGER
 }
@@ -968,7 +976,7 @@ google () {
 # Look things up in Lexin
 # To translate from English to Swedish - use "lexin :word"
 # http://lexin.nada.kth.se/faq.shtml
-lexin () {
+lexin(){
   if [ -z "$1" ] ; then
     echo "Usage example: $FUNCNAME [:]word"
     echo "Prepending word with a colon looks up an English word"
