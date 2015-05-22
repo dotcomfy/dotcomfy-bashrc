@@ -471,7 +471,7 @@ sumnum(){
 
 # Get a sum, total, and average from a bunch of numbers. One number per line
 average(){
-  awk '{ total += $1; count++ } END { print "Line count, Total, Average"; print count " " total " " total/count }'
+  sed 's/[^0-9.]//g' | awk 'BEGIN {min=99999999999999; max=-min} { total += $1; count++; if($1>max){max=$1}; if($1<min){min=$1} } END { printf "Line count: %d\nTotal: %d\nAverage: %f\nMin: %f\nMax: %f\n", count, total, total/count, min, max }'
 }
 
 
