@@ -880,9 +880,14 @@ randpass() {
   ' $*
 }
 
+# rootat - SSH to root @ whatever
+rootat(){
+  local host=$1
+  sssh root@$host
+}
+
 # sssh - function that uses screen_ssh, but is more suited to use interactively
-sssh()
-{
+sssh(){
   if [ -z "$1" ] ; then
     echo "Usage: $FUNCNAME [username@]hostname [ ssh flags ]"
     return 1
@@ -906,7 +911,7 @@ sssh()
 # if not, it'll just run in the current shell
 # if title is set, it will be used as the window title. otherwise,
 # the hostname will be used as the title
-screen_ssh () {
+screen_ssh(){
   if [ -z "$1" ] ; then
     echo "Usage: screen_ssh host [title [ssh flags]]"
     return 1
