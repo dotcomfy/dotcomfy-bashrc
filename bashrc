@@ -4,17 +4,17 @@
 ###############################################################################
 #
 # Copyright (c) 1999-2012 Linus / Dotcomfy
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -42,7 +42,7 @@
 # Since I've tended to work on a wide range of OSes and versions,
 # and often supporting old legacy systems, one of the goals of this .bashrc
 # has always been to minimise dependance third party software.
-# 
+#
 #
 # DISCLAIMER: Please do not use this .bashrc without FULLY understanding
 # what it does. For all you know, it could be doing some really evil stuff.
@@ -178,9 +178,9 @@ mksshalias()
 # sets the title in x terminals, used by cd() and others to update title bars
 # the variables xtitle1 and xtitle2 can be set in local shellrc,
 # to prepend or append a string to the title
-xtitle() { 
+xtitle() {
   case $TERM in
-   *term* | *color | rxvt | vt100 | vt220 | cygwin | screen* ) 
+   *term* | *color | rxvt | vt100 | vt220 | cygwin | screen* )
       echo -n -e "\033]0;${xtitle1}${*}${xtitle2}\007" ;;
    *)  ;;
      esac
@@ -270,7 +270,7 @@ alias cvs="cvs -q"
 alias scp="scp -C"
 
 
-### 
+###
 ### File fetching aliases
 ### (only one remaing, because I never used them)
 # Get the standard .bash_profile
@@ -354,7 +354,7 @@ list_deleted_open_files(){
 list_large_open_files(){
  (
    echo "Size Path"
-   lsof +D / | awk '{print $7 " " $9}' | grep -v ^SIZE| sort -u | sort -rn 
+   lsof +D / | awk '{print $7 " " $9}' | grep -v ^SIZE| sort -u | sort -rn
  ) | column -t
 }
 
@@ -385,7 +385,7 @@ mysql_dump_csv(){
   # The other arguments are passed on as-is to MySQL
   local mysql_args=${@:1:$(($#-1))}
   #echo "db args: $mysql_args, query: $mysql_query" >&2
-  mysql --table --column-names $mysql_args -e "$mysql_query" | csvify_table 
+  mysql --table --column-names $mysql_args -e "$mysql_query" | csvify_table
 }
 
 # A function for concatenating audio files. Supports any input formats that Sox supports, such as wav and MP3
@@ -394,39 +394,39 @@ mysql_dump_csv(){
 audioconcat(){
   # Put all temp files in their own directory - easy to clean up, and no permission issues as long as we've got temp space
   local tmpdir=/tmp/audioconcat.$$.tmp
-  
+
   # The last argument is the output file
   eval local outfile=\${$#}
-  
+
   # Options for sox, adjust as necessary
   local soxoptions="--rate 48000 --channels 2 --encoding signed-integer --bits 24"
-  
+
   # There should be at least three arguments - two input files and an output file
   if [ $# -lt 3 ] ; then
     echo "Usage: audioconcat [ files ] <outfile>"
     echo "Example: audioconcat input1.wav input2.wav output.wav"
     return 1
   fi
-  
+
   # Abort if we can't create the temp directory
   mkdir $tmpdir || ( echo "Failed to create temp dir: $tmpdir" ; return 1)
-  
+
   echo "Concatenating all files into $outfile"
   echo "Using options for sox: $soxoptions"
   echo
-  
+
   count=0
   while [ $# -gt 1 ] ; do
     local thisfile=$1 ; shift
     local count=$(expr $count + 1)
-  
+
     # Abort if any of the files don't exist
     if ! [ -r $thisfile ] ; then
       echo "File does not exist or is not readable: $thisfile, aborting"
       rm -rf $tmpdir
       return 1
     fi
-  
+
     local thistempfile=$tmpdir/outtemp.$count.raw
     # Store this file in the list of files we've processed, and the name of the temp file for concatenating
     local inputfiles="$inputfiles $thisfile"
@@ -434,13 +434,13 @@ audioconcat(){
     echo "Processing: $thisfile ($thistempfile)"
     sox $thisfile $soxoptions $thistempfile
   done
-  
+
   # Do the actual concatenation of files
   cat $rawtempfiles > $tmpdir/concatenated.raw
-  
+
   echo "Creating output file: $outfile"
   sox $soxoptions $tmpdir/concatenated.raw $outfile
-  
+
   echo "Done, created $outfile from:$inputfiles"
   #rm -rf $tmpdir
 }
@@ -494,7 +494,7 @@ slowrun(){
 
   if echo $* | grep -E '^[0-9]+$' > /dev/null ; then
     local pid=$1
-    local run_cmd="Existing PID" 
+    local run_cmd="Existing PID"
     echo "Looks like you've specified a PID of an existing process: $pid"
   else
     local run_cmd=$*
@@ -536,7 +536,7 @@ duf(){
   if [ -z "$1" ] ; then dirs=. ; else dirs=$* ; fi
   for dir in $dirs ; do
     echo "Working on: $dir"
-    # The final sed is there to strip out the leading "./" from file names when 
+    # The final sed is there to strip out the leading "./" from file names when
     # running on the current dir
     find $dir $args -exec du -sk {} \; | sort -n | perl -ne '($s,$f)=split(m{\t});for (qw(K M G)) {if($s<1024) {printf("%.1f",$s);print "$_\t$f"; last};$s=$s/1024}' | sed 's/\.\///'
     du -sh $dir
@@ -682,7 +682,7 @@ mailshot() {
     echo "Where messagefile is a plain text file containing the message headers and body"
     echo "The string __RECIPIENT__ in the message file gets replaced with the address of the"
     echo "current recipient"
-    echo 
+    echo
     echo "Example: $FUNCNAME message.txt < addresses.txt"
     return 1
   fi
@@ -856,7 +856,7 @@ randpass() {
   A B C D E F G H J K L M N P Q R S T U V W X Y Z
   2 3 4 5 6 7 8 9
   ! £ $ % ^ & * ( ) - _ + = [ ] { } ; : @ # ~ ,
-  < . > / ? | 
+  < . > / ? |
   ");
 
   # Seed the random number generator
@@ -967,7 +967,7 @@ calc(){
 }
 
 # Check spelling of a word (or bunch of words) passed as argument
-# quicker than "echo word | spell" for checking one word 
+# quicker than "echo word | spell" for checking one word
 sp(){
   echo $* | spell
 }
@@ -1102,8 +1102,8 @@ chmog() {
     fi
 }
 
-chog () 
-{ 
+chog ()
+{
     if [ $# -ne 3 ]; then
         echo "Usage: chog owner group file"
         return 1
@@ -1120,7 +1120,7 @@ cpdir(){
   local todir=$2
   (cd $fromdir ; tar cf - . ) | ( cd $todir ; tar xpf - )
 }
-  
+
 cddb() {
   # TODO: Usage, name
   mp3cddb *.mp3
@@ -1177,7 +1177,7 @@ sndvol() {
   local delta
   case "$1" in
   mute)
-    mixerctl -nw outputs.master.mute=on 
+    mixerctl -nw outputs.master.mute=on
     echo "Muting sound"
     return 0
   ;;
@@ -1239,7 +1239,7 @@ perlmv() {
       $_        = shift(@ARGV);
       my $dry   = shift(@ARGV);
       my $was=$_;
-    
+
       # print "Using regex: ($regex)\n";
       # print "Filename: $_\n";
       eval $regex;
@@ -1289,7 +1289,7 @@ sinfile() {
 # TODO: integrate this with the case statement that sets PS1 according to $SHELL
 # and make it work for shells that can't handle \u, etc
 ps1() {
-  case "$1" in 
+  case "$1" in
     s*)
       PS1="\u@\h:(\W)\$ "
       export PS1
@@ -1314,7 +1314,7 @@ psgrep() {
     echo "Usage: psgrep pattern" ; return 1
   fi
   ps auxwww | grep $1 | grep -v grep # works on BSD'ish ps
-} 
+}
 
 killall() {
   if [ $# -lt 1 ] ; then
@@ -1365,7 +1365,7 @@ jargon() {
   #print "Perl looking for ($word)\n";
   while ( <STDIN> ) {
      if ( m/^:.*:/ ) { unless ( m/$word/ ) {exit;} }
-      print;                                        
+      print;
   } # while
   ' $searchsz | $PAGER # end perl
 } # end jargon
@@ -1452,11 +1452,11 @@ lowercase() {
       echo "lowercase: $file --> $newname"
     else
       echo "lowercase: $file not changed."
-    fi                                   
+    fi
   done
 }
 
-swapfiles() {    
+swapfiles() {
   # swap 2 filenames around
   local TMPFILE=tmp.$$
   mv -i $1 $TMPFILE
@@ -1484,14 +1484,14 @@ fstr() {
   find . -type f -name "${2:-*}" -print | xargs grep -sin "$1" | \
     sed "s/$1/$SMSO$1$RMSO/gI"
 }
- 
+
 repeat() {
   # repeat n times command
   if [ $# -lt 2 ] ; then echo "Usage: repeat N command" ; return 1 ; fi
   local i max
   max=$1; shift;
-  i=1 
-  while ([ $i -le $max ]); do  
+  i=1
+  while ([ $i -le $max ]); do
    eval "$@";
    let i=$i+1
   done
@@ -1677,7 +1677,7 @@ getpass() {
     stty -echo
     trap 'stty echo; return 1' INT TERM
     printf "%s" "$_PROMPT" > /dev/tty
-    read _PASS 
+    read _PASS
     trap '' INT TERM
     stty echo
     echo > /dev/tty
@@ -1744,7 +1744,7 @@ aescat() {
   fi
 
   # variables used only in this function
-  local output 
+  local output
   local aesinfile=$1
   # Check that file exists
   if [ ! -f $aesinfile ] ; then echo "File doesn't exist: $aesinfile" ; return 1 ; fi
@@ -1830,37 +1830,42 @@ su(){
   xbacktitle
 }
 
-vi () { 
+vi () {
+  local vicmd=vi
+  if [ -f ~/.vim/vimrc ] && type -P vim>/dev/null ; then
+    vicmd="vim -u ~/.vim/vimrc"
+  fi
+
   xtitle "vi $@ - ($USER@$HOSTNAME)";
-  command vi $@;
+  command $vicmd $@;
   xbacktitle
 }
- 
+
 make() {
   xtitle "$USER@$HOSTNAME: make $@ in $PWD"
   command make $@
   xbacktitle
 }
- 
+
 rfc() {
   xtitle "$USER@$HOSTNAME: reading RFC $@"
   wwwget -q http://${1}.rfc.dotcomfy.net | $PAGER
   xbacktitle
 }
- 
+
 man() {
   xtitle "$USER@$HOSTNAME: reading the manual for $@"
   command man $@
   xbacktitle
 }
- 
+
 # These are a bit daft, and I tend to do everything in screen these days, so they're of little use
 #telnet() {
 #  xtitle "$USER@$HOSTNAME: telnet to $@"
 #  command telnet $@
 #  xbacktitle
 #}
-# 
+#
 #ssh() {
 #  xtitle "SSH to $@"
 #  command ssh $@
@@ -1974,7 +1979,7 @@ shrc_check_age() {
   shrc_date=$(cat $shrc_age_file 2>/dev/null)
   if [ -z "$shrc_date" ] ; then shrc_date=0 ; fi
 
-  # compare to current date 
+  # compare to current date
   # some strftime(3) implementations don't have %s - so use Perl to get
   # seconds since epoc
   let age_seconds=$(perl -e 'print time();')-$shrc_date
@@ -2074,7 +2079,7 @@ editfile() {
 ###
 
 smtpclient() {
-$perl - $* <<"ENDOFSMTPCLIENTPERL" 
+$perl - $* <<"ENDOFSMTPCLIENTPERL"
 #!/usr/bin/perl -w
 # Id: smtpclient.pl,v 1.10 2009/05/26 11:27:50 linus Exp
 # An SMTP client in Perl
@@ -2136,7 +2141,7 @@ chomp ( $heloname = $opts{H} || `hostname` || "foo" );
 
 if ( $opts{b} ) {
     print "Enter mail, end with EOF (CTRL-D)\n";
-    @mailbody = <STDIN>; 
+    @mailbody = <STDIN>;
     print "\nOk, full mail recieved, will now try to send it\n\n";
 }
 else {
@@ -2151,7 +2156,7 @@ unless ($sock = IO::Socket::INET->new(
     Timeout=>"10")){
     die ("Couldn't connect to $server:$port ($!)\n")
 }
-    
+
 $sock->autoflush(1);
 $response = &get_resp($sock);
 print_sock ($sock, "HELO $heloname$CRLF");
@@ -2223,7 +2228,7 @@ ENDOFSMTPCLIENTPERL
 } # end of smtpclient() shell function
 
 dfk() {
-$perl - $* <<"ENDOFDFKPERL" 
+$perl - $* <<"ENDOFDFKPERL"
 # dfk.pl - proper formatting of df -k output
 # Original by Brian Peasland
 
@@ -2233,12 +2238,12 @@ $perl - $* <<"ENDOFDFKPERL"
 
 #Set up lengths of columns and format mask for output
 #If the column needs more room (for instance, you just added a 1TB volume), then
-#just increase the variable below and all formatting will hold. 
+#just increase the variable below and all formatting will hold.
 $vol_len = 20;
 $byte_len = 11;
 $cap_len = 8;
 $fs_len = 0;
-#All output uses this format mask. This makes life nice and formatted for 
+#All output uses this format mask. This makes life nice and formatted for
 #better readability.
 $format_mask = "%-".$vol_len."s %".$byte_len."s  %".$byte_len."s  %".$byte_len."s %"
                 .$cap_len."s %-".$fs_len."s\n";
@@ -2256,13 +2261,13 @@ foreach $_ (`df -lk`) {
       ($filesystem,$kbytes,$used,$avail,$capacity,$volume) = split (/ +/,$_);
       chomp $volume;
       #add volume to list of volumes
-      @vol_list = (@vol_list, $volume); 
+      @vol_list = (@vol_list, $volume);
       #add information to appropriate hashes
       #$fs_hash{$volume} = $filesystem;
       $kb_hash{$volume} = comma_int($kbytes);   #Change output to numbers with commas
       $used_hash{$volume} = comma_int($used);   #Change output to numbers with commas
       $avail_hash{$volume} = comma_int($avail); #Change output to numbers with commas
-      $cap_hash{$volume} = $capacity; 
+      $cap_hash{$volume} = $capacity;
       } #if
    } #foreach
 
@@ -2306,7 +2311,7 @@ sub comma_int  {
          $out_string = "," . $out_string;
          } #if
       #add last char to output and remove from input
-      $out_string = chop($in_string) . $out_string; 
+      $out_string = chop($in_string) . $out_string;
    } #while
    return $out_string;
 } #comma_int
@@ -2319,11 +2324,11 @@ wwwget() {
 #
 # The only changes that need to be made to the wwwget code after copying
 # is removing the $'s from the RCS Id tag, and Revision from $version
-# 
+#
 # Everything after the "-" is passed on to the script, so  any arguments
 # passed to the function wwwget are passed on to the Perl script
 
-$perl - $* <<"ENDOFWWWGETPERL" 
+$perl - $* <<"ENDOFWWWGETPERL"
 #!/usr/bin/perl -w
 # Id: wwwget.pl,v 1.28 2010/03/21 20:47:46 linus Exp $
 my $version = 'Revision: 1.28 $';
@@ -2416,7 +2421,7 @@ $user_agent		= &find_agent($opts{u});
 $sleep			= $opts{s} || 0;
 
 # Now we need to extract hostname, port, and path from the
-# URL's specified on the command line. 
+# URL's specified on the command line.
 my $counter=0;
 while ( my $url = shift (@ARGV) ) {
   $url_hash->[$counter] = &decode_url($url);
@@ -2480,7 +2485,7 @@ sub fetchurl {
             local $SIG{'__DIE__'};
             require IO::Socket::SSL;
         };
-        if ( $@ ) { 
+        if ( $@ ) {
             print "$url->{remote_host}:$url->{remote_port} is SSL, but we haven't got IO::Socket::SSL\n";
             return 0;
         }
@@ -2494,7 +2499,7 @@ sub fetchurl {
             warn "Couldn't open socket ($url->{remote_host}): $!\n", &IO::Socket::SSL::errstr, "\n";
             return;
         }
-    } # if do_ssl 
+    } # if do_ssl
     else {
         unless ($socket = IO::Socket::INET->new(PeerAddr => "$url->{remote_host}",
                                             PeerPort => "$url->{remote_port}",
@@ -2640,7 +2645,7 @@ sub spawn {
         debug ("Child processes: " . keys ( %spawned ) . "\n");
         return 1;
     }
-    # I'm the child, run specified sub routine 
+    # I'm the child, run specified sub routine
     &$spawn_sub(@args);
     exit;
 } # spawn
@@ -2682,7 +2687,7 @@ Copyright (C) 1999 onwards Linus, please read the script for disclaimer.
 Makes HTTP request for specified URL on the remote server.
 The URL should be in the format [http[s]://]Server[:Port][/Path]
 Prints the servers response to standard output.
-Be sure to quote any spaces or characters such as "&", which 
+Be sure to quote any spaces or characters such as "&", which
 might be interpreted by the shell.
 
 Options:
@@ -2820,13 +2825,13 @@ git_prompt(){
 
 # Special cases for different shells
 case "$SHELL" in
-    */bash) 
-        set -o notify 
+    */bash)
+        set -o notify
         set -o emacs
         PS1="\u@\h:\w\$(git_prompt)\$ "
         ;;
     */ksh)
-        set -o notify 
+        set -o notify
         set -o emacs
         PS1="$USER@$(hostname):\$PWD\$ "
         ;;
@@ -2850,7 +2855,7 @@ if [ $shrc_age -gt $shrc_max_age -a -z "$noupdateshrc" ] ; then
     else
       echo "OK, will update later."
     fi
-    
+
 fi
 
 # Display user's own motd, if one exists
@@ -2858,7 +2863,7 @@ fi
 [ -f ~/.motd -a -z "$motd_done" ] && cat ~/.motd
 motd_done=1 ; export motd_done
 
-# source .local_shellrc if existent, last in file, to override globals 
+# source .local_shellrc if existent, last in file, to override globals
 [ -f ~/.local_shellrc ] && . ~/.local_shellrc
 
 # This version of the file was downloaded from github
