@@ -76,7 +76,7 @@ backup_url="http://www.dotcomfy.net/dotcomfy_bashrc" # For non-SSL clients
 dotprofile_url="$dlbase/bash_profile" # download location of .bash_profile
 shrc_age_file="$HOME/.shrc_age_file" # file where a time stamp is stored
 shrc_max_age=30 # warn if .bashrc age is older than this (in days)
-file_tmp="$HOME/updatefile_tmp.$$"
+updatefile_tmp="/tmp/.updatefile_tmp.$LOGNAME.$$"
 shrc_home="$HOME/.bashrc" # could be set to eg ~/.profile in local shellrc"
 jargonfile="$HOME/stuff/jargon.txt"
 
@@ -2022,35 +2022,34 @@ updatefile(){
     . $file_home
     return 1
   fi
-  #wwwget -q $file_www > $file_tmp
-  # TODO: Write a retry loop with wget, lynx, wwwget, curl, etc
-  # TODO: If SSL fails, then fall back on plaintext HTTP, grabbing the file from dotcomfy.net
-  curl  -sL -o $file_tmp $file_www
+  #wwwget -q $file_www > $updatefile_tmp
+  curl  -sL -o $updatefile_tmp $file_www
   if [ $? -ne 0 ] ; then
     echo "cURL failed retrieving file, will try wget"
-    wget  -q -O $file_tmp --no-check-certificate $file_www
+    wget  -q -O $updatefile_tmp --no-check-certificate $file_www
     if [ $? -ne 0 ] ; then
       echo "Failed retrieving file, will try lynx"
-      lynx -dump -source $file_www > $file_tmp
+      lynx -dump -source $file_www > $updatefile_tmp
       if [ $? -ne 0 ] ; then
         echo "Doh, I couldn't get the new bashrc, giving up"
+        rm -f $updatefile_tmp
         return 1
       fi
     fi
   fi
-  if diff $file_home $file_tmp ; then
+  if diff $file_home $updatefile_tmp ; then
     echo "You already have the most recent version."
     shrc_check_ver
-    rm $file_tmp
+    rm -f $updatefile_tmp
   else
     echo "Current version: `shrc_check_ver`"
     if askyesno "Update to newest version, according to diff?" ; then
-      mv $file_tmp $file_home
+      mv $updatefile_tmp $file_home
       echo "Updated to most recent version."
       shrc_check_ver
     else
       echo "OK, will update later."
-      rm $file_tmp
+      rm -f $updatefile_tmp
     fi
   fi
   # Register that it's updated
