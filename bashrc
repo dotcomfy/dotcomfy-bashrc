@@ -58,6 +58,9 @@
 # Last CVS version:
 # $Header: /home/linus/RCS/.bashrc,v 1.338 2010/12/22 13:29:51 linus Exp $
 
+# Source custom stuff, if it's there
+[ -f /etc/profile.d/custom.sh ] && . /etc/profile.d/custom.sh
+
 # Not much point in doing any of this stuff unless we're on a tty, is it?
 if ! tty >/dev/null ; then
   return
