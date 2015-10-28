@@ -268,6 +268,8 @@ alias exit='kill -9 $$'
 alias cvs="cvs -q"
 # Compression is almost always a good idea for scp
 alias scp="scp -C"
+# Convert to lowercase
+alias lowercase="sed -e 's/./\L&/g'"
 
 
 ### 
@@ -1429,7 +1431,8 @@ rot13() {
   fi
 }
 
-lowercase() {
+
+lcmv() {
   # move filenames to lowercase
   local filename
   local nf
