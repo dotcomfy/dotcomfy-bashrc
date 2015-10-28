@@ -4,17 +4,17 @@
 ###############################################################################
 #
 # Copyright (c) 1999-2012 Linus / Dotcomfy
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -42,7 +42,7 @@
 # Since I've tended to work on a wide range of OSes and versions,
 # and often supporting old legacy systems, one of the goals of this .bashrc
 # has always been to minimise dependance third party software.
-# 
+#
 #
 # DISCLAIMER: Please do not use this .bashrc without FULLY understanding
 # what it does. For all you know, it could be doing some really evil stuff.
@@ -58,6 +58,9 @@
 # Last CVS version:
 # $Header: /home/linus/RCS/.bashrc,v 1.338 2010/12/22 13:29:51 linus Exp $
 
+# Source custom stuff, if it's there
+[ -f /etc/profile.d/custom.sh ] && . /etc/profile.d/custom.sh
+
 # Not much point in doing any of this stuff unless we're on a tty, is it?
 if ! tty >/dev/null ; then
   return
@@ -69,13 +72,14 @@ fi
 ###
 toolsbase="http://dotcomfy.net/tools" # location of traceroute, ping, etc tools
 dlbase="http://dl.dotcomfy.net" # where files are downloaded from
-githubbase="https://github.com/dotcomfy/dotcomfy-bashrc/raw/master"
+#githubbase="https://github.com/dotcomfy/dotcomfy-bashrc/raw/master"
+githubbase="https://raw.githubusercontent.com/dotcomfy/dotcomfy-bashrc/master"
 shrc_url="$githubbase/bashrc" # download location of .bashrc
 backup_url="http://www.dotcomfy.net/dotcomfy_bashrc" # For non-SSL clients
 dotprofile_url="$dlbase/bash_profile" # download location of .bash_profile
 shrc_age_file="$HOME/.shrc_age_file" # file where a time stamp is stored
 shrc_max_age=30 # warn if .bashrc age is older than this (in days)
-file_tmp="$HOME/updatefile_tmp.$$"
+updatefile_tmp="/tmp/.updatefile_tmp.$LOGNAME.$$"
 shrc_home="$HOME/.bashrc" # could be set to eg ~/.profile in local shellrc"
 jargonfile="$HOME/stuff/jargon.txt"
 
@@ -136,8 +140,7 @@ isrunning(){
 
 # Dump a web page to stdout, in a reasonably usable format (HTML removed)
 # Uses lynx - could be rewritten to use something else
-wwwdump()
-{
+wwwdump(){
   local url
   # replace selected special chars...
   url=`echo $* | sed 's/ /%20/g' | sed 's/"/%22/g'`
@@ -148,8 +151,7 @@ wwwdump()
 # Make ssh aliases - takes a list of host names and creates ssh aliases for them
 # Helper function to be used from .local_shellrc
 # Example: mksshalias -s "foo bar.example.com baz"
-mksshalias()
-{
+mksshalias(){
   local shorten="N"
   local hostname
   local shortcut
@@ -178,28 +180,28 @@ mksshalias()
 # sets the title in x terminals, used by cd() and others to update title bars
 # the variables xtitle1 and xtitle2 can be set in local shellrc,
 # to prepend or append a string to the title
-xtitle() { 
+xtitle(){
   case $TERM in
-   *term* | *color | rxvt | vt100 | vt220 | cygwin | screen* ) 
+   *term* | *color | rxvt | vt100 | vt220 | cygwin | screen* )
       echo -n -e "\033]0;${xtitle1}${*}${xtitle2}\007" ;;
    *)  ;;
      esac
 }
 
 # sets the title to "default"
-xbacktitle() {
+xbacktitle(){
   xtitle "$USER@$HOSTNAME:$PWD"
 }
 
 # Seriously pointless. Used by ssh() function
-welcomeback() {
+welcomeback(){
   echo
   echo "Back on `hostname` on `date`"
   echo
 }
 
 # Ask for yes or no answer - return 1 unless answer contains n|N
-askyesno() {
+askyesno(){
   echo -n "$@ [Y|n] " ; read yesno
   case "$yesno" in
     n*|N*) return 1 ;;
@@ -209,7 +211,7 @@ askyesno() {
 
 # Check if a lock file exists
 # used by virt(), ali(), spam()
-checklockf() {
+checklockf(){
     local lockfile=$1
     if [ -f $lockfile ] ; then
         echo lockfile found: $lockfile
@@ -272,7 +274,7 @@ alias scp="scp -C"
 alias lowercase="sed -e 's/./\L&/g'"
 
 
-### 
+###
 ### File fetching aliases
 ### (only one remaing, because I never used them)
 # Get the standard .bash_profile
@@ -356,7 +358,7 @@ list_deleted_open_files(){
 list_large_open_files(){
  (
    echo "Size Path"
-   lsof +D / | awk '{print $7 " " $9}' | grep -v ^SIZE| sort -u | sort -rn 
+   lsof +D / | awk '{print $7 " " $9}' | grep -v ^SIZE| sort -u | sort -rn
  ) | column -t
 }
 
@@ -387,7 +389,7 @@ mysql_dump_csv(){
   # The other arguments are passed on as-is to MySQL
   local mysql_args=${@:1:$(($#-1))}
   #echo "db args: $mysql_args, query: $mysql_query" >&2
-  mysql --table --column-names $mysql_args -e "$mysql_query" | csvify_table 
+  mysql --table --column-names $mysql_args -e "$mysql_query" | csvify_table
 }
 
 # A function for concatenating audio files. Supports any input formats that Sox supports, such as wav and MP3
@@ -396,39 +398,39 @@ mysql_dump_csv(){
 audioconcat(){
   # Put all temp files in their own directory - easy to clean up, and no permission issues as long as we've got temp space
   local tmpdir=/tmp/audioconcat.$$.tmp
-  
+
   # The last argument is the output file
   eval local outfile=\${$#}
-  
+
   # Options for sox, adjust as necessary
   local soxoptions="--rate 48000 --channels 2 --encoding signed-integer --bits 24"
-  
+
   # There should be at least three arguments - two input files and an output file
   if [ $# -lt 3 ] ; then
     echo "Usage: audioconcat [ files ] <outfile>"
     echo "Example: audioconcat input1.wav input2.wav output.wav"
     return 1
   fi
-  
+
   # Abort if we can't create the temp directory
   mkdir $tmpdir || ( echo "Failed to create temp dir: $tmpdir" ; return 1)
-  
+
   echo "Concatenating all files into $outfile"
   echo "Using options for sox: $soxoptions"
   echo
-  
+
   count=0
   while [ $# -gt 1 ] ; do
     local thisfile=$1 ; shift
     local count=$(expr $count + 1)
-  
+
     # Abort if any of the files don't exist
     if ! [ -r $thisfile ] ; then
       echo "File does not exist or is not readable: $thisfile, aborting"
       rm -rf $tmpdir
       return 1
     fi
-  
+
     local thistempfile=$tmpdir/outtemp.$count.raw
     # Store this file in the list of files we've processed, and the name of the temp file for concatenating
     local inputfiles="$inputfiles $thisfile"
@@ -436,13 +438,13 @@ audioconcat(){
     echo "Processing: $thisfile ($thistempfile)"
     sox $thisfile $soxoptions $thistempfile
   done
-  
+
   # Do the actual concatenation of files
   cat $rawtempfiles > $tmpdir/concatenated.raw
-  
+
   echo "Creating output file: $outfile"
   sox $soxoptions $tmpdir/concatenated.raw $outfile
-  
+
   echo "Done, created $outfile from:$inputfiles"
   #rm -rf $tmpdir
 }
@@ -479,9 +481,9 @@ average(){
 
 # Expand a shortened URL, recursively
 # Follows a chain of HTTP redirects, showing each hop, including the final destination
-expandurl() { curl -sIL $1 | grep ^Location; }
+expandurl(){ curl -sIL $1 | grep ^Location; }
 # An alternative, using wget:
-#expandurl() { wget -S $1 2>&1 | grep ^Location; }
+#expandurl(){ wget -S $1 2>&1 | grep ^Location; }
 
 slowrun(){
   # Poor man's scheduling... for when ionice (Linux) doesn't quite work,
@@ -496,7 +498,7 @@ slowrun(){
 
   if echo $* | grep -E '^[0-9]+$' > /dev/null ; then
     local pid=$1
-    local run_cmd="Existing PID" 
+    local run_cmd="Existing PID"
     echo "Looks like you've specified a PID of an existing process: $pid"
   else
     local run_cmd=$*
@@ -538,7 +540,7 @@ duf(){
   if [ -z "$1" ] ; then dirs=. ; else dirs=$* ; fi
   for dir in $dirs ; do
     echo "Working on: $dir"
-    # The final sed is there to strip out the leading "./" from file names when 
+    # The final sed is there to strip out the leading "./" from file names when
     # running on the current dir
     find $dir $args -exec du -sk {} \; | sort -n | perl -ne '($s,$f)=split(m{\t});for (qw(K M G)) {if($s<1024) {printf("%.1f",$s);print "$_\t$f"; last};$s=$s/1024}' | sed 's/\.\///'
     du -sh $dir
@@ -547,7 +549,7 @@ duf(){
 
 
 # Create a directory or path, and go to it
-mkcd() { mkdir -p $1 && cd $1; }
+mkcd(){ mkdir -p $1 && cd $1; }
 
 
 bookmarkletify(){
@@ -587,7 +589,7 @@ ENDOFBOOKMARKLETIFYPERL
 
 
 # Shred a file (similar to to "shred", which is common in Linux)
-shredfile () {
+shredfile(){
 $perl -w - $* <<"ENDOFSHREDPERL"
   use strict;
   use Getopt::Std;
@@ -643,7 +645,7 @@ ENDOFSHREDPERL
 
 # Strip out XML tags from text read on stdin
 # Used by xmldiff, but can also be used to read a Word XML file in a terminal
-xmlstrip() {
+xmlstrip(){
    # Replace XML tags with newlines (so that output isn't all on one line)
    # Use grep to exclude blank lines, and lines with only digits and dots
    perl -p -e 's/<[^>]*>/\n/g' | grep -v '^$' | grep -v '^[0-9.]*$'
@@ -655,7 +657,7 @@ xmlstrip() {
 # especially if tags span several lines
 # this might help:
 # sed -e :a -e 's/<[^>]*>//g;/</N;//ba'
-xmldiff() {
+xmldiff(){
   if [ $# -ne 2 -o "$1" == "-h" ] ; then
     echo "Usage: $FUNCNAME file1 file2"
     return 1
@@ -678,13 +680,13 @@ xmldiff() {
 # one per line
 # Reads an RFC822 formatted message from stdin,
 # expanding the string "__RECIPIENT__"
-mailshot() {
+mailshot(){
   if [ -z "$1" ] ; then
     echo "Usage: $FUNCNAME messagefile"
     echo "Where messagefile is a plain text file containing the message headers and body"
     echo "The string __RECIPIENT__ in the message file gets replaced with the address of the"
     echo "current recipient"
-    echo 
+    echo
     echo "Example: $FUNCNAME message.txt < addresses.txt"
     return 1
   fi
@@ -711,7 +713,7 @@ mailshot() {
 # Handy when needing to execute the same command on several files
 # eg: dosh rm -rf
 #  then paste/type in path to remove
-dosh() {
+dosh(){
   local cmd=$*
   echo "Will run '$cmd' for every line entered"
   echo "Exit with EOF (normally CTRL-D) or CTRL-C"
@@ -727,7 +729,7 @@ dosh() {
 
 # Renames files to include a date/time stamp
 # If the first argument looks like a date format (begins with +), then use that format, otherwise use default
-datefile() {
+datefile(){
   $perl -w -e'
   use strict;
   use POSIX qw(strftime);
@@ -767,7 +769,7 @@ datefile() {
 # This function is written entirely in Perl
 # If the first argument is a date format, beginning with "+",
 # use that format, otherwise use default
-datedir() {
+datedir(){
   $perl -w -e'
   use strict;
   use POSIX qw(strftime);
@@ -803,7 +805,7 @@ datedir() {
 
 # Generates and prints a random PIN number
 # I use this to generate PIN codes for various things
-randpin() {
+randpin(){
   # TODO: Should check for and avoid duplicates
   perl -w -e'
   use strict;
@@ -837,7 +839,7 @@ randpin() {
 }
 # Generates and prints a random password
 # I use this to generate passwords for new users
-randpass() {
+randpass(){
   perl -w -e'
   use strict;
   my $password_length = 10;
@@ -858,7 +860,7 @@ randpass() {
   A B C D E F G H J K L M N P Q R S T U V W X Y Z
   2 3 4 5 6 7 8 9
   ! £ $ % ^ & * ( ) - _ + = [ ] { } ; : @ # ~ ,
-  < . > / ? | 
+  < . > / ? |
   ");
 
   # Seed the random number generator
@@ -882,9 +884,14 @@ randpass() {
   ' $*
 }
 
+# rootat - SSH to root @ whatever
+rootat(){
+  local host=$1
+  sssh root@$host
+}
+
 # sssh - function that uses screen_ssh, but is more suited to use interactively
-sssh()
-{
+sssh(){
   if [ -z "$1" ] ; then
     echo "Usage: $FUNCNAME [username@]hostname [ ssh flags ]"
     return 1
@@ -908,7 +915,7 @@ sssh()
 # if not, it'll just run in the current shell
 # if title is set, it will be used as the window title. otherwise,
 # the hostname will be used as the title
-screen_ssh () {
+screen_ssh(){
   if [ -z "$1" ] ; then
     echo "Usage: screen_ssh host [title [ssh flags]]"
     return 1
@@ -964,7 +971,7 @@ calc(){
 }
 
 # Check spelling of a word (or bunch of words) passed as argument
-# quicker than "echo word | spell" for checking one word 
+# quicker than "echo word | spell" for checking one word
 sp(){
   echo $* | spell
 }
@@ -988,18 +995,18 @@ lexin(){
 }
 
 # Look up word in wikipedia
-wp () {
+wp(){
   if [ -z "$1" ] ; then echo "Usage example: $FUNCNAME word" ; return 1 ; fi
   wwwdump "http://en.wikipedia.org/wiki/${*}" | $PAGER
 }
 # Look up word in wictionary
-wn () {
+wn(){
   if [ -z "$1" ] ; then echo "Usage example: $FUNCNAME word" ; return 1 ; fi
   wwwdump "http://en.wiktionary.org/wiki/${*}" | $PAGER
 }
 
 # Use Google's define: search feature, to find definitions of a word
-define () {
+define(){
   if [ -z "$1" ] ; then echo "Usage example: $FUNCNAME word" ; return 1 ; fi
   local word=$1
   wwwdump "http://www.google.co.uk/search?hl=en&q=define%3A${*}" | $PAGER
@@ -1014,7 +1021,7 @@ define () {
 # 54 mpg in litres per 10 kilometres
 # 1 uk gallon in litres
 alias conv=gcalc
-gcalc () {
+gcalc(){
   # Needs at least 1 argument - don't be too picky
   if [ -z "$1" ] ; then echo "Usage example: $FUNCNAME 100 usd in gbp" ; return 1 ; fi
   local query=`echo "$*" | sed 's/ /+/g'`
@@ -1025,25 +1032,25 @@ gcalc () {
 # Conversion for some different currencies that I often use
 # TODO: make a master function that splits currency pairs and figures
 # out what to look up. Maybe these can then be made into aliases?
-gbpsek() {
+gbpsek(){
   if [ -z "$1" ] ; then echo "Usage example: $FUNCNAME 100" ; return 1 ; fi
   gcalc $1 gbp in sek
 }
-sekgbp() {
+sekgbp(){
   if [ -z "$1" ] ; then echo "Usage example: $FUNCNAME 100" ; return 1 ; fi
   gcalc $1 sek in gbp
 }
-usdgbp() {
+usdgbp(){
   if [ -z "$1" ] ; then echo "Usage example: $FUNCNAME 100" ; return 1 ; fi
   gcalc $1 usd in gbp
 }
-gbpusd() {
+gbpusd(){
   if [ -z "$1" ] ; then echo "Usage example: $FUNCNAME 100" ; return 1 ; fi
   gcalc $1 gbp in usd
 }
 
 # Replace CR with LF
-replacecr () {
+replacecr(){
   if [ -z "$1" ] ; then echo "Usage: replacecr <file>" ; return 1 ; fi
   local file=$1
   # backup
@@ -1053,7 +1060,7 @@ replacecr () {
 }
 
 # Strip out Carriage Return (CR) from a file
-stripcr () {
+stripcr(){
   if [ -z "$1" ] ; then echo "Usage: stripcr <file>" ; return 1 ; fi
   local file=$1
   # backup
@@ -1064,7 +1071,7 @@ stripcr () {
 
 # Grep, using Perl regular expressions.
 # TODO: Use this more often ;-)
-pgrep () {
+pgrep(){
   if [ $# -lt 1 -o "$1" == "-h" ] ; then
     echo "Usage: pgrep [-v] /regex/ <files>"
     echo "  -v  Print all lines except those that contain the pattern."
@@ -1088,7 +1095,7 @@ pgrep () {
 }
 
 # Handy functions for setting owner, group and mode
-chmog() {
+chmog(){
     if [ $# -ne 4 ] ; then
         echo "Usage: chmog mode owner group file"
         return 1
@@ -1099,8 +1106,7 @@ chmog() {
     fi
 }
 
-chog () 
-{ 
+chog (){
     if [ $# -ne 3 ]; then
         echo "Usage: chog owner group file"
         return 1
@@ -1117,8 +1123,8 @@ cpdir(){
   local todir=$2
   (cd $fromdir ; tar cf - . ) | ( cd $todir ; tar xpf - )
 }
-  
-cddb() {
+
+cddb(){
   # TODO: Usage, name
   mp3cddb *.mp3
   echo "Hit enter to update, ctrl-c to cancel"
@@ -1129,7 +1135,7 @@ cddb() {
 
 # mkisofs's a directory and cdrecord's it
 # this was written for an OpenBSD desktop machine, should just need to change cdrdev to work on any machine with mkisofs and cdrecord
-mkcdrom() {
+mkcdrom(){
   # TODO: Usage
   local cdrdev=/dev/rcd1c
   local cdrspeed=16
@@ -1164,17 +1170,17 @@ nullroute(){
   sed "s/\(.*\)/ip route \1 255.255.255.255 Null0/"
 }
 
-dlget() {
+dlget(){
   wwwget -q $dlbase/$1
 }
 
-sndvol() {
+sndvol(){
 # sets the sound volume using mixerctl under OpenBSD
   local currentvol
   local delta
   case "$1" in
   mute)
-    mixerctl -nw outputs.master.mute=on 
+    mixerctl -nw outputs.master.mute=on
     echo "Muting sound"
     return 0
   ;;
@@ -1209,7 +1215,7 @@ sndvol() {
 # this used to be done entirely in Perl, but make it work
 # on several files, using wildcards, etc, it was easier
 # to do part of it as a shell script due to issues with spaces in filenames
-perlmv() {
+perlmv(){
   local file
   local dry
 
@@ -1236,7 +1242,7 @@ perlmv() {
       $_        = shift(@ARGV);
       my $dry   = shift(@ARGV);
       my $was=$_;
-    
+
       # print "Using regex: ($regex)\n";
       # print "Filename: $_\n";
       eval $regex;
@@ -1250,7 +1256,7 @@ perlmv() {
   done
 } # end perlmv
 
-termsize() {
+termsize(){
   echo "COLUMNS:	$COLUMNS"
   echo "LINES:		$LINES"
 }
@@ -1276,7 +1282,7 @@ sectime(){
 }
 
 # "s// in file", sinfile, do a replace of text in one or several files
-sinfile() {
+sinfile(){
   if [ $# -lt 2 ] ; then echo "Usage: sinfile perlcode files" ; return 1 ; fi
   perlcmd=$1 ; shift
   perl -i.old -p -e "$perlcmd" $*
@@ -1285,8 +1291,8 @@ sinfile() {
 # Set prompt(PS1) to s(hort) or long. Default is long
 # TODO: integrate this with the case statement that sets PS1 according to $SHELL
 # and make it work for shells that can't handle \u, etc
-ps1() {
-  case "$1" in 
+ps1(){
+  case "$1" in
     s*)
       PS1="\u@\h:(\W)\$ "
       export PS1
@@ -1299,21 +1305,21 @@ ps1() {
 }
 
 # search the OpenBSD ports, locally
-psearch() {
+psearch(){
   local oldpwd=`pwd`
   if ! cd /usr/ports ; then echo "You haven't got /usr/ports" ; return 1 ; fi
   make search key=$@
   cd $oldpwd
 }
 
-psgrep() {
+psgrep(){
   if [ $# -lt 1 ] ; then
     echo "Usage: psgrep pattern" ; return 1
   fi
   ps auxwww | grep $1 | grep -v grep # works on BSD'ish ps
-} 
+}
 
-killall() {
+killall(){
   if [ $# -lt 1 ] ; then
     echo "Usage: killall -SIG procname" ; return 1
   fi
@@ -1335,7 +1341,7 @@ killall() {
 }
 
 
-jargon() {
+jargon(){
   # Searches for a word in a local copy of the jargon file:
   # http://www.tuxedo.org/jargon/
   # The grep portion is a bit ugly, but gets the job done
@@ -1362,13 +1368,13 @@ jargon() {
   #print "Perl looking for ($word)\n";
   while ( <STDIN> ) {
      if ( m/^:.*:/ ) { unless ( m/$word/ ) {exit;} }
-      print;                                        
+      print;
   } # while
   ' $searchsz | $PAGER # end perl
 } # end jargon
 
 
-pathadd() {
+pathadd(){
   # Function to save some typing when adding stuff to $PATH
   # This would have been cleaner if implemented in Perl,
   # but I don't want to require Perl for the bashrc to work
@@ -1410,7 +1416,7 @@ pathadd() {
 
 
 
-keepalive() {
+keepalive(){
   # Used as a lame keepalive on ssh connections
   # might sometimes leave an annoying "." on the screen
   echo "Trying to keep connection alive"
@@ -1421,7 +1427,7 @@ keepalive() {
 
 # The classic symmetric key encryption example ;-)
 # Example: echo "Gur ohgyre qvq vg" | rot13
-rot13() {
+rot13(){
   if [ $# = 0 ] ; then
     # If there's no argument, read from stdin
     tr "[a-m][n-z][A-M][N-Z]" "[n-z][a-m][N-Z][A-M]"
@@ -1431,8 +1437,7 @@ rot13() {
   fi
 }
 
-
-lcmv() {
+lcmv(){
   # move filenames to lowercase
   local filename
   local nf
@@ -1450,11 +1455,11 @@ lcmv() {
       echo "lowercase: $file --> $newname"
     else
       echo "lowercase: $file not changed."
-    fi                                   
+    fi
   done
 }
 
-swapfiles() {    
+swapfiles(){
   # swap 2 filenames around
   local TMPFILE=tmp.$$
   mv -i $1 $TMPFILE
@@ -1464,14 +1469,14 @@ swapfiles() {
 
 
 # Find a file with a pattern in name:
-ff() { find . -name '*'$*'*' -ls ; }
+ff(){ find . -name '*'$*'*' -ls ; }
 # Same, case insensitive
-ffi() { find . -iname '*'$*'*' -ls ; }
+ffi(){ find . -iname '*'$*'*' -ls ; }
 # Find a file with pattern $1 in name and Execute $2 on it:
-fe() { find . -name '*'$1'*' -exec $2 {} \; ; }
+fe(){ find . -name '*'$1'*' -exec $2 {} \; ; }
 # Same, case insensitive
-fei() { find . -iname '*'$1'*' -exec $2 {} \; ; }
-fstr() {
+fei(){ find . -iname '*'$1'*' -exec $2 {} \; ; }
+fstr(){
    # find pattern in a set of files and highlight them:
   if [ "$#" -gt 2 ]; then
     echo "Usage: fstr \"pattern\" [files] "
@@ -1482,20 +1487,20 @@ fstr() {
   find . -type f -name "${2:-*}" -print | xargs grep -sin "$1" | \
     sed "s/$1/$SMSO$1$RMSO/gI"
 }
- 
-repeat() {
+
+repeat(){
   # repeat n times command
   if [ $# -lt 2 ] ; then echo "Usage: repeat N command" ; return 1 ; fi
   local i max
   max=$1; shift;
-  i=1 
-  while ([ $i -le $max ]); do  
+  i=1
+  while ([ $i -le $max ]); do
    eval "$@";
    let i=$i+1
   done
 }
 
-printn() {
+printn(){
   # print text n times, including the number n
   if [ $# -lt 2 ] ; then
      echo "Usage: printn x y[text1] [text2]" ; return 1
@@ -1510,14 +1515,14 @@ printn() {
 
 
 # check an address against dbl.dotcomfy.net, or other zone
-dblcheck() {
+dblcheck(){
   local address=$1
   local domain=$2
   if [ -z $dom ] ; then domain=dbl.dotcomfy.net ; fi
   revlookup $address $domain
 }
 
-revlookup() {
+revlookup(){
   if [ $# -lt 1 ]; then
     echo "Usage: revlookup address [domain]"
     echo "Reverses address and looks for PTR, A and TXT record in domain"
@@ -1548,26 +1553,26 @@ revlookup() {
 
 
 # Find which external IP I'm using (or at least for WWW)
-myip() {
+myip(){
   local url="$toolsbase/?action=myip"
   if [ $# -gt 0 ] ; then url="${url}$*" ; fi
   wwwget -q $url
 }
 # nmap myself from toolsbace
-scanme() {
+scanme(){
   local url="$toolsbase/?action=scan"
   if [ $# -gt 0 ] ; then url="${url}$*" ; fi
   wwwget -q $url
 }
 
 # ping myself from toolsbase
-pingme() {
+pingme(){
   local url="$toolsbase/?action=ping"
   wwwget -q $url
 }
 
 # trace myself from toolsbase
-traceme() {
+traceme(){
   local url="$toolsbase/?action=trace"
   wwwget -q $url
 }
@@ -1575,7 +1580,7 @@ traceme() {
 # connect to specified routeserver / looking glass
 # mostly to keep a list of such handy...
 alias lookingglass=routeserver
-routeserver() {
+routeserver(){
   local server
   case $1 in
     list)
@@ -1618,7 +1623,7 @@ routeserver() {
 
 # Builds an HTML image index page
 # Takes a list of files as arguments
-mkimgindex() {
+mkimgindex(){
   local img
   local body
   if [ -z "$1" ] ; then
@@ -1668,14 +1673,14 @@ EOF
 } # end mkimgindex
 
 # used by aestar()
-getpass() {
+getpass(){
     local _PROMPT="$1"
     local _PASS
 
     stty -echo
     trap 'stty echo; return 1' INT TERM
     printf "%s" "$_PROMPT" > /dev/tty
-    read _PASS 
+    read _PASS
     trap '' INT TERM
     stty echo
     echo > /dev/tty
@@ -1684,7 +1689,7 @@ getpass() {
 	
 # tar and encrypt on the fly
 # from aestar.sh, taken from somewhere
-aestar() {
+aestar(){
 
     local TARFLAGS
     local FILE
@@ -1732,7 +1737,7 @@ aestar() {
     return 0
 } # aestar
 
-aescat() {
+aescat(){
   # Similar to aeastar, but simply used to en/decrypt a single file
   # Requires openssl to be installed
   if [ $# -ne 1 ] ; then
@@ -1742,7 +1747,7 @@ aescat() {
   fi
 
   # variables used only in this function
-  local output 
+  local output
   local aesinfile=$1
   # Check that file exists
   if [ ! -f $aesinfile ] ; then echo "File doesn't exist: $aesinfile" ; return 1 ; fi
@@ -1766,7 +1771,7 @@ aescat() {
 
 }
 
-makerun() {
+makerun(){
     local outfile
     outfile=`echo $1 | sed 's/\.c$//'`
     CFLAGS=-Wall make $outfile
@@ -1776,7 +1781,7 @@ makerun() {
 # Lists Sun disk names on the two different forms:
 # cXtXdX - sdX
 # useful when looking at output from iostat -x
-sdlist() {
+sdlist(){
     local tmp1=/tmp/sdlist_1.$$
     local tmp2=/tmp/sdlist_2.$$
     local oldcwd=`pwd`
@@ -1797,7 +1802,7 @@ sdlist() {
 ### Functions that use xtitle() to set the title of xterm or ssh client
 ### before running the specific command
 ###
-screen() {
+screen(){
   xtitle "$HOSTNAME: $USER (screen)"
   command screen $@
   xbacktitle
@@ -1814,11 +1819,11 @@ pine(){
   xbacktitle
 }
 
-cd() {
+cd(){
   builtin cd "$@" && xtitle $USER@$HOSTNAME:$PWD
 }
 
-cdup() {
+cdup(){
   popd && xtitle $USER@$HOSTNAME:$PWD
 }
 
@@ -1828,51 +1833,58 @@ su(){
   xbacktitle
 }
 
-vi () { 
+# In case there's an alias, get rid of it
+unalias vi >/dev/null 2>&1
+vi(){
+  local vicmd=vi
+  if [ -f ~/.vim/vimrc ] && type -P vim>/dev/null ; then
+    vicmd="vim -u ~/.vim/vimrc"
+  fi
+
   xtitle "vi $@ - ($USER@$HOSTNAME)";
-  command vi $@;
+  command $vicmd $@;
   xbacktitle
 }
- 
-make() {
+
+make(){
   xtitle "$USER@$HOSTNAME: make $@ in $PWD"
   command make $@
   xbacktitle
 }
- 
-rfc() {
+
+rfc(){
   xtitle "$USER@$HOSTNAME: reading RFC $@"
   wwwget -q http://${1}.rfc.dotcomfy.net | $PAGER
   xbacktitle
 }
- 
-man() {
+
+man(){
   xtitle "$USER@$HOSTNAME: reading the manual for $@"
   command man $@
   xbacktitle
 }
- 
+
 # These are a bit daft, and I tend to do everything in screen these days, so they're of little use
-#telnet() {
+#telnet(){
 #  xtitle "$USER@$HOSTNAME: telnet to $@"
 #  command telnet $@
 #  xbacktitle
 #}
-# 
-#ssh() {
+#
+#ssh(){
 #  xtitle "SSH to $@"
 #  command ssh $@
 #  xbacktitle
 #  welcomeback
 #}
 #
-#ftp() {
+#ftp(){
 #  xtitle "$USER@$HOSTNAME: ftp $@"
 #  command ftp $@
 #  xbacktitle
 #}
 
-top() {
+top(){
   xtitle "Processes on $HOSTNAME"
   command $top $@
   xbacktitle
@@ -1884,7 +1896,7 @@ top() {
 ### will rewrite these a bit better at some other time..
 
 # Update quotes and stick in fortune
-quoteget() {
+quoteget(){
   sudo sh -c "lynx -dump $dlbase/quotes.txt >/usr/share/games/fortune/linus"
   ( cd /usr/share/games/fortune ; sudo /usr/games/strfile linus )
 }
@@ -1895,7 +1907,7 @@ hupsendmail(){
 }
 
 # m4mc - used to update sendmail.cf
-m4mc() {
+m4mc(){
     local cfdir=/etc/mail
     local mcfile=$cfdir/$(hostname -s).mc
     local cffile=$cfdir/sendmail.cf
@@ -1909,7 +1921,7 @@ m4mc() {
     fi
 } # end of m4mc()
 
-spam() {
+spam(){
     local name=spam
     local lockfile=/tmp/.$name.lock
     local file=/etc/mail/access
@@ -1965,14 +1977,14 @@ huphttpd(){
 
 # Check time since last successful update of this file
 # Used by the update checker
-shrc_check_age() {
+shrc_check_age(){
   local age_seconds
   local age_days
   # get date of current .bashrc from age file
   shrc_date=$(cat $shrc_age_file 2>/dev/null)
   if [ -z "$shrc_date" ] ; then shrc_date=0 ; fi
 
-  # compare to current date 
+  # compare to current date
   # some strftime(3) implementations don't have %s - so use Perl to get
   # seconds since epoc
   let age_seconds=$(perl -e 'print time();')-$shrc_date
@@ -1984,12 +1996,12 @@ shrc_check_age() {
 }
 
 # check version of .bashrc
-shrc_check_ver() {
+shrc_check_ver(){
   grep "Id: \.bashrc" $shrc_home | sed "s/^# //"
 }
 
 # Print general version/age info
-shrcinfo() {
+shrcinfo(){
   echo "Age:             `shrc_check_age` days"
   echo "Update after:    $shrc_max_age days"
   echo "Current version: `shrc_check_ver`"
@@ -1998,7 +2010,7 @@ shrcinfo() {
 }
 
 # Updates the base .bashrc (or whatever it's stored as locally)
-shrcupd() {
+shrcupd(){
   updatefile $shrc_home $shrc_url || updatefile $shrc_home $backup_url
 }
 
@@ -2006,7 +2018,7 @@ shrcupd() {
 # Two arguments:
 #  - the local path to the file to update
 #  - the URI of the file to get
-updatefile() {
+updatefile(){
   file_home=$1
   file_www=$2
   if [ ! -w $file_home ] ; then
@@ -2015,35 +2027,34 @@ updatefile() {
     . $file_home
     return 1
   fi
-  #wwwget -q $file_www > $file_tmp
-  # TODO: Write a retry loop with wget, lynx, wwwget, curl, etc
-  # TODO: If SSL fails, then fall back on plaintext HTTP, grabbing the file from dotcomfy.net
-  curl  -sL -o $file_tmp $file_www
+  #wwwget -q $file_www > $updatefile_tmp
+  curl  -sL -o $updatefile_tmp $file_www
   if [ $? -ne 0 ] ; then
     echo "cURL failed retrieving file, will try wget"
-    wget  -q -O $file_tmp --no-check-certificate $file_www
+    wget  -q -O $updatefile_tmp --no-check-certificate $file_www
     if [ $? -ne 0 ] ; then
       echo "Failed retrieving file, will try lynx"
-      lynx -dump -source $file_www > $file_tmp
+      lynx -dump -source $file_www > $updatefile_tmp
       if [ $? -ne 0 ] ; then
         echo "Doh, I couldn't get the new bashrc, giving up"
+        rm -f $updatefile_tmp
         return 1
       fi
     fi
   fi
-  if diff $file_home $file_tmp ; then
+  if diff $file_home $updatefile_tmp ; then
     echo "You already have the most recent version."
     shrc_check_ver
-    rm $file_tmp
+    rm -f $updatefile_tmp
   else
     echo "Current version: `shrc_check_ver`"
     if askyesno "Update to newest version, according to diff?" ; then
-      mv $file_tmp $file_home
+      mv $updatefile_tmp $file_home
       echo "Updated to most recent version."
       shrc_check_ver
     else
       echo "OK, will update later."
-      rm $file_tmp
+      rm -f $updatefile_tmp
     fi
   fi
   # Register that it's updated
@@ -2055,7 +2066,7 @@ updatefile() {
 
 # Check a file out from RCS, edit, show diff, check back in
 # Used by vishrc
-editfile() {
+editfile(){
   if [ "$1" == "" ] ; then
     echo "Usage: editfile <file>"
     return 1
@@ -2071,8 +2082,8 @@ editfile() {
 ### These are best off stuffed away at the bottom of the .bashrc
 ###
 
-smtpclient() {
-$perl - $* <<"ENDOFSMTPCLIENTPERL" 
+smtpclient(){
+$perl - $* <<"ENDOFSMTPCLIENTPERL"
 #!/usr/bin/perl -w
 # Id: smtpclient.pl,v 1.10 2009/05/26 11:27:50 linus Exp
 # An SMTP client in Perl
@@ -2134,7 +2145,7 @@ chomp ( $heloname = $opts{H} || `hostname` || "foo" );
 
 if ( $opts{b} ) {
     print "Enter mail, end with EOF (CTRL-D)\n";
-    @mailbody = <STDIN>; 
+    @mailbody = <STDIN>;
     print "\nOk, full mail recieved, will now try to send it\n\n";
 }
 else {
@@ -2149,7 +2160,7 @@ unless ($sock = IO::Socket::INET->new(
     Timeout=>"10")){
     die ("Couldn't connect to $server:$port ($!)\n")
 }
-    
+
 $sock->autoflush(1);
 $response = &get_resp($sock);
 print_sock ($sock, "HELO $heloname$CRLF");
@@ -2220,8 +2231,8 @@ ENDUSAGE
 ENDOFSMTPCLIENTPERL
 } # end of smtpclient() shell function
 
-dfk() {
-$perl - $* <<"ENDOFDFKPERL" 
+dfk(){
+$perl - $* <<"ENDOFDFKPERL"
 # dfk.pl - proper formatting of df -k output
 # Original by Brian Peasland
 
@@ -2231,12 +2242,12 @@ $perl - $* <<"ENDOFDFKPERL"
 
 #Set up lengths of columns and format mask for output
 #If the column needs more room (for instance, you just added a 1TB volume), then
-#just increase the variable below and all formatting will hold. 
+#just increase the variable below and all formatting will hold.
 $vol_len = 20;
 $byte_len = 11;
 $cap_len = 8;
 $fs_len = 0;
-#All output uses this format mask. This makes life nice and formatted for 
+#All output uses this format mask. This makes life nice and formatted for
 #better readability.
 $format_mask = "%-".$vol_len."s %".$byte_len."s  %".$byte_len."s  %".$byte_len."s %"
                 .$cap_len."s %-".$fs_len."s\n";
@@ -2254,13 +2265,13 @@ foreach $_ (`df -lk`) {
       ($filesystem,$kbytes,$used,$avail,$capacity,$volume) = split (/ +/,$_);
       chomp $volume;
       #add volume to list of volumes
-      @vol_list = (@vol_list, $volume); 
+      @vol_list = (@vol_list, $volume);
       #add information to appropriate hashes
       #$fs_hash{$volume} = $filesystem;
       $kb_hash{$volume} = comma_int($kbytes);   #Change output to numbers with commas
       $used_hash{$volume} = comma_int($used);   #Change output to numbers with commas
       $avail_hash{$volume} = comma_int($avail); #Change output to numbers with commas
-      $cap_hash{$volume} = $capacity; 
+      $cap_hash{$volume} = $capacity;
       } #if
    } #foreach
 
@@ -2304,24 +2315,24 @@ sub comma_int  {
          $out_string = "," . $out_string;
          } #if
       #add last char to output and remove from input
-      $out_string = chop($in_string) . $out_string; 
+      $out_string = chop($in_string) . $out_string;
    } #while
    return $out_string;
 } #comma_int
 ENDOFDFKPERL
 } # END OF dfk() FUNCTION
 
-wwwget() {
+wwwget(){
 # wwwget - fetch a url and print on stdout, including request and headers.
 # The actual script is being kept in CVS (scripts/wwwget.pl)
 #
 # The only changes that need to be made to the wwwget code after copying
 # is removing the $'s from the RCS Id tag, and Revision from $version
-# 
+#
 # Everything after the "-" is passed on to the script, so  any arguments
 # passed to the function wwwget are passed on to the Perl script
 
-$perl - $* <<"ENDOFWWWGETPERL" 
+$perl - $* <<"ENDOFWWWGETPERL"
 #!/usr/bin/perl -w
 # Id: wwwget.pl,v 1.28 2010/03/21 20:47:46 linus Exp $
 my $version = 'Revision: 1.28 $';
@@ -2414,7 +2425,7 @@ $user_agent		= &find_agent($opts{u});
 $sleep			= $opts{s} || 0;
 
 # Now we need to extract hostname, port, and path from the
-# URL's specified on the command line. 
+# URL's specified on the command line.
 my $counter=0;
 while ( my $url = shift (@ARGV) ) {
   $url_hash->[$counter] = &decode_url($url);
@@ -2478,7 +2489,7 @@ sub fetchurl {
             local $SIG{'__DIE__'};
             require IO::Socket::SSL;
         };
-        if ( $@ ) { 
+        if ( $@ ) {
             print "$url->{remote_host}:$url->{remote_port} is SSL, but we haven't got IO::Socket::SSL\n";
             return 0;
         }
@@ -2492,7 +2503,7 @@ sub fetchurl {
             warn "Couldn't open socket ($url->{remote_host}): $!\n", &IO::Socket::SSL::errstr, "\n";
             return;
         }
-    } # if do_ssl 
+    } # if do_ssl
     else {
         unless ($socket = IO::Socket::INET->new(PeerAddr => "$url->{remote_host}",
                                             PeerPort => "$url->{remote_port}",
@@ -2638,7 +2649,7 @@ sub spawn {
         debug ("Child processes: " . keys ( %spawned ) . "\n");
         return 1;
     }
-    # I'm the child, run specified sub routine 
+    # I'm the child, run specified sub routine
     &$spawn_sub(@args);
     exit;
 } # spawn
@@ -2680,7 +2691,7 @@ Copyright (C) 1999 onwards Linus, please read the script for disclaimer.
 Makes HTTP request for specified URL on the remote server.
 The URL should be in the format [http[s]://]Server[:Port][/Path]
 Prints the servers response to standard output.
-Be sure to quote any spaces or characters such as "&", which 
+Be sure to quote any spaces or characters such as "&", which
 might be interpreted by the shell.
 
 Options:
@@ -2818,13 +2829,13 @@ git_prompt(){
 
 # Special cases for different shells
 case "$SHELL" in
-    */bash) 
-        set -o notify 
+    */bash)
+        set -o notify
         set -o emacs
         PS1="\u@\h:\w\$(git_prompt)\$ "
         ;;
     */ksh)
-        set -o notify 
+        set -o notify
         set -o emacs
         PS1="$USER@$(hostname):\$PWD\$ "
         ;;
@@ -2848,7 +2859,7 @@ if [ $shrc_age -gt $shrc_max_age -a -z "$noupdateshrc" ] ; then
     else
       echo "OK, will update later."
     fi
-    
+
 fi
 
 # Display user's own motd, if one exists
@@ -2856,7 +2867,7 @@ fi
 [ -f ~/.motd -a -z "$motd_done" ] && cat ~/.motd
 motd_done=1 ; export motd_done
 
-# source .local_shellrc if existent, last in file, to override globals 
+# source .local_shellrc if existent, last in file, to override globals
 [ -f ~/.local_shellrc ] && . ~/.local_shellrc
 
 # This version of the file was downloaded from github
