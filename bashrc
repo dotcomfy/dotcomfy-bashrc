@@ -80,7 +80,12 @@ dotprofile_url="$dlbase/bash_profile" # download location of .bash_profile
 shrc_age_file="$HOME/.shrc_age_file" # file where a time stamp is stored
 shrc_max_age=30 # warn if .bashrc age is older than this (in days)
 updatefile_tmp="/tmp/.updatefile_tmp.$LOGNAME.$$"
-shrc_home="$HOME/.bashrc" # could be set to eg ~/.profile in local shellrc"
+# This can be overridden if necessary
+if [ -z "$BASH_SOURCE" ] ; then
+  shrc_home="$HOME/.bashrc"
+else
+  shrc_home=$BASH_SOURCE
+fi
 jargonfile="$HOME/stuff/jargon.txt"
 
 ###
