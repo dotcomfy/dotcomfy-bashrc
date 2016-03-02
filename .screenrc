@@ -1,0 +1,22 @@
+# termcapinfo xterm
+# having $TERM set to xterm seems to make less and vi clear the screen on exit
+# Leaving it set to screen seems to makes things difficult on some Suns...
+
+startup_message off
+defscrollback 4096
+nethack on
+
+# An alternative hardstatus to display a bar at the bottom listing the
+# windownames and highlighting the current windowname in blue. (This is only
+# enabled if there is no hardstatus setting for your terminal)
+hardstatus on
+hardstatus alwayslastline
+hardstatus string "%{.bW}%-w%{.rW}%n %t%{-}%+w %=%{..G} %H %{..Y} %M %d %c "
+
+# ------------------------------------------------------------------------------
+# STARTUP SCREENS
+# ------------------------------------------------------------------------------
+
+screen 0 bash
+screen 1 bash
+screen 2 bash
