@@ -235,6 +235,7 @@ checklockf(){
 ##### Command aliases
 ### General command aliases - includes a few default flags and stuff
 ###
+alias dyndns="sudo reason=manual_config sh /etc/dhcp/dhclient-exit-hooks"
 alias obsdcvs="cvs -d anoncvs@anoncvs.se.openbsd.org:/cvs"
 alias lock="clear ; lock -p -n ; echo \"Welcome back, it's \`date\`\""
 alias eterm="Eterm -x -O --scrollbar 0 --menubar 0"
@@ -309,6 +310,7 @@ alias gtldns="dig @a.gtld-servers.net ns"
 alias ipfr="sudo ipf -Fa -v -f /etc/ipf.rules > /dev/null"
 alias ftpstart="sudo /usr/libexec/ftpd -D -A -l -l -U -S -h"
 alias ftpstop="sudo kill \`cat /var/run/ftpd.pid\`"
+
 
 ###
 ##### Programmable command completion
