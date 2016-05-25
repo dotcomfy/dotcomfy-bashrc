@@ -116,7 +116,9 @@ CVS_RSH=/usr/bin/ssh ; export CVS_RSH
 PS4='$0:$LINENO: ' ; export PS4
 # MySQL prompt, hostname:databasename
 MYSQL_PS1="$(hostname -s):\d> " export MYSQL_PS1
-
+#
+# Used as the default title on screen windows
+SCREEN_TITLE="$(basename $SHELL)"
 
 
 ###
@@ -182,6 +184,18 @@ mksshalias(){
    alias $shortcut="screen_ssh $hostname $title"
    done
 }
+
+set_screen_title(){
+  # To make screen titles get set, one of these conditions needs to be met:
+  # screen_title_prefix - for example, on host1.example.com, I may set this to "host1:", so if I'm editing some_script.sh, screen title gets set to host1:some_script.sh
+  # $STY - this gets set on the server that screen runs on, usually bouncer
+  # For any other server that I ssh to, the screen title gets set to the hostname of the server, when I launch the SSH command. This makes for shorter titles.
+  [ -z "$STY" ] && [ -z "$screen_title_prefix" ] && return
+  local newtitle="${screen_title_prefix}${1}"
+  [ -z "$newtitle" ] && newtitle=$(hostname -s)
+  echo -ne "\ek$newtitle\e\\"
+}
+
 
 # sets the title in x terminals, used by cd() and others to update title bars
 # the variables xtitle1 and xtitle2 can be set in local shellrc,
@@ -1849,9 +1863,19 @@ vi(){
     vicmd="vim -u ~/.vim/vimrc"
   fi
 
+  if [ -n "$1" ]; then
+    fname=$(basename "${@: -1}")
+    set_screen_title "${fname::12}"
+  else
+    set_screen_title "vi"
+  fi
+
+
   xtitle "vi $@ - ($USER@$HOSTNAME)";
+  set_screen
   command $vicmd $@;
   xbacktitle
+  set_screen_title $SCREEN_TITLE
 }
 
 make(){
