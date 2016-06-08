@@ -1872,7 +1872,6 @@ vi(){
 
 
   xtitle "vi $@ - ($USER@$HOSTNAME)";
-  set_screen
   command $vicmd $@;
   xbacktitle
   set_screen_title $SCREEN_TITLE
