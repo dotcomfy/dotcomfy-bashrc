@@ -2114,7 +2114,7 @@ editfile(){
 ###
 
 smtpclient(){
-$perl - $* <<"ENDOFSMTPCLIENTPERL"
+$perl - "$@" <<"ENDOFSMTPCLIENTPERL"
 #!/usr/bin/perl -w
 # Id: smtpclient.pl,v 1.10 2009/05/26 11:27:50 linus Exp
 # An SMTP client in Perl
@@ -2263,7 +2263,7 @@ ENDOFSMTPCLIENTPERL
 } # end of smtpclient() shell function
 
 dfk(){
-$perl - $* <<"ENDOFDFKPERL"
+$perl - "$@" <<"ENDOFDFKPERL"
 # dfk.pl - proper formatting of df -k output
 # Original by Brian Peasland
 
@@ -2363,7 +2363,7 @@ wwwget(){
 # Everything after the "-" is passed on to the script, so  any arguments
 # passed to the function wwwget are passed on to the Perl script
 
-$perl - $* <<"ENDOFWWWGETPERL"
+$perl - "$@" <<"ENDOFWWWGETPERL"
 #!/usr/bin/perl -w
 # Id: wwwget.pl,v 1.28 2010/03/21 20:47:46 linus Exp $
 my $version = 'Revision: 1.28 $';
