@@ -2832,10 +2832,12 @@ fi
 #
 ## Git stuff
 #
-# I think I might start organising things more by subject, rather than functions and aliases separately
 
 # git commit & push
 alias gcp="git commit -a ; git push origin master"
+alias gpr="git pull --rebase"
+alias gst="git status"
+
 
 # Set a prompt for when inside a git repo
 git_prompt(){
