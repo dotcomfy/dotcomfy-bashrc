@@ -2840,24 +2840,263 @@ alias gst="git status"
 
 
 # Set a prompt for when inside a git repo
+
 git_prompt(){
   if ref=$(git symbolic-ref HEAD 2>/dev/null); then
     gitstatus="$(git status)"
     if echo "$gitstatus" | grep -E 'Changes|Changed|Untracked' >/dev/null; then
       COLOUR=$RED;
     elif echo "$gitstatus" | grep -E 'Your branch is ahead' >/dev/null; then
-      ahead_by=":$(echo "$gitstatus" | grep 'Your branch is ahead' | awk '{ print $9 }')"
+      ahead_by=":$(echo "$gitstatus" | grep 'Your branch is ahead' | sed 's/.*by \(.*\) commit.*/\1/')"
       COLOUR=$YELLOW;
     elif echo "$gitstatus" | grep -E 'Unmerged paths' >/dev/null; then
       COLOUR=$PURPLE;
-    else
+    elif echo "$gitstatus" | grep -E 'working directory clean' >/dev/null; then
       COLOUR=$GREEN;
+    else
+      # Unknown status
+      COLOUR=$LIGHT_BLUE;
     fi
     printf "$COLOUR("${ref#refs/heads/}"${ahead_by})$ENDCOLOUR";
   else
     return 1;
   fi
 }
+
+# Create a branch on Github
+git_create_remote_branch(){
+  # Replace spaces with underscores
+  local new_branch=$(echo $* | sed -r 's/[^a-zA-Z0-9-]/_/g')
+  local from_branch
+  local default_from='master'
+
+  if [ -z "$1" ] ; then
+    echo "Usage: $FUNCNAME <new branch name>"
+    return 1
+  fi
+
+  echo "New branch: $new_branch"
+  echo "Which branch do you want to cut from?"
+  echo "Enter \"c\" for current branch, leave empty to use default ($default_from) or enter branch name"
+  echo -n "From branch: "
+  read from_branch
+  if [ -z "$from_branch" ] ; then
+    from_branch=$default_from
+  elif [ "$from_branch" = "c" ] ; then
+    from_branch=$(get_current_git_branch)
+  fi
+
+  echo "Cutting new branch $new_branch from $from_branch"
+
+  if ! git checkout $from_branch ; then
+    echo "Branch not found: $from_branch, aborting"
+    return 1
+  fi
+
+  if ! git pull --rebase ; then
+    echo
+    echo
+    echo "Something went wrong when trying to pull"
+    echo "Press ENTER to continue and put these changes into the new branch, or CTRL-C to abort, and sort out any conflicts"
+    read foo
+  fi
+
+  echo "Creating and pushing: $new_branch"
+  git checkout -b $new_branch
+  git push -u origin $new_branch
+  echo "Done"
+}
+
+
+
+git_diff_origin(){
+  git diff origin/$(get_current_git_branch)..HEAD
+}
+
+# Found and modified from: http://stackoverflow.com/questions/3878624/how-do-i-programmatically-determine-if-there-are-uncommited-changes
+git_require_clean_work_tree () {
+  # First off, we abort if this doesn't look like a git repo, otherwise, all of the git commands will generate errors
+  if ! [ -d ./.git ]; then
+    echo "Not a git repo (no .git directory): $(pwd)" >&2
+    return 1
+  fi
+
+  # Update the index
+  git update-index -q --ignore-submodules --refresh
+  err=0
+
+  # Disallow unstaged changes in the working tree
+  if ! git diff-files --quiet --ignore-submodules -- ; then
+      echo >&2 "Aborting: you have unstaged changes."
+      git diff-files --name-status -r --ignore-submodules -- >&2
+      err=1
+  fi
+
+  # Disallow uncommitted changes in the index
+  if ! git diff-index --cached --quiet HEAD --ignore-submodules -- ; then
+      echo >&2 "Aborting: your index contains uncommitted changes."
+      git diff-index --cached --name-status -r --ignore-submodules HEAD -- >&2
+      err=1
+  fi
+
+  if ! [ $err -eq 0 ] ; then
+      echo >&2 "Please commit or stash them."
+      return 1
+  fi
+
+  # If no arguments were specified, then we just return 0 to indicate success, otherwise we run the specified git command
+  if [ -z "$1" ]; then
+    return 0
+  else
+    git $*
+  fi
+}
+
+
+mergemaster(){
+  echo "This will merge master into UAT and QA branches. It assumes that branches master, uat and qa are all clean in your local tree."
+  echo "Press CTRL-C to abort, or ENTER to continue."
+  read foo
+  local branch
+  ctrails
+  local previous_branch=$(get_current_git_branch)
+  git_require_clean_work_tree || return 1
+  git checkout master
+  git_require_clean_work_tree || return 1
+  git pull --rebase
+  for branch in qa uat ; do
+    git checkout $branch
+    git_require_clean_work_tree || return 1
+    git pull --rebase
+    git_require_clean_work_tree || return 1
+    git merge master
+    git push
+  done
+
+  # Also ensuring that the QA branch is up to date, since that often gets skipped
+  git checkout qa
+  git merge uat
+  git_require_clean_work_tree || return 1
+  git push
+
+  git checkout $previous_branch
+}
+
+
+git_clean_branches(){
+  echo "Cleaning out LOCAL copies of branches. This will not delete anything from Github."
+  for branch in $(git branch  | grep -v '^*' | grep -v -E ' master$' | grep -v " uat$" | grep -v " qa$"); do
+    echo
+    echo -n "Remove $branch? (y/N): "
+    read ans
+    if [ "$ans" = "y" ] ; then
+      echo "Removing $branch..."
+      git branch -d $branch
+    else
+      echo "Skipping $branch..."
+    fi
+  done
+}
+
+# Create a branch on Github
+git_create_remote_branch(){
+  # Replace spaces with underscores
+  local new_branch=$(echo $* | sed -r 's/[^a-zA-Z0-9-]/_/g')
+  local from_branch
+  local default_from='master'
+
+  if [ -z "$1" ] ; then
+    echo "Usage: $FUNCNAME <new branch name>"
+    return 1
+  fi
+
+  echo "New branch: $new_branch"
+  echo "Which branch do you want to cut from?"
+  echo "Enter \"c\" for current branch, leave empty to use default ($default_from) or enter branch name"
+  echo -n "From branch: "
+  read from_branch
+  if [ -z "$from_branch" ] ; then
+    from_branch=$default_from
+  elif [ "$from_branch" = "c" ] ; then
+    from_branch=$(get_current_git_branch)
+  fi
+
+  echo "Cutting new branch $new_branch from $from_branch"
+
+  if ! git checkout $from_branch ; then
+    echo "Branch not found: $from_branch, aborting"
+    return 1
+  fi
+
+  if ! git pull --rebase ; then
+    echo
+    echo
+    echo "Something went wrong when trying to pull"
+    echo "Press ENTER to continue and put these changes into the new branch, or CTRL-C to abort, and sort out any conflicts"
+    read foo
+  fi
+
+  echo "Creating and pushing: $new_branch"
+  git checkout -b $new_branch
+  git push -u origin $new_branch
+  echo "Done"
+}
+
+
+
+# Git change branch
+gcb(){
+  local lastbranchfile=~/.lastgitbranch
+  local new_branch
+  if [ "$1" = "-a" ] ; then local flags='-a' ; shift ; fi # Show remote branches
+
+
+  if [ "$1" = "-" ] ; then
+    local branches="$(get_git_branches -a)"
+    new_branch=$(cat $lastbranchfile)
+  elif [ ! -z "$1" ] ; then
+    # A branch name was specified - include remote branches when looking for it
+    local branches="$(get_git_branches -a)"
+    new_branch=$1
+  else
+    local branches="$(get_git_branches $flags)"
+    local PS3='Branch (or CTRL-D to quit)#: '
+    select new_branch in $branches ; do
+      break
+    done
+  fi
+
+  if [ -z "$new_branch" ] ; then
+    echo "No branch selected, aborting"
+  else
+    get_current_git_branch > $lastbranchfile
+    if echo "$branches" | grep "^$new_branch$" > /dev/null ;then
+      echo "Exact match, checking out: $new_branch"
+      git checkout $new_branch
+    else
+      # There wasn't an exact match, so we try partial match.
+      echo "Trying to find branch that matches $new_branch"
+      found_branch=$(echo "$branches" | grep $new_branch | head -1)
+      if [ -z "$found_branch" ]; then
+        echo "No branch found matching $new_branch (try -a to include remote branches)"
+      else
+        echo "Found: $found_branch"
+        git checkout $found_branch
+      fi
+    fi
+  fi
+}
+
+get_git_branches(){
+  flags="$*"
+  git branch -v $flags | sed -r 's/^\*//' | awk '{print $1}' | sed 's#.*/##'
+}
+
+get_current_git_branch(){
+  git symbolic-ref HEAD 2>/dev/null | sed 's#refs/heads/##'
+}
+
+
 
 
 # Special cases for different shells
