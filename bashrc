@@ -2847,8 +2847,10 @@ alias gc="git commit"
 alias gb="git branch"
 alias gco='git checkout'
 # These are intentionally spelled out a bit longer, since they're dangerous and you don't want to do it by accident
-alias git_abort_commit="echo 'Are you sure? If so, press ENTER, Otherwise press CTRL-C' && read && git reset --hard HEAD~1"
-alias git_reset_hard_head="echo 'Are you sure? If so, press ENTER, Otherwise press CTRL-C' && read && git reset --hard HEAD"
+alias git_abort_commit="echo 'Abort commits? ENTER/CTRL-C' && read && git reset --hard HEAD~1"
+alias git_reset_hard_head="echo 'Reset to HEAD? ENTER/CTRL-C' && read && git reset --hard HEAD"
+alias git_reset_hard_origin="echo 'Reset from origin/master? ENTER/CTRL-C' && read && git reset --hard origin/master"
+
 
 
 # Set a prompt for when inside a git repo
