@@ -2834,9 +2834,21 @@ fi
 #
 
 # git commit & push
-alias gcp="git commit -a ; git push origin master"
 alias gpr="git pull --rebase"
 alias gst="git status"
+alias gd="git diff"
+alias gcp="gpr; git cherry-pick"
+alias gcpp="git commit -a ; git pull --rebase ; git push"
+alias gbr="git branch"
+alias gl='git log --pretty=format:"%h %ad | %s%d [%an]" --graph --date=short'
+alias ga="git add ."
+alias gh='git log --pretty=format:"%h %ad [%an] |  %s%d" --graph --date=short'
+alias gc="git commit"
+alias gb="git branch"
+alias gco='git checkout'
+# These are intentionally spelled out a bit longer, since they're dangerous and you don't want to do it by accident
+alias git_abort_commit="echo 'Are you sure? If so, press ENTER, Otherwise press CTRL-C' && read && git reset --hard HEAD~1"
+alias git_reset_hard_head="echo 'Are you sure? If so, press ENTER, Otherwise press CTRL-C' && read && git reset --hard HEAD"
 
 
 # Set a prompt for when inside a git repo
