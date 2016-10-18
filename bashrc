@@ -2785,7 +2785,7 @@ pathadd -q $pathdirs
 [ -d ~/Desktop ] && alias dt="cd ~/Desktop"
 
 # Ruby Version Manager
-if [ -f ~/.rvm/scripts/rvm ] ; then
+if [ -f ~/.rvm/scripts/rvm -a "$(type -t rvm)" != "function" ] ; then
   echo "Loading rvm..."
   source ~/.rvm/scripts/rvm
 fi
