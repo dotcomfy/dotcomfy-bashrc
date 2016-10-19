@@ -1340,6 +1340,9 @@ psearch(){
   cd $oldpwd
 }
 
+pa (){
+  ps auxwww
+}
 psgrep(){
   if [ $# -lt 1 ] ; then
     echo "Usage: psgrep pattern" ; return 1
