@@ -362,6 +362,20 @@ local_shellrc_run=1
 ### Some of these are old shell scripts or small perl scripts
 ### that are quite handy to have available on any host I might log in to
 
+# Runs html2haml on a file, and renames it from .html.erb to .html.haml
+# Also ensures that ERB comments are parseable by html2haml, by adding a space (<%# Hello %> should be <% # Hello %>)
+# This is not an issue for comments starting with "<%-#"
+erb2haml(){
+  local _infile="$1"
+  _tmpfile="$_infile.tmp.$$"
+  _hamlfile="$(echo $_infile | sed 's#\.erb$#.haml#')"
+  # Add space
+  perl -pi -e 's/<%#/<% #/g' $_infile
+  html2haml $_infile $_tmpfile
+  mv $_tmpfile $_infile
+  git mv $_infile $_hamlfile
+}
+
 
 # Put timestamps on the output of any command
 timestamp(){
