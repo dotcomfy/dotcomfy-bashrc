@@ -1,4 +1,4 @@
-The Dotcomfy bashrc - AKA The .bashrc from Hell &tm;
+The Dotcomfy bashrc - AKA The .bashrc from Hell (tm)
 
 # Disclaimer
 
