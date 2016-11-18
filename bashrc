@@ -313,13 +313,6 @@ alias uk="whois -h whois.nic.uk"
 alias geektool="whois -h whois.geektools.com"
 alias gtldns="dig @a.gtld-servers.net ns"
 
-###
-### Aliases used by root (or not used so frequently, to be precise)
-### Kept mostly for nostalgic reasons ;-) I haven't used ipf or ftp in yonks
-alias ipfr="sudo ipf -Fa -v -f /etc/ipf.rules > /dev/null"
-alias ftpstart="sudo /usr/libexec/ftpd -D -A -l -l -U -S -h"
-alias ftpstop="sudo kill \`cat /var/run/ftpd.pid\`"
-
 
 ###
 ##### Programmable command completion
@@ -487,6 +480,12 @@ wtf(){
   echo "OS:           $(uname -a)"
   echo "IP:           $(ifconfig -a | grep inet | grep -v 127.0.0.1 | grep -v inet6 | sed 's/\s*//')"
   echo "External IP:  $(myip | tail -1 | sed 's/.*: //')"
+  # echo "Netname:     $(whois -h whois.ripe.net $external_ip | grep ^netname: | awk '{print $2}')"
+  echo
+  echo "Uptime:      $(uptime | sed 's/^ *//')"
+  echo "Memory:      $(free -m | grep buffers/cache | awk '{ print "used: " $3 "M, free: " $4 "M"}')"
+  echo "Processor:   $(grep ^processor /proc/cpuinfo | wc -l) CPU(s); $(grep '^model name' /proc/cpuinfo  | sort -u | sed 's/.*: //')"
+  echo "Disk usage:  $(df -h -T -x tmpfs -x devtmpfs | grep /)"
   if [ $(uname -s) = "Linux" ] ; then
     echo
     echo "Release info:"
