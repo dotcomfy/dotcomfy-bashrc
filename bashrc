@@ -2888,7 +2888,7 @@ git_prompt(){
       COLOUR=$YELLOW;
     elif echo "$gitstatus" | grep -E 'Unmerged paths' >/dev/null; then
       COLOUR=$PURPLE;
-    elif echo "$gitstatus" | grep -E 'working directory clean' >/dev/null; then
+    elif echo "$gitstatus" | grep -E 'working (directory|tree) clean' >/dev/null; then
       COLOUR=$GREEN;
     else
       # Unknown status
