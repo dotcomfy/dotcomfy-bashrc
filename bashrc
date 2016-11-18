@@ -3,7 +3,7 @@
 #
 ###############################################################################
 #
-# Copyright (c) 1999-2012 Linus / Dotcomfy
+# Copyright (c) 1999-2016 Linus / Dotcomfy
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -34,28 +34,16 @@
 #
 # Local customizations are done in .local_shellrc
 #
-# Some features in this .bashrc, such as updating itself,
-# require either lynx or wwwget (which requires Perl and IO::Socket)
-# to be installed and in the path. wwwget is included in the script,
-# so as long as you've got a working Perl5 with IO::Socket you should be fine
-#
-# Since I've tended to work on a wide range of OSes and versions,
-# and often supporting old legacy systems, one of the goals of this .bashrc
-# has always been to minimise dependance third party software.
-#
-#
 # DISCLAIMER: Please do not use this .bashrc without FULLY understanding
 # what it does. For all you know, it could be doing some really evil stuff.
 #
 # TODO:
 # - Documentation and usable list of functions and aliases
-# - Clean up stuff that I never use. The world has moved on a bit since 2001
-# - Figure out why it's recently gotten so slow... it now takes seconds to load
-#   (yes, it used to be faster even with a squillion lines of Perl)
+# - Clean up stuff that I never use. The world has moved on a bit since 1999
 #
-# From 1999 to Dec 2010, this file was just kept in RCS.
+# From 1999 to Dec 2010, this file was just kept in RCS on one of my servers
 # As of Dec 2010, it is on github
-# Last CVS version:
+# Last RCS version:
 # $Header: /home/linus/RCS/.bashrc,v 1.338 2010/12/22 13:29:51 linus Exp $
 
 # Source custom stuff, if it's there
@@ -80,13 +68,14 @@ dotprofile_url="$dlbase/bash_profile" # download location of .bash_profile
 shrc_age_file="$HOME/.shrc_age_file" # file where a time stamp is stored
 shrc_max_age=30 # warn if .bashrc age is older than this (in days)
 updatefile_tmp="/tmp/.updatefile_tmp.$LOGNAME.$$"
+# Profile files that we watch for changes. Changes to these trigger a reload.
+potential_profile_watch_files="$BASH_SOURCE ~/.local_shellrc ~/.bash_profile ~/.bashrc ~/.profile /etc/profile.d/custom.sh"
 # This can be overridden if necessary
 if [ -z "$BASH_SOURCE" ] ; then
   shrc_home="$HOME/.bashrc"
 else
   shrc_home=$BASH_SOURCE
 fi
-jargonfile="$HOME/stuff/jargon.txt"
 
 ###
 ##### Shell variables
@@ -1386,39 +1375,6 @@ killall(){
 }
 
 
-jargon(){
-  # Searches for a word in a local copy of the jargon file:
-  # http://www.tuxedo.org/jargon/
-  # The grep portion is a bit ugly, but gets the job done
-  # TODO: Did I not know about shift and $* when I did this?
-  searchsz=$1
-  grepopts="$2 $3 $4 $5 $6 $7 $8 $9"
-  grep="grep $grepopts"
-
-  if ! [ -f $jargonfile ] ; then
-    echo "Jargon File not found: $jargonfile"
-    return 1
-  fi
-
-  if [ -z $searchsz ] ; then echo "Usage: jargon word" ; return 1 ; fi
-
-  if ! $grep "^:${searchsz}:" $jargonfile ; then
-   echo "$searchsz not found"
-   return 1
-  fi
-
-  $grep -A 200 "^:${searchsz}:" $jargonfile | perl -e '\
-  print "Searching the Jargon File for $ARGV[0]\n\n";
-  my $word = "$ARGV[0]";
-  #print "Perl looking for ($word)\n";
-  while ( <STDIN> ) {
-     if ( m/^:.*:/ ) { unless ( m/$word/ ) {exit;} }
-      print;
-  } # while
-  ' $searchsz | $PAGER # end perl
-} # end jargon
-
-
 pathadd(){
   # Function to save some typing when adding stuff to $PATH
   # This would have been cleaner if implemented in Perl,
@@ -1458,7 +1414,6 @@ pathadd(){
   # end with exporting PATH
   export PATH
 }
-
 
 
 keepalive(){
@@ -1731,7 +1686,7 @@ getpass(){
     echo > /dev/tty
     echo "$_PASS"
 }
-	
+
 # tar and encrypt on the fly
 # from aestar.sh, taken from somewhere
 aestar(){
@@ -2049,6 +2004,31 @@ shrc_check_age(){
   echo $age_days
 }
 
+# This is the setup for the stuff that watches the various profile files. It gets used by shrc_reloader
+profile_watch_files=""
+profile_last_loaded_at=$(date +%s)
+for _file in $potential_profile_watch_files ; do
+  # Using eval, so that tilde expansion works
+  _file=$(eval echo $_file)
+  # echo "Considering watch file: $_file"
+  if [ -f $_file -a -r $_file ] ; then
+    profile_watch_files="$profile_watch_files $_file"
+  fi
+done
+if ! echo "$PROMPT_COMMAND" | grep -E '\bshrc_reloader\b'>/dev/null ; then
+  PROMPT_COMMAND="shrc_reloader; $PROMPT_COMMAND"
+fi
+
+shrc_reloader(){
+  profile_files_on_disk_modified_at=$(stat --format "%Y" $profile_watch_files | sort -rn | head -1)
+  # echo "Comparing $profile_last_loaded_at against $profile_files_on_disk_modified_at"
+  if [ -z "$profile_last_loaded_at" -o $profile_files_on_disk_modified_at -gt $profile_last_loaded_at ]; then
+    echo "Detected change in one of the profile files, reloading dotcomfy bashrc"
+    dotrc
+    profile_last_loaded_at=$(date +%s)
+  fi
+}
+
 # check version of .bashrc
 shrc_check_ver(){
   grep "Id: \.bashrc" $shrc_home | sed "s/^# //"
@@ -2081,7 +2061,6 @@ updatefile(){
     . $file_home
     return 1
   fi
-  #wwwget -q $file_www > $updatefile_tmp
   curl  -sL -o $updatefile_tmp $file_www
   if [ $? -ne 0 ] ; then
     echo "cURL failed retrieving file, will try wget"
