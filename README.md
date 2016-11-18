@@ -1,7 +1,10 @@
-The Dotcomfy bashrc - AKA The .bashrc from Hell (tm)
+The Dotcomfy bashrc - AKA The .bashrc from Hell &tm;
+
+# Disclaimer
+
+## Please read the disclaimer at the top of bashrc
 
 # Getting started
-
 
 ## Back up your old .bashrc, if you want to hang on to it
     mv ~/.bashrc ~/.OLD.bashrc
