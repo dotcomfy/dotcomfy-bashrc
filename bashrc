@@ -2019,7 +2019,12 @@ if ! echo "$PROMPT_COMMAND" | grep -E '\bshrc_reloader\b'>/dev/null ; then
 fi
 
 shrc_reloader(){
-  profile_files_on_disk_modified_at=$(stat --format "%Y" $profile_watch_files | sort -rn | head -1)
+  if [ "$DCMF_OS" = "osx" ] ; then
+    statcmd="stat -f %m"
+  else
+    statcmd="stat --format %Y"
+  fi
+  profile_files_on_disk_modified_at=$($statcmd $profile_watch_files | sort -rn | head -1)
   # echo "Comparing $profile_last_loaded_at against $profile_files_on_disk_modified_at"
   if [ -z "$profile_last_loaded_at" -o $profile_files_on_disk_modified_at -gt $profile_last_loaded_at ]; then
     echo "Detected change in one of the profile files, reloading dotcomfy bashrc"
@@ -2789,15 +2794,18 @@ fi
 top="top"
 ### OpenBSD
 if echo $OSTYPE | grep "openbsd" > /dev/null ; then
+  DCMF_OS=obsd
   PKG_PATH=ftp://ftp.sunet.se/pub/OpenBSD/`uname -r`/packages/`uname -m`/
   export PKG_PATH
 fi
 ### GNU/Linux
 if [ "$OSTYPE" = "linux-gnu" ] ; then
+  DCMF_OS=linux
   alias grep="grep --color=auto"
 fi
 ### OSX / Darwin
 if echo $OSTYPE | grep "darwin" > /dev/null ; then
+  DCMF_OS=osx
   top="top -o cpu"
   alias hibernateon="sudo pmset -a hibernatemode 25 ; echo 'Will now hibernate when closing lid'"
   alias hibernateoff="sudo pmset -a hibernatemode 3 ; echo 'Will just sleep when closing lid'"
