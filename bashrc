@@ -60,13 +60,12 @@ fi
 ###
 toolsbase="http://dotcomfy.net/tools" # location of traceroute, ping, etc tools
 dlbase="http://dl.dotcomfy.net" # where files are downloaded from
-#githubbase="https://github.com/dotcomfy/dotcomfy-bashrc/raw/master"
 githubbase="https://raw.githubusercontent.com/dotcomfy/dotcomfy-bashrc/master"
 shrc_url="$githubbase/bashrc" # download location of .bashrc
-backup_url="http://www.dotcomfy.net/dotcomfy_bashrc" # For non-SSL clients
-dotprofile_url="$dlbase/bash_profile" # download location of .bash_profile
-shrc_age_file="$HOME/.shrc_age_file" # file where a time stamp is stored
-shrc_max_age=30 # warn if .bashrc age is older than this (in days)
+shrc_backup_url="http://www.dotcomfy.net/dotcomfy_bashrc" # For non-SSL clients
+dotprofile_url="$dlbase/bash_profile" # Download location of .bash_profile
+shrc_age_file="$HOME/.shrc_age_file" # File where a time stamp is stored
+shrc_max_age=30 # Ask for update if .bashrc age is older than this (in days)
 updatefile_tmp="/tmp/.updatefile_tmp.$LOGNAME.$$"
 # Profile files that we watch for changes. Changes to these trigger a reload.
 potential_profile_watch_files="$BASH_SOURCE ~/.local_shellrc ~/.bash_profile ~/.bashrc ~/.profile /etc/profile.d/custom.sh"
@@ -2049,7 +2048,7 @@ shrcinfo(){
 
 # Updates the base .bashrc (or whatever it's stored as locally)
 shrcupd(){
-  updatefile $shrc_home $shrc_url || updatefile $shrc_home $backup_url
+  updatefile $shrc_home $shrc_url || updatefile $shrc_home $shrc_backup_url
 }
 
 # Updates a file from the web repository
@@ -2057,8 +2056,8 @@ shrcupd(){
 #  - the local path to the file to update
 #  - the URI of the file to get
 updatefile(){
-  file_home=$1
-  file_www=$2
+  local file_home=$1
+  local file_www=$2
   if [ ! -w $file_home ] ; then
     echo "$file_home is not writeable, you probably don't want to do that"
     echo "I'll just . it for you"
@@ -2080,17 +2079,17 @@ updatefile(){
     fi
   fi
   if diff $file_home $updatefile_tmp ; then
-    echo "You already have the most recent version."
+    echo "You already have the most recent version in $file_home"
     shrc_check_ver
     rm -f $updatefile_tmp
   else
     echo "Current version: `shrc_check_ver`"
-    if askyesno "Update to newest version, according to diff?" ; then
+    if askyesno "Update $file_home to newest version, according to diff?" ; then
       mv $updatefile_tmp $file_home
       echo "Updated to most recent version."
       shrc_check_ver
     else
-      echo "OK, will update later."
+      echo "OK, will update later"
       rm -f $updatefile_tmp
     fi
   fi
