@@ -228,9 +228,9 @@ askyesno(){
 checklockf(){
     local lockfile=$1
     if [ -f $lockfile ] ; then
-        echo lockfile found: $lockfile
-        echo someone else is probably editing $file
-        echo if this is not the case, please rm $lockfile
+        echo "Lockfile found: $lockfile"
+        echo "Someone else is probably editing $file"
+        echo "If this is not the case, please rm $lockfile"
         return 1
     fi
     touch $lockfile
@@ -1934,7 +1934,7 @@ spam(){
     local file=/etc/mail/access
     if ! checklockf $lockfile ; then return 1 ; fi
     sudo vi $file
-    rm $lockfile
+    rm -f $lockfile
     echo Press enter to rebuild database
     echo Or press ^C to exit
     read
@@ -1948,7 +1948,7 @@ virt(){
     local dbfile=/etc/mail/virtusertable
     if ! checklockf $lockfile ; then return 1 ; fi
     sudo vi $textfile
-    rm $lockfile
+    rm -f $lockfile
     echo Press enter to rebuild database
     echo Or press ^C to exit
     read
@@ -1961,7 +1961,7 @@ ali(){
     local file=/etc/mail/aliases
     if ! checklockf $lockfile ; then return 1 ; fi
     sudo vi $file
-    rm $lockfile
+    rm -f $lockfile
     echo Press enter to rebuild database
     echo Or press ^C to exit
     read
