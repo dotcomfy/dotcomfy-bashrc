@@ -325,6 +325,42 @@ if complete > /dev/null 2>&1 ; then
 fi
 
 ###
+##### Stuff that's required by local shellrc
+###
+
+# Function to save some typing when adding stuff to $PATH
+pathadd(){
+
+  local quiet="yes" # Quiet by default
+  if [ "$1" = "-v" ] ; then quiet="" ; shift ; fi
+
+  if [ -z "$1" ] ; then
+    echo "Usage: $FUNCNAME path (path elements separated by whitespace)"
+    return 1
+  fi
+
+  # Go through the directories, add them to $PATH if they exist
+  while [ ! -z "$1" ] ; do
+    local newdir=$1; shift
+
+    if [ -d $newdir ] ; then
+      # Lame test to see if directory is already in path
+      # Look for beginning-of-line or colon, followed by dir, followed by colon or end-of-line
+      if echo $PATH | egrep '(^|:)'"$newdir"'(:|$)' > /dev/null ; then
+        [ -z "$quiet" ] && echo "$newdir is already in PATH"
+      else
+        PATH=$PATH:$newdir
+        [ -z "$quiet" ] && echo "Added $newdir to PATH:" && echo "$PATH"
+      fi
+    else
+      [ -z "$quiet" ] && echo "Directory $newdir doesn't exist"
+    fi
+  done
+
+  export PATH
+}
+
+###
 ### Local config file - local_shellrc
 ###
 # local_shellrc needs to be able to override the above settings
@@ -1371,48 +1407,6 @@ killall(){
     kill $sig $pid
   done
 }
-
-
-pathadd(){
-  # Function to save some typing when adding stuff to $PATH
-  # This would have been cleaner if implemented in Perl,
-  # but I don't want to require Perl for the bashrc to work
-
-  # Quiet by default
-  local quiet="yes"
-  if [ "$1" = "-v" ] ; then quiet="" ; shift ; fi
-
-  # Require at least one arg - the path to add
-  if [ -z "$1" ] ; then
-    echo "Usage: $FUNCNAME path"
-    return 1
-  fi
-
-  # Go through the directories, and add them to $PATH if they exist
-  while [ ! -z "$1" ] ; do
-    local newdir=$1
-    shift
-
-    # Check that directory exists
-    if [ -d $newdir ] ; then
-      # Lame test to see if directory is already in path
-      # Look for beginning-of-line or colon, followed by dir, followed by
-      # colon or end-of-line. example: (^|:)/usr/local(:|$)
-      if echo $PATH | egrep '(^|:)'"$newdir"'(:|$)' > /dev/null ; then
-        [ -z "$quiet" ] && echo "$newdir is already in PATH"
-      else
-        PATH=$PATH:$newdir
-        [ -z "$quiet" ] && echo "Added $newdir to PATH:" && echo "$PATH"
-      fi
-    else
-        [ -z "$quiet" ] && echo "Directory $newdir doesn't exist"
-    fi
-  done
-
-  # end with exporting PATH
-  export PATH
-}
-
 
 keepalive(){
   # Used as a lame keepalive on ssh connections
