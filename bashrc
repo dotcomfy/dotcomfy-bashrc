@@ -3118,28 +3118,31 @@ get_current_git_branch(){
   git symbolic-ref HEAD 2>/dev/null | sed 's#refs/heads/##'
 }
 
-
-
+if [ "$(id -u 2>&1)" = "0" ] ; then
+  psch='#'
+else
+  psch='$'
+fi
 
 # Special cases for different shells
 case "$SHELL" in
     */bash)
         set -o notify
         set -o emacs
-        PS1="\u@\h:\w\$(git_prompt)\$ "
+        PS1="\u@\h:\w\$(git_prompt)$psch "
         ;;
     */ksh)
         set -o notify
         set -o emacs
-        PS1="$USER@$(hostname):\$PWD\$ "
+        PS1="$USER@$(hostname):\$PWD$psch "
         ;;
     */sh)
-        PS1="$USER@$(hostname):\$PWD\$ "
+        PS1="$USER@$(hostname):\$PWD$psch "
         ;;
 esac
 
 # indicate that the shell is running under sudo, if it is
-if ! [  -z "$SUDO_USER" ] ; then PS1="(sudo)${PS1}" ;fi
+if ! [ -z "$SUDO_USER" ] ; then PS1="(sudo)${PS1}" ;fi
 
 # Set the terminal/ssh client title to the default
 xbacktitle
