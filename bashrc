@@ -1378,9 +1378,9 @@ pathadd(){
   # This would have been cleaner if implemented in Perl,
   # but I don't want to require Perl for the bashrc to work
 
-  # When used to initially set up path, we want it to be quiet
-  local quiet=""
-  if [ "$1" = "-q" ] ; then quiet=yes ; shift ; fi
+  # Quiet by default
+  local quiet="yes"
+  if [ "$1" = "-v" ] ; then quiet="" ; shift ; fi
 
   # Require at least one arg - the path to add
   if [ -z "$1" ] ; then
