@@ -2223,8 +2223,15 @@ exit(0);
 # Get response, print it on stdout
 sub get_resp {
     my $sock = shift();
-    $response = <$sock>;
-    print "<<< $response";
+    $response = "";
+    my $tmpresponse;
+    # Handling multi-line responses
+    while ( $tmpresponse = <$sock> ) {
+      print "<<< $tmpresponse";
+      $response .= $tmpresponse;
+      # If response is a set of digits followed by a dash, it means that there are more lines
+      last unless $tmpresponse =~ /^\d+-/;
+    }
     return "$response";
 }
 
