@@ -1922,7 +1922,25 @@ m4mc(){
     fi
 } # end of m4mc()
 
-spam(){
+viregex(){
+    local name=regex
+    local lockfile=/tmp/.$name.lock
+    local file=/etc/mail/milter-regex.conf
+    if ! checklockf $lockfile ; then return 1 ; fi
+    sudo vi $file
+    rm -f $lockfile
+} # End of function viregex()
+
+vigreylist(){
+    local name=greylist
+    local lockfile=/tmp/.$name.lock
+    local file=/etc/mail/greylist.conf
+    if ! checklockf $lockfile ; then return 1 ; fi
+    sudo vi $file
+    rm -f $lockfile
+} # End of function vigreylist()
+
+viaccess(){
     local name=spam
     local lockfile=/tmp/.$name.lock
     local file=/etc/mail/access
@@ -1933,9 +1951,9 @@ spam(){
     echo Or press ^C to exit
     read
     sudo makemap -v hash $file <$file > /dev/null
-} # End of function spam()
+} # End of function viaccess()
 
-virt(){
+vivirt(){
     local name=virt
     local lockfile=/tmp/.$name.lock
     local textfile=/etc/mail/virtusertable
@@ -1947,10 +1965,10 @@ virt(){
     echo Or press ^C to exit
     read
     sudo makemap -v hash $dbfile < $textfile > /dev/null
-} # End of virt()
+} # End of vivirt()
 
-ali(){
-    local name=ali
+vialiases(){
+    local name=aliases
     local lockfile=/tmp/.$name.lock
     local file=/etc/mail/aliases
     if ! checklockf $lockfile ; then return 1 ; fi
@@ -1960,7 +1978,7 @@ ali(){
     echo Or press ^C to exit
     read
     sudo newaliases
-} # end of ali
+} # end of vialiases
 
 # Written when apachectl on OpenBSD wouldn't support "restart" for SSL servers
 huphttpd(){
