@@ -3,7 +3,7 @@
 #
 ###############################################################################
 #
-# Copyright (c) 1999-2016 Linus / Dotcomfy
+# Copyright (c) 1999-2017 Linus / Dotcomfy
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -58,7 +58,7 @@ fi
 ##### Settings
 ### Specific for the usage of the .bashrc and its functions
 ###
-toolsbase="http://dotcomfy.net/tools" # location of traceroute, ping, etc tools
+toolsbase="http://t.dotcomfy.net" # location of traceroute, ping, etc tools
 dlbase="http://dl.dotcomfy.net" # where files are downloaded from
 githubbase="https://raw.githubusercontent.com/dotcomfy/dotcomfy-bashrc/master"
 shrc_url="$githubbase/bashrc" # download location of .bashrc
@@ -1546,26 +1546,27 @@ revlookup(){
 
 # Find which external IP I'm using (or at least for WWW)
 myip(){
-  local url="$toolsbase/?action=myip"
+  local url="$toolsbase/myip"
   if [ $# -gt 0 ] ; then url="${url}$*" ; fi
   wwwget -q $url
 }
 # nmap myself from toolsbace
 scanme(){
-  local url="$toolsbase/?action=scan"
+  echo "NOT SUPPORTED" ; return 1
+  local url="$toolsbase/scan"
   if [ $# -gt 0 ] ; then url="${url}$*" ; fi
   wwwget -q $url
 }
 
 # ping myself from toolsbase
 pingme(){
-  local url="$toolsbase/?action=ping"
+  local url="$toolsbase/ping"
   wwwget -q $url
 }
 
 # trace myself from toolsbase
 traceme(){
-  local url="$toolsbase/?action=trace"
+  local url="$toolsbase/trace"
   wwwget -q $url
 }
 
