@@ -2016,19 +2016,33 @@ shrc_check_age(){
 }
 
 # This is the setup for the stuff that watches the various profile files. It gets used by shrc_reloader
-profile_watch_files=""
 profile_last_loaded_at=$(date +%s)
-for _file in $potential_profile_watch_files ; do
-  # Using eval, so that tilde expansion works
-  _file=$(eval echo $_file)
-  # echo "Considering watch file: $_file"
-  if [ -f $_file -a -r $_file ] ; then
-    profile_watch_files="$profile_watch_files $_file"
-  fi
-done
+add_watched_profile_files(){
+  local _file
+  for _file in $*; do
+    # Using eval, so that tilde expansion works
+    _file=$(eval echo $_file)
+    echo "Considering watch file: $_file"
+    if [ -f $_file -a -r $_file ] && ! echo $profile_watch_files | grep "$_file" >/dev/null ; then
+      echo "Adding: $_file"
+      profile_watch_files="$profile_watch_files $_file"
+    else
+      echo "Skipping: $_file"
+    fi
+  done
+}
+add_watched_profile_files $potential_profile_watch_files
 if ! echo "$PROMPT_COMMAND" | grep -E '\bshrc_reloader\b'>/dev/null ; then
   PROMPT_COMMAND="shrc_reloader; $PROMPT_COMMAND"
 fi
+
+add_profile_files(){
+  local _file
+  for _file in $*; do
+    . $_file
+  done
+  add_watched_profile_files $*
+}
 
 shrc_reloader(){
   if [ "$DCMF_OS" = "osx" ] ; then
