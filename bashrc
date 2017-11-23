@@ -2022,12 +2022,10 @@ add_watched_profile_files(){
   for _file in $*; do
     # Using eval, so that tilde expansion works
     _file=$(eval echo $_file)
-    echo "Considering watch file: $_file"
+    #echo "Considering watch file: $_file"
     if [ -f $_file -a -r $_file ] && ! echo $profile_watch_files | grep "$_file" >/dev/null ; then
-      echo "Adding: $_file"
+      #echo "Adding: $_file"
       profile_watch_files="$profile_watch_files $_file"
-    else
-      echo "Skipping: $_file"
     fi
   done
 }
