@@ -247,17 +247,33 @@ askyesno(){
 # Check if a lock file exists
 # used by virt(), ali(), spam()
 checklockf(){
-    local lockfile=$1
-    if [ -f $lockfile ] ; then
-        echo "Lockfile found: $lockfile"
-        echo "Someone else is probably editing $file"
-        echo "If this is not the case, please rm $lockfile"
-        return 1
-    fi
-    touch $lockfile
+  local lockfile=$1
+  local file=$2
+  if [ -e $lockfile ] ; then
+    echo "Lockfile found: $lockfile"
+    ls -l $lockfile
+    echo "Someone else is probably editing $file"
+    echo "If this is not the case, please delete $lockfile"
+    return 1
+  elif ! touch $lockfile ; then
+    echo "Failed to create lock file: $lockfile"
+    return 1
+  else
     return 0
+  fi
 }
 
+# Lock a file, and edit it with sudo.
+# The locking stuff is kind of overkill, I suppose, as long as I always use vi
+# But could be useful for others
+sudoedit(){
+  local file=$1
+  local name=$(basename $file)
+  local lockfile=/tmp/.$name.lock
+  if ! checklockf $lockfile $file ; then return 1 ; fi
+  sudo $EDITOR $file
+  rm -f $lockfile
+}
 
 ###
 ###
@@ -1945,68 +1961,44 @@ m4mc(){
 } # end of m4mc()
 
 viregex(){
-    local name=regex
-    local lockfile=/tmp/.$name.lock
-    local file=/etc/mail/milter-regex.conf
-    if ! checklockf $lockfile ; then return 1 ; fi
-    sudo vi $file
-    rm -f $lockfile
-} # End of function viregex()
+  sudoedit /etc/mail/milter-regex.conf
+}
 
 vigreylist(){
-    local name=greylist
-    local lockfile=/tmp/.$name.lock
-    local file=/etc/mail/greylist.conf
-    if ! checklockf $lockfile ; then return 1 ; fi
-    sudo vi $file
-    rm -f $lockfile
-} # End of function vigreylist()
+  sudoedit /etc/mail/greylist.conf
+}
 
 viaccess(){
-    local name=spam
-    local lockfile=/tmp/.$name.lock
-    local file=/etc/mail/access
-    if ! checklockf $lockfile ; then return 1 ; fi
-    sudo vi $file
-    rm -f $lockfile
-    echo Press enter to rebuild database
-    echo Or press ^C to exit
-    read
-    sudo makemap -v hash $file <$file > /dev/null
-} # End of function viaccess()
+  local mapfile=/etc/mail/access
+  sudoedit $mapfile
+  echo "Press enter to rebuild database"
+  echo "Or press ^C to exit"
+  read
+  sudo makemap -v hash $mapfile <$mapfile > /dev/null
+}
 
 vivirt(){
-    local name=virt
-    local lockfile=/tmp/.$name.lock
-    local textfile=/etc/mail/virtusertable
-    local dbfile=/etc/mail/virtusertable
-    if ! checklockf $lockfile ; then return 1 ; fi
-    sudo vi $textfile
-    rm -f $lockfile
-    echo Press enter to rebuild database
-    echo Or press ^C to exit
-    read
-    sudo makemap -v hash $dbfile < $textfile > /dev/null
-} # End of vivirt()
+  local mapfile=/etc/mail/virtusertable
+  sudoedit $mapfile
+  echo "Press enter to rebuild database"
+  echo "Or press ^C to exit"
+  read
+  sudo makemap -v hash $mapfile < $mapfile > /dev/null
+}
 
 vialiases(){
-    local name=aliases
-    local lockfile=/tmp/.$name.lock
-    local file=/etc/mail/aliases
-    if ! checklockf $lockfile ; then return 1 ; fi
-    sudo vi $file
-    rm -f $lockfile
-    echo Press enter to rebuild database
-    echo Or press ^C to exit
-    read
-    sudo newaliases
-} # end of vialiases
+  sudoedit /etc/mail/aliases
+  echo "Press enter to rebuild database"
+  echo "Or press ^C to exit"
+  read
+  sudo newaliases
+}
 
 # Written when apachectl on OpenBSD wouldn't support "restart" for SSL servers
 huphttpd(){
-    sudo apachectl stop
-    sleep 1
-    sudo apachectl startssl
+  sudo apachectl stop
+  sleep 1
+  sudo apachectl startssl
 }
 # End of root/sudo specific functions
 
