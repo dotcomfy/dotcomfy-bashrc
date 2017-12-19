@@ -9,7 +9,7 @@ The Dotcomfy bashrc - AKA The .bashrc from Hell (tm)
 ## Back up your old .bashrc, if you want to hang on to it
     mv ~/.bashrc ~/.OLD.bashrc
 ## Download the bashrc
-    wget  -q -O ~/.bashrc --no-check-certificate https://github.com/dotcomfy/dotcomfy-bashrc/raw/master/bashrc
+    wget  -q -O ~/.bashrc https://raw.githubusercontent.com/dotcomfy/dotcomfy-bashrc/master/bashrc
 ## Source it
     . ~/.bashrc
 ## Make sure that your .bashrc is loaded by your profile, if it isn't already
@@ -19,7 +19,7 @@ The Dotcomfy bashrc - AKA The .bashrc from Hell (tm)
 # Other tips
 
 If you can't change your login shell, but still want to run bash when it's available,
-then this little hack can be quite useful
+then this little hack can be quite useful.
 I used to do this in an environment where I had a lot of different Unix flavours, but with shared home dirs
 
 ```

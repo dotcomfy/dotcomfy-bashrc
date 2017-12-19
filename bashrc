@@ -2083,7 +2083,7 @@ updatefile(){
   curl  -sL -o $updatefile_tmp $file_www
   if [ $? -ne 0 ] ; then
     echo "cURL failed retrieving file, will try wget"
-    wget  -q -O $updatefile_tmp --no-check-certificate $file_www
+    wget  -q -O $updatefile_tmp $file_www
     if [ $? -ne 0 ] ; then
       echo "Failed retrieving file, will try lynx"
       lynx -dump -source $file_www > $updatefile_tmp
