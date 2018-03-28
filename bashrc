@@ -420,11 +420,16 @@ local_shellrc_run=1
 # Sending / receiving files via transfer.sh, encrypted
 transfersend(){
   local infile=$1
+  local oldpwd="$(pwd)"
+  cd $(dirname $infile)
+  infile=$(basename $infile)
+  echo "In $(pwd) working on $infile"
   aescat $infile > $infile.enc
   local res=$(cat $infile.enc | curl -X PUT -T "-" https://transfer.sh/$infile)
   echo
   echo "Sent to transfer.sh: $res"
   rm $infile.enc
+  cd "$oldpwd"
 }
 
 transferget(){
