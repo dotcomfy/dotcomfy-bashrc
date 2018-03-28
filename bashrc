@@ -416,6 +416,34 @@ local_shellrc_run=1
 ### Some of these are old shell scripts or small perl scripts
 ### that are quite handy to have available on any host I might log in to
 
+
+# Sending / receiving files via transfer.sh, encrypted
+transfersend(){
+  local infile=$1
+  aescat $infile > $infile.enc
+  local res=$(cat $infile.enc | curl -X PUT -T "-" https://transfer.sh/$infile)
+  echo
+  echo "Sent to transfer.sh: $res"
+  rm $infile.enc
+}
+
+transferget(){
+  local url=$1
+  local fname=$(echo $url | sed 's/.*\///')
+  local tmpfile=/tmp/$fname.$$.$(datestring)
+  echo "Saving to: $fname"
+  if [ -f $fname ] ; then
+    local remotefile=$fname
+    fname=$fname.$(datestring)
+    echo "$remotefile exists, saving to $fname instead"
+  fi
+  curl $url > $tmpfile
+  aescat $tmpfile > $fname
+  rm $tmpfile
+  echo "Saved $fname"
+}
+
+
 # Runs html2haml on a file, and renames it from .html.erb to .html.haml
 # Also ensures that ERB comments are parseable by html2haml, by adding a space (<%# Hello %> should be <% # Hello %>)
 # This is not an issue for comments starting with "<%-#"
