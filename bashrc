@@ -977,7 +977,7 @@ randpin(){
 randpass(){
   perl -w -e'
   use strict;
-  my $password_length = 10;
+  my $password_length = 12;
   my $quantity = 1;
   my $password;
   my $_rand;
@@ -991,7 +991,6 @@ randpass(){
   my @chars = split(" ",
   "a b c d e f g h i j k m n o p q r s t u v w x y z
   a b c d e f g h i j k m n o p q r s t u v w x y z
-  a b c d e f g h i j k m n o p q r s t u v w x y z
   A B C D E F G H J K L M N P Q R S T U V W X Y Z
   2 3 4 5 6 7 8 9
   ! £ $ % ^ & * ( ) - _ + = [ ] { } ; : @ # ~ ,
@@ -1001,16 +1000,15 @@ randpass(){
   # Seed the random number generator
   srand;
 
-
   for ( my $i=0; $i < $quantity; ) {
     $password = "";
     for (my $j=0; $j < $password_length ; $j++) {
       $_rand = int(rand ($#chars + 1) );
       $password .= $chars[$_rand];
      }
-    # Password must include uppercase, lowercase, digit, non-alpha otherwise skip
-    # Also must not contain repeated characters, or more than one non-alpha
-    if ( $password =~ /[a-z]/ && $password =~ /[A-Z]/ && $password =~ /[0-9]/ && $password !~ /(.).*\1/ && $password =~ /\W/ && $password !~ /\W.*\W/ ) {
+    # Password must include 2 of each uppercase, lowercase, digit, non-alpha otherwise skip
+    # Also must not contain repeated characters, or more than X non-alpha
+    if ( $password =~ /[a-z].*[a-z]/ && $password =~ /[A-Z].*[A-Z]/ && $password =~ /\d.*\d/ && $password =~ /\W.*\W/ && $password !~ /(.).*\1/ ) {
         print "$password\n";
         $i++; # only increase counter if the password was used
     }
