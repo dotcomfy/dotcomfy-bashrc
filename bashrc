@@ -1993,10 +1993,12 @@ m4mc(){
 
 viregex(){
   sudoedit /etc/mail/milter-regex.conf
+  sudo service milter-regex restart
 }
 
 vigreylist(){
   sudoedit /etc/mail/greylist.conf
+  sudo service milter-greylist restart
 }
 
 viaccess(){
