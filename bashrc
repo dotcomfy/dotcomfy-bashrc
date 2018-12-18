@@ -2077,7 +2077,7 @@ shrc_reloader(){
   fi
 }
 add_watched_profile_files $potential_profile_watch_files
-if ! echo "$PROMPT_COMMAND" | grep -E '\bshrc_reloader\b'>/dev/null ; then
+if ! echo "$PROMPT_COMMAND" | grep shrc_reloader >/dev/null ; then
   PROMPT_COMMAND="shrc_reloader; $PROMPT_COMMAND"
 fi
 
