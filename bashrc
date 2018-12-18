@@ -2063,7 +2063,7 @@ shrc_check_age(){
 
 profile_last_loaded_at=$(date +%s)
 shrc_reloader(){
-  if [ "$DCMF_OS" = "osx" ] ; then
+  if [ "$DCMF_OS" = "osx" -o "$DCMF_OS" = "obsd" ] ; then
     statcmd="stat -f %m"
   else
     statcmd="stat --format %Y"
