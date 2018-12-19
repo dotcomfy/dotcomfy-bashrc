@@ -2850,8 +2850,9 @@ top="top"
 ### OpenBSD
 if echo $OSTYPE | grep "openbsd" > /dev/null ; then
   DCMF_OS=obsd
-  PKG_PATH=ftp://ftp.sunet.se/pub/OpenBSD/`uname -r`/packages/`uname -m`/
-  export PKG_PATH
+  # This is getting replaced by /etc/installurl, and Sunet have removed their OpenBSD mirror
+  # PKG_PATH=ftp://ftp.sunet.se/pub/OpenBSD/`uname -r`/packages/`uname -m`/
+  # export PKG_PATH
 fi
 ### GNU/Linux
 if [ "$OSTYPE" = "linux-gnu" ] ; then
