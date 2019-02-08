@@ -977,7 +977,7 @@ randpin(){
 randpass(){
   perl -w -e'
   use strict;
-  my $password_length = 12;
+  my $password_length = 24;
   my $quantity = 1;
   my $password;
   my $_rand;
