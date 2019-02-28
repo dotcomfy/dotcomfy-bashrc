@@ -590,11 +590,29 @@ wtf(){
   echo "Uptime:      $(uptime | sed 's/^ *//')"
   echo "Memory:      $(free -m | grep buffers/cache | awk '{ print "used: " $3 "M, free: " $4 "M"}')"
   echo "Processor:   $(grep ^processor /proc/cpuinfo | wc -l) CPU(s); $(grep '^model name' /proc/cpuinfo  | sort -u | sed 's/.*: //')"
-  echo "Disk usage:  $(df -h -T -x tmpfs -x devtmpfs | grep /)"
+  echo "Disk usage:"
+  echo "$(df -h -T -x tmpfs -x devtmpfs | grep /)"
   if [ $(uname -s) = "Linux" ] ; then
     echo
-    echo "Release info:"
-    cat /etc/*release | sort -u
+    echo "Linux Release info:"
+    if [ -f /etc/os-release ] ; then
+      . /etc/os-release
+      echo "$PRETTY_NAME"
+    elif [ -f /etc/lsb-release ] ; then
+      . /etc/lsb-release
+      echo "$DISTRIB_DESCRIPTION"
+    elif [ -f /etc/redhat-release ] ; then
+      cat /etc/redhat-release
+    else
+      cat /etc/*release | sort -u
+    fi
+  fi
+  echo
+  echo "You:"
+  if [ ! -z "$SSH_TTY" ] ; then
+    last -i | grep $(echo $SSH_TTY|sed 's/^\/dev\///') | grep still.logged.in
+  else
+    who am i
   fi
 }
 
