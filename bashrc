@@ -1876,8 +1876,6 @@ sdlist(){
     cd $oldpwd
 }
 
-
-
 ### Functions that use xtitle() to set the title of xterm or ssh client
 ### before running the specific command
 ###
