@@ -3201,22 +3201,22 @@ fi
 
 # Special cases for different shells
 case "$SHELL" in
-    */bash)
-        set -o notify
-        set -o emacs
-        PS1="\u@\h:\w\$(git_prompt)$psch "
-        ;;
-    */ksh)
-        set -o notify
-        set -o emacs
-        PS1="$USER@$(hostname):\$PWD$psch "
-        ;;
-    */sh)
-        PS1="$USER@$(hostname):\$PWD$psch "
-        ;;
+  */bash)
+    set -o notify
+    set -o emacs
+    PS1="\u@\h:\w\$(git_prompt)$psch "
+    ;;
+  */ksh)
+    set -o notify
+    set -o emacs
+    PS1="$USER@$(hostname):\$PWD$psch "
+    ;;
+  */sh)
+    PS1="$USER@$(hostname):\$PWD$psch "
+    ;;
 esac
 
-# indicate that the shell is running under sudo, if it is
+# Indicate that the shell is running under sudo, if applicable
 if ! [ -z "$SUDO_USER" ] ; then PS1="(sudo)${PS1}" ;fi
 
 # Set the terminal/ssh client title to the default
@@ -3226,12 +3226,11 @@ xbacktitle
 shrc_age=`shrc_check_age`
 # $noupdateshrc can be set to 1 in .local_shellrc to disable auto updating
 if [ $shrc_age -gt $shrc_max_age -a -z "$noupdateshrc" ] ; then
-    if askyesno "Your .bashrc is $shrc_age days old, do you want to update?" ; then
-      shrcupd
-    else
-      echo "OK, will update later."
-    fi
-
+  if askyesno "Your .bashrc is $shrc_age days old, do you want to update?" ; then
+    shrcupd
+  else
+    echo "OK, will update later."
+  fi
 fi
 
 # Display user's own motd, if one exists
@@ -3239,8 +3238,8 @@ fi
 [ -f ~/.motd -a -z "$motd_done" ] && cat ~/.motd
 motd_done=1 ; export motd_done
 
-# source .local_shellrc if existent, last in file, to override globals
+# Source .local_shellrc if existent, last in file, to override globals
 [ -f ~/.local_shellrc ] && . ~/.local_shellrc
 
-# This version of the file was downloaded from github
+# This version of the file was downloaded from Github
 # EOF
