@@ -330,14 +330,7 @@ alias suidfind="find / -perm -4000 -or -perm -2000"
 alias calentool="calentool -D 2 -e" # ISO date format and week starts on monday
 alias prtdiag='/usr/platform/`uname -i`/sbin/prtdiag' # Diag command on Suns
 alias s_client="openssl s_client -connect" # "ssl telnet"
-# Screen alias - if we're not in screen
-if [ ! -z "$STY" ] ; then
-  alias s="echo 'You ARE already in screen!'"
-elif [ -z "$screen_session_alternatives" ] ; then
-  alias s="screen -R -D"
-else
-  alias s="screen_session_picker"
-fi
+# The alias for screen gets set *after* loading local bashrc, since it depends on settings from it
 
 # Disk usage related stuff
 alias sdu="du -sk * | sort -n"
@@ -442,6 +435,17 @@ pathadd(){
 # if [ "$local_shellrc_run" = "1" ] ; then return ; fi
 # echo "This only gets run the first time"
 local_shellrc_run=1
+
+
+# This depends on $screen_session_alternatives, which may be set in local shellrc
+# Screen alias - if we're not in screen
+if [ ! -z "$STY" ] ; then
+  alias s="echo 'You ARE already in screen!'"
+elif [ -z "$screen_session_alternatives" ] ; then
+  alias s="screen -R -D"
+else
+  alias s="screen_session_picker"
+fi
 
 ###
 ###
