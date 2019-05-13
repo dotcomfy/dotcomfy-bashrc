@@ -135,6 +135,36 @@ ENDCOLOUR="\e[m"
 ### Used by other functions throughout the .bashrc
 ### These need to be listed early, to make them accessible to others
 
+# Picks a screen session to load/start, based on some commons screen session names, as configured in $screen_session_alternatives (set this in .local_shellrc)
+screen_session_picker(){
+  echo "Please choose one of the following screen sessions"
+  echo "For a generic session for this host, choose 0 or 1"
+  echo "To list active sessions, type 'l' (lowercase L)"
+  echo "Use 'q' or any other invalid answer to quit"
+  local _screen_session
+  select _screen_session in $(hostname -s) $screen_session_alternatives; do break ; done
+  echo "You selected: $REPLY / $_screen_session"
+  if [ "$_screen_session" = "$(hostname -s)" -o $REPLY -eq 0 ] ; then
+    echo "Loading generic screen session"
+    screen -R -D $(hostname -s)
+  elif [ "$REPLY" = "l" ]; then
+    screen_active_session_picker
+  elif [ -z "$_screen_session" ] ; then
+    echo "Invalid selection"
+  else
+    echo "Running selected: $_screen_session"
+    $_screen_session
+  fi
+}
+
+# Picks one of the current running screen sessions, and loads it
+screen_active_session_picker(){
+  local _selected_session
+  running_screen_sessions=$(screen -ls | grep '^\s' | awk '{print $1}' | grep -v '^\s$')
+  select _selected_session in $running_screen_sessions ; do break ; done
+  screen -D -r $_selected_session
+}
+
 # This is the setup for the stuff that watches the various profile files. It gets used by shrc_reloader
 add_watched_profile_files(){
   local _file
@@ -301,11 +331,14 @@ alias calentool="calentool -D 2 -e" # ISO date format and week starts on monday
 alias prtdiag='/usr/platform/`uname -i`/sbin/prtdiag' # Diag command on Suns
 alias s_client="openssl s_client -connect" # "ssl telnet"
 # Screen alias - if we're not in screen
-if [ -z "$STY" ] ; then
+if [ ! -z "$STY" ] ; then
+  alias s="echo 'You ARE already in screen!'"
+elif [ -z "$screen_session_alternatives" ] ; then
   alias s="screen -R -D"
 else
-  alias s="echo 'You ARE already in screen, you muppet!'"
+  alias s="screen_session_picker"
 fi
+
 # Disk usage related stuff
 alias sdu="du -sk * | sort -n"
 # allows running functions and aliases with sudo (eg, "runsudo m4mc")
