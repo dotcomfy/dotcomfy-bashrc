@@ -144,7 +144,7 @@ screen_session_picker(){
   local _screen_session
   select _screen_session in $(hostname -s) $screen_session_alternatives; do break ; done
   echo "You selected: $REPLY / $_screen_session"
-  if [ "$_screen_session" = "$(hostname -s)" -o $REPLY -eq 0 ] ; then
+  if [ "$_screen_session" = "$(hostname -s)" -o "$REPLY" = "0" ] ; then
     echo "Loading generic screen session"
     screen -R -D $(hostname -s)
   elif [ "$REPLY" = "l" ]; then
