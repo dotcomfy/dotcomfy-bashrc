@@ -80,10 +80,11 @@ fi
 ##### Shell variables
 ### Stuff used by various commands/applications, or the shell itself
 # Locale
-LANG=en_UK export LANG
-LC_TIME=en_UK export LC_TIME
-LC_NUMERIC=en_UK export LC_NUMERIC
-LC_ALL=en_UK export LC_ALL
+LANG=en_GB export LANG
+LANGUAGE=en_GB export LANGUAGE # Only used by Perl?
+LC_TIME=en_GB export LC_TIME
+LC_NUMERIC=en_GB export LC_NUMERIC
+LC_ALL=en_GB export LC_ALL
 
 # The One True Text Editor (TM)
 EDITOR=vi export EDITOR
