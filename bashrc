@@ -2087,6 +2087,10 @@ vialiases(){
   sudo newaliases
 }
 
+vipmrc(){
+  $EDITOR ~/.procmailrc
+}
+
 # Written when apachectl on OpenBSD wouldn't support "restart" for SSL servers
 huphttpd(){
   sudo apachectl stop
