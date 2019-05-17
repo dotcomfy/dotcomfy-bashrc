@@ -2271,6 +2271,9 @@ my $rcptto   = "$to";
 # If the addresses passed in as arguments contain a full name, then use just the address (within angle brackets)
 if ( $mailfrom =~ /<(.+)>/ ) { $mailfrom = $1 };
 if ( $rcptto   =~ /<(.+)>/ ) { $rcptto   = $1 };
+# Wrap from and to for headers, if they are just bare addresses
+unless ( $from =~ /<(.+)>/ ) { $from = "<$from>" };
+unless ( $to   =~ /<(.+)>/ ) { $to   = "<$to>"   };
 
 # Constants:
 my $CRLF       = "\015\012";
@@ -2289,7 +2292,7 @@ my %headers = (
 # Do we need help or version info?
 if ($opts{h}){&usage}
 
-$headers{'Subject'} = $opts{s} || "Test from <$from> to <$to> via $server on $date";
+$headers{'Subject'} = $opts{s} || "Test from [$from] to [$to] via $server on $date";
 chomp ( $heloname = $opts{H} || `hostname` || "foo" );
 
 if ( $opts{b} ) {
