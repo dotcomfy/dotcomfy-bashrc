@@ -2292,7 +2292,8 @@ my %headers = (
 # Do we need help or version info?
 if ($opts{h}){&usage}
 
-$headers{'Subject'} = $opts{s} || "Test from [$from] to [$to] via $server on $date";
+my $maildesc = "Test from [$from] to [$to] via $server on $date";
+$headers{'Subject'} = $opts{s} || $maildesc;
 chomp ( $heloname = $opts{H} || `hostname` || "foo" );
 
 if ( $opts{b} ) {
@@ -2301,9 +2302,11 @@ if ( $opts{b} ) {
     print "\nOk, full mail recieved, will now try to send it\n\n";
 }
 else {
-    $mailbody[0] = "Test from <$from> to <$to> via $server on $date";
+    $mailbody[0] = $maildesc;
 }
 
+STDOUT->autoflush(1);
+print "Connecting to $server:$port...\n";
 unless ($sock = IO::Socket::INET->new(
     Proto=>"tcp",
     PeerAddr=>"$server",
