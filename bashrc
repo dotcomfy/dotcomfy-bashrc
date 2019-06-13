@@ -2088,7 +2088,7 @@ vialiases(){
 }
 
 vipmrc(){
-  $EDITOR ~/.procmailrc
+  editfile ~/.procmailrc
 }
 
 # Written when apachectl on OpenBSD wouldn't support "restart" for SSL servers
