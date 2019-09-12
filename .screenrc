@@ -1,10 +1,18 @@
-# termcapinfo xterm
-# having $TERM set to xterm seems to make less and vi clear the screen on exit
-# Leaving it set to screen seems to makes things difficult on some Suns...
+# My standard screenrc, kept in Git under the dotcomfy-bashrc project
+# Can be fetched/updated with:
+# curl -s -S https://raw.githubusercontent.com/dotcomfy/dotcomfy-bashrc/master/bashrc -o ~/.bashrc
+# Or, if using .bashrc, just run screenrcget
 
+# Kill startup message
 startup_message off
-defscrollback 4096
-nethack on
+
+# Bigger scrollback, default is 100 lines
+defscrollback 40960
+
+# Needed to make UTF-8 work properly
+# Also need to run screen -U
+defutf8 on
+defencoding utf8
 
 # An alternative hardstatus to display a bar at the bottom listing the
 # windownames and highlighting the current windowname in blue. (This is only
@@ -13,10 +21,36 @@ hardstatus on
 hardstatus alwayslastline
 hardstatus string "%{.bW}%-w%{.rW}%n %t%{-}%+w %=%{..G} %H %{..Y} %M %d %c "
 
-# ------------------------------------------------------------------------------
-# STARTUP SCREENS
-# ------------------------------------------------------------------------------
+# Some old examples, left for reference, or something
+#hardstatus string "%{-b gk}%-w%{+b kg}%n %t%{-b gk}%+w %h %= %D %d %M %Y %c:%s "
+#hardstatus alwayslastline "%{rk}%H %{gk}%c %{yk}%M%d %{wk}%?%-Lw%?%{bw}%n*%f %t%?(%u)%?%{wk}%?%+Lw%?"
+#"ks=E[?1lE:kuE[A:kd=E[B:kl=E[D:kr=E[C:kh=E[5~:kH=E[F"
+# http://www.kuro5hin.org/story/2004/3/9/16838/14935
+#hardstatus alwayslastline "Window list: %{-b gk}%-w%{+b kg}%50>%n %t%{-b gk}%+w%<"
 
-screen 0 bash
-screen 1 bash
-screen 2 bash
+# Nethack style error messages and warnings.
+# "Be careful!  New screen tonight."
+# "You escaped the dungeon."
+nethack on
+
+# This fixes the issue where screen resizes the putty window when you connect
+termcapinfo xterm* 'is=\E[r\E[m\E[2J\E[H\E[?7h\E[?1;4;6l'
+
+
+
+# Startup screens, and other local settings, can be put into .local_screenrc
+
+#screen 0 bash
+#screen 1 bash
+#screen 2 bash
+#screen 4 bash
+#screen 5 bash
+#screen 6 bash
+#screen 7 bash
+#screen 8 bash
+#screen 9 bash
+
+# Examples
+#screen -t mail 2 pine
+
+source .local_screenrc

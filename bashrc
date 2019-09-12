@@ -370,6 +370,8 @@ alias bpget="test -f ~/.bash_profile || wwwget -q \
 # Get a skeleton .local_shellrc
 alias lsget="test -f ~/.local_shellrc || wwwget -q \
    $dlbase/local_shellrc >> ~/.local_shellrc ; cat  ~/.local_shellrc"
+# Get the standard .screenrc
+alias screenrcget="curl -s -S -o ~/.screenrc $githubbase/.screenrc"
 
 ###
 ### Whois aliases, and a bit of DNS
