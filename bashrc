@@ -76,7 +76,7 @@ else
   shrc_home=$BASH_SOURCE
 fi
 # Normally, with screen, you want to attach to an existing session (-D) and with UTF-8 enabled (-U)
-gnu_screen_base_cmd='-D -U'
+gnu_screen_base_cmd='screen -D -U'
 
 ###
 ##### Shell variables
