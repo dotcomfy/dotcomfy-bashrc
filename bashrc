@@ -3,7 +3,7 @@
 #
 ###############################################################################
 #
-# Copyright (c) 1999-2017 Linus / Dotcomfy
+# Copyright (c) 1999-2019 Linus / Dotcomfy
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -75,6 +75,8 @@ if [ -z "$BASH_SOURCE" ] ; then
 else
   shrc_home=$BASH_SOURCE
 fi
+# Normally, with screen, you want to attach to an existing session (-D) and with UTF-8 enabled (-U)
+gnu_screen_base_cmd='-D -U'
 
 ###
 ##### Shell variables
@@ -153,7 +155,7 @@ screen_session_picker(){
   echo "You selected: $REPLY / $_screen_session"
   if [ "$_screen_session" = "$(hostname -s)" -o "$REPLY" = "0" ] ; then
     echo "Loading generic screen session"
-    screen -R -D $(hostname -s)
+    $gnu_screen_base_cmd -R $(hostname -s)
   elif [ "$REPLY" = "l" ]; then
     screen_active_session_picker
   elif [ -z "$_screen_session" ] ; then
@@ -169,7 +171,7 @@ screen_active_session_picker(){
   local _selected_session
   running_screen_sessions=$(screen -ls | grep '^\s' | awk '{print $1}' | grep -v '^\s$')
   select _selected_session in $running_screen_sessions ; do break ; done
-  screen -D -r $_selected_session
+  $gnu_screen_base_cmd -r $_selected_session
 }
 
 # This is the setup for the stuff that watches the various profile files. It gets used by shrc_reloader
@@ -449,7 +451,7 @@ local_shellrc_run=1
 if [ ! -z "$STY" ] ; then
   alias s="echo 'You ARE already in screen!'"
 elif [ -z "$screen_session_alternatives" ] ; then
-  alias s="screen -R -D"
+  alias s="$gnu_screen_base_cmd -R"
 else
   alias s="screen_session_picker"
 fi
