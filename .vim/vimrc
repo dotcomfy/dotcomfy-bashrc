@@ -1,0 +1,47 @@
+" My standard ~/.vim directory, lives in Github
+
+set nocompatible
+" Syntax highlighting
+syn on
+
+" Doesn't work properly?
+" 256 colours
+
+set t_Co=256
+colorscheme darkblue-modified
+
+" Highlight trailing space (treat it as a todo)
+match Todo /\s\+$/
+
+" Macros
+" Clean up trailing spaces
+let @s='%s/ \+$//c'
+" Indentation
+let @i='s/^/  /'
+" Set number on/off (toggle)
+let @n='set number!'
+
+" Toggle number display with ctrl-n ctrl-n
+nmap <C-N><C-N> :set invnumber<CR>
+" Toggle paste
+nmap <C-P><C-P> :set paste<CR>
+
+" Indent
+nmap <C-I><C-I> :s/^/  /<CR>
+" Unindent, escape-control-i
+nmap <Esc><C-I> :s/^  //<CR>
+
+" Show line numbers, with a fixed width "gutter"
+set number
+if v:version >=700
+  set numberwidth=5
+endif
+highlight LineNr term=bold cterm=NONE ctermfg=Black ctermbg=DarkGray gui=NONE guifg=DarkGrey guibg=NONE
+
+" Always show a status bar
+set laststatus=2
+
+" Bloody UTF-8
+set encoding=utf-8
+set fileencoding=utf-8
+setglobal fileencoding=utf-8
