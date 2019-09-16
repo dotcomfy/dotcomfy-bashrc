@@ -1511,14 +1511,25 @@ psearch(){
   cd $oldpwd
 }
 
-pa (){
-  ps auxwww
+# Process stuff
+fullps (){
+  if [ $DCMF_OS = "linux" ]; then
+    ps -e -o 'uid pid ppid pcpu pmem vsz rssize tty stat start time command'
+  else
+    ps auxwww
+  fi
 }
+
+# Grep for processes, include headers. Doesn't work on 
 psgrep(){
   if [ $# -lt 1 ] ; then
     echo "Usage: psgrep pattern" ; return 1
   fi
-  ps auxwww | grep $1 | grep -v grep # works on BSD'ish ps
+  psoutput="$(fullps)"
+  # First, produce a header line
+  echo "$psoutput" | head -1
+  # Then produce the output
+  echo "$psoutput" | grep $1 | grep -v grep
 }
 
 killall(){
@@ -2921,6 +2932,7 @@ fi
 
 # This is just so that the Darwin-specific top options work with the top() function later on...
 top="top"
+
 ### OpenBSD
 if echo $OSTYPE | grep "openbsd" > /dev/null ; then
   DCMF_OS=obsd
@@ -2951,6 +2963,7 @@ if [ "$MACHTYPE" == "i686-pc-cygwin" ] ; then
   # the same bad habit in Cygwin...
   alias x="exit"
 fi
+
 
 # Some stupid os's (read commercial SysV stuff, oh, and RedHat)
 # don't set a proper umask by default
