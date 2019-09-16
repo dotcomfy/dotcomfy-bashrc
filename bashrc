@@ -1520,7 +1520,9 @@ fullps(){
   fi
 }
 # An old version, as an alias
-pa(){ fullps }
+pa(){
+  fullps
+}
 
 # Grep for processes, include headers. Doesn't work on 
 psgrep(){
