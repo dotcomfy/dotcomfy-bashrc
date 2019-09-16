@@ -37,6 +37,9 @@ nethack on
 termcapinfo xterm* 'is=\E[r\E[m\E[2J\E[H\E[?7h\E[?1;4;6l'
 
 
+# To fix numeric keypad
+# Should possibly be combined with "term screen-256color", but this seems to work on its own
+termcapinfo xterm 'ks@:ke@'
 
 # Startup screens, and other local settings, can be put into .local_screenrc
 
