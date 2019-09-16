@@ -1512,13 +1512,15 @@ psearch(){
 }
 
 # Process stuff
-fullps (){
+fullps(){
   if [ $DCMF_OS = "linux" ]; then
-    ps -e -o 'uid pid ppid pcpu pmem vsz rssize tty stat start time command'
+    ps -e -o 'uid user pid ppid pcpu pmem vsz rssize tty stat start time command'
   else
     ps auxwww
   fi
 }
+# An old version, as an alias
+pa(){ fullps }
 
 # Grep for processes, include headers. Doesn't work on 
 psgrep(){
