@@ -1524,7 +1524,7 @@ pa(){
   fullps
 }
 
-# Grep for processes, include headers. Doesn't work on 
+# Grep for processes, include headers
 psgrep(){
   if [ $# -lt 1 ] ; then
     echo "Usage: psgrep pattern" ; return 1
