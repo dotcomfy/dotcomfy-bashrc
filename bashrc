@@ -66,7 +66,7 @@ shrc_backup_url="http://www.dotcomfy.net/dotcomfy_bashrc" # For non-SSL clients
 dotprofile_url="$dlbase/bash_profile" # Download location of .bash_profile
 shrc_age_file="$HOME/.shrc_age_file" # File where a time stamp is stored
 shrc_max_age=30 # Ask for update if .bashrc age is older than this (in days)
-updatefile_tmp="/tmp/.updatefile_tmp.$LOGNAME.$$"
+updatefile_tmp="${TMPDIR:-/tmp}/.updatefile_tmp.$LOGNAME.$$"
 # Profile files that we watch for changes. Changes to these trigger a reload.
 potential_profile_watch_files="$BASH_SOURCE ~/.local_shellrc ~/.bash_profile ~/.bashrc ~/.profile /etc/profile.d/custom.sh"
 # This can be overridden if necessary
@@ -308,7 +308,7 @@ checklockf(){
 sudoedit(){
   local file=$1
   local name=$(basename $file)
-  local lockfile=/tmp/.$name.lock
+  local lockfile=${TMPDIR:-/tmp}/.$name.lock
   if ! checklockf $lockfile $file ; then return 1 ; fi
   sudo $EDITOR $file
   rm -f $lockfile
@@ -497,7 +497,7 @@ transfersend(){
 transferget(){
   local url=$1
   local fname=$(echo $url | sed 's/.*\///')
-  local tmpfile=/tmp/$fname.$$.$(datestring)
+  local tmpfile=${TMPDIR:-/tmp}/$fname.$$.$(datestring)
   echo "Saving to: $fname"
   if [ -f $fname ] ; then
     local remotefile=$fname
@@ -588,7 +588,7 @@ mysql_dump_csv(){
 # and then converting to the desired format
 audioconcat(){
   # Put all temp files in their own directory - easy to clean up, and no permission issues as long as we've got temp space
-  local tmpdir=/tmp/audioconcat.$$.tmp
+  local tmpdir=${TMPDIR:-/tmp}/audioconcat.$$.tmp
 
   # The last argument is the output file
   eval local outfile=\${$#}
@@ -879,8 +879,8 @@ xmldiff(){
   fi
     file1=$1
     file2=$2
-    tmpfile1=/tmp/$FUNCNAME.$$.file1.tmp
-    tmpfile2=/tmp/$FUNCNAME.$$.file2.tmp
+    tmpfile1=${TMPDIR:-/tmp}/$FUNCNAME.$$.file1.tmp
+    tmpfile2=${TMPDIR:-/tmp}/$FUNCNAME.$$.file2.tmp
 
     xmlstrip < $file1 > $tmpfile1
     xmlstrip < $file2 > $tmpfile2
@@ -1938,8 +1938,8 @@ makerun(){
 # cXtXdX - sdX
 # useful when looking at output from iostat -x
 sdlist(){
-    local tmp1=/tmp/sdlist_1.$$
-    local tmp2=/tmp/sdlist_2.$$
+    local tmp1=${TMPDIR:-/tmp}/sdlist_1.$$
+    local tmp2=${TMPDIR:-/tmp}/sdlist_2.$$
     local oldcwd=`pwd`
     cd /dev/rdsk
     /usr/bin/ls -l *s0 \
