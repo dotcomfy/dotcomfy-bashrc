@@ -744,6 +744,8 @@ slowrun(){
 
 # Print disk usage for all files/directories, human readable, sorted by size
 duf(){
+  local _status
+  if [ "$SUDO" = "y" -o "$DUF_SUDO" = "y" ]; then sudo=sudo ; else sudo="" ; fi
   # Never include the directory itself - just the directories beneath
   args="-mindepth 1"
   if [ "$1" = "-r" ] ; then
@@ -757,9 +759,15 @@ duf(){
     echo "Working on: $dir"
     # The final sed is there to strip out the leading "./" from file names when
     # running on the current dir
-    find $dir $args -exec du -sk {} \; | sort -n | perl -ne '($s,$f)=split(m{\t});for (qw(K M G)) {if($s<1024) {printf("%.1f",$s);print "$_\t$f"; last};$s=$s/1024}' | sed 's/\.\///'
-    du -sh $dir
+    $sudo find $dir $args -exec du -sk {} \; | sort -n | perl -ne '($s,$f)=split(m{\t});for (qw(K M G)) {if($s<1024) {printf("%.1f",$s);print "$_\t$f"; last};$s=$s/1024}' | sed 's/\.\///'
+    $sudo du -sh $dir
+    let _status=$_status+$?
   done
+  if [ $_status -gt 0 ]; then
+    echo
+    echo "There seem to have been errors ($_status), maybe you don't have the right permissions? To run with sudo, try: SUDO=y duf"
+    echo "You can also set DUF_SUDO=y in your profile"
+  fi
 }
 
 
