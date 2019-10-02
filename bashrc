@@ -745,7 +745,7 @@ slowrun(){
 # Print disk usage for all files/directories, human readable, sorted by size
 duf(){
   local _status
-  if [ "$SUDO" = "y" -o "$DUF_SUDO" = "y" ]; then sudo=sudo ; else sudo="" ; fi
+  if [ "$DUF_SUDO" = "y" ]; then sudo=sudo ; else sudo="" ; fi
   # Never include the directory itself - just the directories beneath
   args="-mindepth 1"
   if [ "$1" = "-r" ] ; then
@@ -765,9 +765,13 @@ duf(){
   done
   if [ $_status -gt 0 ]; then
     echo
-    echo "There seem to have been errors ($_status), maybe you don't have the right permissions? To run with sudo, try: SUDO=y duf"
+    echo "There seem to have been errors ($_status), maybe you don't have the right permissions? To run with sudo, try: suduf"
     echo "You can also set DUF_SUDO=y in your profile"
   fi
+}
+
+suduf(){
+  DUF_SUDO=y duf $*
 }
 
 
