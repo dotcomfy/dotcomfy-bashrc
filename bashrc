@@ -763,7 +763,7 @@ duf(){
     $sudo du -sh $dir
     let _status=$_status+$?
   done
-  if [ $_status -gt 0 ]; then
+  if [ $_status -gt 0 -a -z "$DUF_SUDO" ]; then
     echo
     echo "There seem to have been errors ($_status), maybe you don't have the right permissions? To run with sudo, try: suduf"
     echo "You can also set DUF_SUDO=y in your profile"
