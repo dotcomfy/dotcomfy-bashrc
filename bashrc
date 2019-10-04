@@ -1989,6 +1989,14 @@ cd(){
   builtin cd "$@" && xtitle $USER@$HOSTNAME:$PWD
 }
 
+# Change into the directory of the last file we did something to
+cdlast(){
+  local lastfile=$_
+  local lastdir=$(dirname $lastfile)
+  echo "Changing to dir of $lastfile: $lastdir"
+  cd $lastdir
+}
+
 cdup(){
   popd && xtitle $USER@$HOSTNAME:$PWD
 }
