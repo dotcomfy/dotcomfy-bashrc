@@ -318,7 +318,7 @@ sudoedit(){
 # Either reruns previous command with sudo, or just acts as an alias for sudo
 please(){
   local runcmd=""
-  if [ $# -gt 1 ] ; then
+  if [ $# -gt 0 ] ; then
     runcmd="$*"
   else
     runcmd="$(fc -n -l -2 -2 | sed 's/^\s*//')"
