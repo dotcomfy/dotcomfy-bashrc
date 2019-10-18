@@ -186,6 +186,7 @@ add_watched_profile_files(){
   done
 }
 
+# Loads one or more profile files, and adds them to list of watched files. Watched files get reloaded when a change is detected.
 add_profile_files(){
   local _file
   for _file in $*; do
@@ -193,6 +194,7 @@ add_profile_files(){
   done
   add_watched_profile_files $*
 }
+
 # Check if a pid is running
 isrunning(){
   kill -0 $1 > /dev/null 2>&1
@@ -206,7 +208,6 @@ wwwdump(){
   url=`echo $* | sed 's/ /%20/g' | sed 's/"/%22/g'`
   lynx -hiddenlinks=ignore -nolist -dump $url
 }
-
 
 # Make ssh aliases - takes a list of host names and creates ssh aliases for them
 # Helper function to be used from .local_shellrc
@@ -346,7 +347,6 @@ alias pmlog="mailstat ~/.pm/procmail.log | $PAGER"
 alias xvbg="xv -root -rmode 5 -maxpect -quit" # set X background with xv
 alias dotrc=". $shrc_home"
 alias linusping="ping -p 6c696e7573" # sends "linus" as byte padding in packet
-alias gwping="ping \`cat /etc/mygate\`" # pings default gateway according to /etc/mygate
 alias suidfind="find / -perm -4000 -or -perm -2000"
 alias calentool="calentool -D 2 -e" # ISO date format and week starts on monday
 alias prtdiag='/usr/platform/`uname -i`/sbin/prtdiag' # Diag command on Suns
@@ -476,6 +476,51 @@ fi
 ### Some of these are old shell scripts or small perl scripts
 ### that are quite handy to have available on any host I might log in to
 
+vipmrc(){
+  editfile ~/.procmailrc
+}
+
+# Check time since last successful update of this file
+# Used by the update checker
+shrc_check_age(){
+  local age_seconds
+  local age_days
+  # get date of current .bashrc from age file
+  shrc_date=$(cat $shrc_age_file 2>/dev/null)
+  if [ -z "$shrc_date" ] ; then shrc_date=0 ; fi
+
+  # compare to current date
+  # some strftime(3) implementations don't have %s - so use Perl to get
+  # seconds since epoc
+  let age_seconds=$(perl -e 'print time();')-$shrc_date
+
+  # translate into days
+  let age_days=$age_seconds/68400 # age in days
+
+  echo $age_days
+}
+
+profile_last_loaded_at=$(date +%s)
+shrc_reloader(){
+  if [ "$DCMF_OS" = "osx" -o "$DCMF_OS" = "obsd" ] ; then
+    statcmd="stat -f %m"
+  else
+    statcmd="stat --format %Y"
+  fi
+  profile_files_on_disk_modified_at=$($statcmd $profile_watch_files | sort -rn | head -1)
+  # echo "Comparing $profile_last_loaded_at against $profile_files_on_disk_modified_at"
+  if [ -z "$profile_last_loaded_at" -o $profile_files_on_disk_modified_at -gt $profile_last_loaded_at ]; then
+    echo "Detected change in one of the profile files, reloading dotcomfy bashrc"
+    dotrc
+    profile_last_loaded_at=$(date +%s)
+  fi
+}
+add_watched_profile_files $potential_profile_watch_files
+if ! echo "$PROMPT_COMMAND" | grep shrc_reloader >/dev/null ; then
+  PROMPT_COMMAND="shrc_reloader; $PROMPT_COMMAND"
+fi
+
+# check version of .bashrc
 
 # Sending / receiving files via transfer.sh, encrypted
 transfersend(){
@@ -1179,7 +1224,6 @@ nanoclock(){
   [ ! -z "$1" ] && interval=$1
   while usleep $interval ; do printf "\r%s %s" $(date '+%H:%M:%S %N') ; done
 }
-alias clocknano=nanoclock # Just so I can type clock and tab, the day that I've forgotten what I called the function above, but remember that it was something to do with 'clock' :-)
 
 # Calculate something by echo'ing it to bc -l
 # using decimals, so 7/2 = 2.33... rather than 7/2 = 2
@@ -2045,26 +2089,6 @@ man(){
   xbacktitle
 }
 
-# These are a bit daft, and I tend to do everything in screen these days, so they're of little use
-#telnet(){
-#  xtitle "$USER@$HOSTNAME: telnet to $@"
-#  command telnet $@
-#  xbacktitle
-#}
-#
-#ssh(){
-#  xtitle "SSH to $@"
-#  command ssh $@
-#  xbacktitle
-#  welcomeback
-#}
-#
-#ftp(){
-#  xtitle "$USER@$HOSTNAME: ftp $@"
-#  command ftp $@
-#  xbacktitle
-#}
-
 top(){
   xtitle "Processes on $HOSTNAME"
   command $top $@
@@ -2074,18 +2098,6 @@ top(){
 
 ### A bunch of old shell scripts that used to be in /root/bin
 ### on a couple of OpenBSD boxes. Turned into functions.
-### will rewrite these a bit better at some other time..
-
-# Update quotes and stick in fortune
-quoteget(){
-  sudo sh -c "lynx -dump $dlbase/quotes.txt >/usr/share/games/fortune/linus"
-  ( cd /usr/share/games/fortune ; sudo /usr/games/strfile linus )
-}
-
-# Rather than sending a hup
-hupsendmail(){
-  sudo sh -c 'kill `head -1 /var/run/sendmail.pid` ; sleep 1 ; /usr/libexec/sendmail/sendmail -L sm-mta -bd -q30m'
-}
 
 # m4mc - used to update sendmail.cf
 m4mc(){
@@ -2138,16 +2150,7 @@ vialiases(){
   sudo newaliases
 }
 
-vipmrc(){
-  editfile ~/.procmailrc
-}
 
-# Written when apachectl on OpenBSD wouldn't support "restart" for SSL servers
-huphttpd(){
-  sudo apachectl stop
-  sleep 1
-  sudo apachectl startssl
-}
 # End of root/sudo specific functions
 
 
@@ -2155,6 +2158,10 @@ huphttpd(){
 ### Functions related to the editing, fetching, updating
 ### etc of .bashrc
 ### Some of these are also used as general supporting functions
+
+vipmrc(){
+  editfile ~/.procmailrc
+}
 
 # Check time since last successful update of this file
 # Used by the update checker
