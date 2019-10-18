@@ -65,18 +65,24 @@ shrc_url="$githubbase/bashrc" # download location of .bashrc
 shrc_backup_url="http://www.dotcomfy.net/dotcomfy_bashrc" # For non-SSL clients
 dotprofile_url="$dlbase/bash_profile" # Download location of .bash_profile
 shrc_age_file="$HOME/.shrc_age_file" # File where a time stamp is stored
-shrc_max_age=30 # Ask for update if .bashrc age is older than this (in days)
+shrc_max_age=7 # Ask for update if .bashrc age is older than this (in days)
 updatefile_tmp="${TMPDIR:-/tmp}/.updatefile_tmp.$LOGNAME.$$"
 # Profile files that we watch for changes. Changes to these trigger a reload.
 potential_profile_watch_files="$BASH_SOURCE ~/.local_shellrc ~/.bash_profile ~/.bashrc ~/.profile /etc/profile.d/custom.sh"
-# This can be overridden if necessary
-if [ -z "$BASH_SOURCE" ] ; then
-  shrc_home="$HOME/.bashrc"
-else
-  shrc_home=$BASH_SOURCE
-fi
 # Normally, with screen, you want to attach to an existing session (-D) and with UTF-8 enabled (-U)
 gnu_screen_base_cmd='screen -D -U'
+# The location of this file, probably in the user's home directory
+# During development, the file may be loaded from several locations, and we don't want to override the first one (which is probably the "real" file)
+if [ -n "$shrc_home" ] ; then
+  # We've already set this, no need to do anything
+  true
+elif [ -z "$BASH_SOURCE" ] ; then
+  # We don't know what file we're in, assume ~/.bashrc
+  shrc_home="$HOME/.bashrc"
+else
+  # This file is the bashrc
+  shrc_home=$BASH_SOURCE
+fi
 
 ###
 ##### Shell variables
@@ -100,13 +106,8 @@ HISTSIZE=5000 export HISTSIZE
 if [ -z "$PAGER" ] ; then PAGER=less ; export PAGER ; fi
 # Get less to display a useful prompt, and quit if there's only one screen
 # -R makes it handle escape characters - ANSI colours, etc
-if [ -z "$C9_HOSTNAME" ] ; then
-  LESS="-M -F -R"
-else
-  # In C9 IDE, less -F displays nothing, it just quits
-  LESS="-M -R"
-fi
- export LESS
+LESS="-M -F -R"
+export LESS
 # Set USER and HOSTNAME if they aren't set
 if [ -z "$USER" -a ! -z "$LOGNAME" ] ; then
   USER=$LOGNAME export USER
@@ -119,7 +120,6 @@ CVS_RSH=/usr/bin/ssh ; export CVS_RSH
 PS4='$0:$LINENO: ' ; export PS4
 # MySQL prompt, hostname:databasename
 MYSQL_PS1="$(hostname -s):\d> " export MYSQL_PS1
-#
 # Used as the default title on screen windows
 SCREEN_TITLE="$(basename $SHELL)"
 
@@ -135,8 +135,6 @@ YELLOW="\033[0;33m"
 BLUE="\033[0;34m"
 PURPLE="\033[0;35m"
 ENDCOLOUR="\e[m"
-
-
 
 
 ###
