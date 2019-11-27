@@ -308,9 +308,18 @@ sudoedit(){
   local file=$1
   local name=$(basename $file)
   local lockfile=${TMPDIR:-/tmp}/.$name.lock
+  local md5before=$(sudo md5sum $file)
   if ! checklockf $lockfile $file ; then return 1 ; fi
   sudo $EDITOR $file
   rm -f $lockfile
+  local md5after=$(sudo md5sum $file)
+  if [ "$md5before" = "$md5after" ]; then
+    echo "No changes to file: $file"
+    return 1
+  else
+    echo "Changes made to file: $file"
+    return 0
+  fi
 }
 
 # Part convenience, part play :)
@@ -2115,41 +2124,26 @@ m4mc(){
 } # end of m4mc()
 
 viregex(){
-  sudoedit /etc/mail/milter-regex.conf
-  sudo service milter-regex restart
+  sudoedit /etc/mail/milter-regex.conf && sudo service milter-regex restart
 }
 
 vigreylist(){
-  sudoedit /etc/mail/greylist.conf
-  sudo service milter-greylist restart
+  sudoedit /etc/mail/greylist.conf && sudo service milter-greylist restart
 }
 
 viaccess(){
   local mapfile=/etc/mail/access
-  sudoedit $mapfile
-  echo "Press enter to rebuild database"
-  echo "Or press ^C to exit"
-  read
-  sudo makemap -v hash $mapfile <$mapfile > /dev/null
+  sudoedit $mapfile && sudo makemap -v hash $mapfile <$mapfile > /dev/null
 }
 
 vivirt(){
   local mapfile=/etc/mail/virtusertable
-  sudoedit $mapfile
-  echo "Press enter to rebuild database"
-  echo "Or press ^C to exit"
-  read
-  sudo makemap -v hash $mapfile < $mapfile > /dev/null
+  sudoedit $mapfile && echo "Updating map" && sudo makemap -v hash $mapfile < $mapfile > /dev/null
 }
 
 vialiases(){
-  sudoedit /etc/mail/aliases
-  echo "Press enter to rebuild database"
-  echo "Or press ^C to exit"
-  read
-  sudo newaliases
+  sudoedit /etc/mail/aliases && echo "Updating map" && sudo newaliases
 }
-
 
 # End of root/sudo specific functions
 
