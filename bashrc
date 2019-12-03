@@ -87,12 +87,14 @@ fi
 ###
 ##### Shell variables
 ### Stuff used by various commands/applications, or the shell itself
-# Locale
-LANG=en_GB export LANG
-LANGUAGE=en_GB export LANGUAGE # Only used by Perl?
-LC_TIME=en_GB export LC_TIME
-LC_NUMERIC=en_GB export LC_NUMERIC
-LC_ALL=en_GB export LC_ALL
+# Locale, doesn't work on Termux in Android
+if [ "$OSTYPE" != "linux-android" ] ; then
+  LANG=en_GB export LANG
+  LANGUAGE=en_GB export LANGUAGE # Only used by Perl?
+  LC_TIME=en_GB export LC_TIME
+  LC_NUMERIC=en_GB export LC_NUMERIC
+  LC_ALL=en_GB export LC_ALL
+fi
 
 # The One True Text Editor (TM)
 EDITOR=vi export EDITOR
@@ -2976,6 +2978,10 @@ if echo $OSTYPE | grep "openbsd" > /dev/null ; then
   # This is getting replaced by /etc/installurl, and Sunet have removed their OpenBSD mirror
   # PKG_PATH=ftp://ftp.sunet.se/pub/OpenBSD/`uname -r`/packages/`uname -m`/
   # export PKG_PATH
+fi
+### Android
+if [ "$OSTYPE" = "linux-android" ] ; then
+  DCMF_OS=android
 fi
 ### GNU/Linux
 if [ "$OSTYPE" = "linux-gnu" ] ; then
