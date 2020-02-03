@@ -2126,11 +2126,11 @@ m4mc(){
 } # end of m4mc()
 
 viregex(){
-  sudoedit /etc/mail/milter-regex.conf && sudo service milter-regex restart
+  sudoedit /etc/mail/milter-regex.conf && sudo service milter-regex restart && sudo tail -f /var/log/messages | grep regex
 }
 
 vigreylist(){
-  sudoedit /etc/mail/greylist.conf && sudo service milter-greylist restart
+  sudoedit /etc/mail/greylist.conf && sudo service milter-greylist restart && sudo tail -f /var/log/maillog | grep greylist
 }
 
 viaccess(){
