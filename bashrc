@@ -2126,7 +2126,17 @@ m4mc(){
 } # end of m4mc()
 
 viregex(){
-  sudoedit /etc/mail/milter-regex.conf && sudo service milter-regex restart && sudo tail -f /var/log/messages | grep regex
+  local _configfile=/etc/mail/milter-regex.conf
+  sudoedit $_configfile && sudo service milter-regex restart
+  if sudo milter-regex -d -t -c $_configfile ; then
+    echo "Config seems to be OK"
+  else
+    echo "Problem with milter-regex config file? Please check it over"
+    echo "$_configfile"
+    echo "Also see /var/log/messages for details"
+    echo ""
+    echo "Worth noting, for example, that you can't escape slashes. Instead, use a different regex delimiter"
+  fi
 }
 
 vigreylist(){
