@@ -2127,15 +2127,18 @@ m4mc(){
 
 viregex(){
   local _configfile=/etc/mail/milter-regex.conf
-  sudoedit $_configfile && sudo service milter-regex restart
+  sudoedit $_configfile || return
   if sudo milter-regex -d -t -c $_configfile ; then
-    echo "Config seems to be OK"
+    echo "Config seems to be OK, restarting daemon"
+    sudo service milter-regex restart
   else
+    echo "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
     echo "Problem with milter-regex config file? Please check it over"
     echo "$_configfile"
     echo "Also see /var/log/messages for details"
     echo ""
     echo "Worth noting, for example, that you can't escape slashes. Instead, use a different regex delimiter"
+    echo "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
   fi
 }
 
