@@ -3312,7 +3312,7 @@ gcb(){
 
 get_git_branches(){
   flags="$*"
-  git branch -v $flags | sed -r 's/^\*//' | awk '{print $1}' | sed 's#.*/##'
+  git branch -a -v $flags | sed -r 's/^\*//' | awk '{print $1}' | sed 's#.*/##'
 }
 
 get_current_git_branch(){
