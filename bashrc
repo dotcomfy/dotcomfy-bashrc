@@ -3274,11 +3274,11 @@ gcb(){
 
 
   if [ "$1" = "-" ] ; then
-    local branches="$(get_git_branches -a)"
+    local branches="$(get_git_branches)"
     new_branch=$(cat $lastbranchfile)
   elif [ ! -z "$1" ] ; then
-    # A branch name was specified - include remote branches when looking for it
-    local branches="$(get_git_branches -a)"
+    # A branch name was specified
+    local branches="$(get_git_branches)"
     new_branch=$1
   else
     local branches="$(get_git_branches $flags)"
