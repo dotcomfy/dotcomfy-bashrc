@@ -3268,7 +3268,7 @@ git_create_remote_branch(){
 
 # Git change branch
 gcb(){
-  local lastbranchfile=~/.lastgitbranch
+  local lastbranchfile=~/.lastgitbranch$(git rev-parse --show-toplevel | sed 's/\W/_/g')
   local new_branch
   if [ "$1" = "-a" ] ; then local flags='-a' ; shift ; fi # Show remote branches
 
@@ -3292,6 +3292,7 @@ gcb(){
     echo "No branch selected, aborting"
   else
     get_current_git_branch > $lastbranchfile
+    chmod go-rwx $lastbranchfile
     if echo "$branches" | grep "^$new_branch$" > /dev/null ;then
       echo "Exact match, checking out: $new_branch"
       git checkout $new_branch
