@@ -58,8 +58,8 @@ fi
 ##### Settings
 ### Specific for the usage of the .bashrc and its functions
 ###
-toolsbase="http://t.dotcomfy.net" # location of traceroute, ping, etc tools
-dlbase="http://dl.dotcomfy.net" # where files are downloaded from
+toolsbase="https://t.dotcomfy.net" # location of traceroute, ping, etc tools
+dlbase="https://dl.dotcomfy.net" # where files are downloaded from
 githubbase="https://raw.githubusercontent.com/dotcomfy/dotcomfy-bashrc/master"
 shrc_url="$githubbase/bashrc" # download location of .bashrc
 shrc_backup_url="http://www.dotcomfy.net/dotcomfy_bashrc" # For non-SSL clients
@@ -208,7 +208,8 @@ wwwdump(){
   local url
   # replace selected special chars...
   url=`echo $* | sed 's/ /%20/g' | sed 's/"/%22/g'`
-  lynx -hiddenlinks=ignore -nolist -dump $url
+  # Using curl and piping to lynx, since curl has better handling of multi-domain SSL certificates
+  curl -L $url | lynx -stdin -hiddenlinks=ignore -nolist -dump
 }
 
 # Make ssh aliases - takes a list of host names and creates ssh aliases for them
@@ -1269,12 +1270,6 @@ sp(){
   echo $* | spell
 }
 
-# Search for something in Google, and dump the results
-google(){
-  if [ -z "$1" ] ; then echo "Usage example: $FUNCNAME word" ; return 1 ; fi
-  wwwdump "http://www.google.co.uk/search?hl=en&q=${*}" | $PAGER
-}
-
 # Look things up in Lexin
 # To translate from English to Swedish - use "lexin :word"
 # http://lexin.nada.kth.se/faq.shtml
@@ -1284,62 +1279,18 @@ lexin(){
     echo "Prepending word with a colon looks up an English word"
     return 1
   fi
-  wwwdump "http://lexikon.nada.kth.se/cgi-bin/sve-eng?${*}" | $PAGER
+  wwwdump "https://lexikon.nada.kth.se/cgi-bin/sve-eng?${*}" | $PAGER
 }
 
 # Look up word in wikipedia
 wp(){
   if [ -z "$1" ] ; then echo "Usage example: $FUNCNAME word" ; return 1 ; fi
-  wwwdump "http://en.wikipedia.org/wiki/${*}" | $PAGER
+  wwwdump "https://en.wikipedia.org/wiki/${*}" | $PAGER
 }
 # Look up word in wictionary
 wn(){
   if [ -z "$1" ] ; then echo "Usage example: $FUNCNAME word" ; return 1 ; fi
-  wwwdump "http://en.wiktionary.org/wiki/${*}" | $PAGER
-}
-
-# Use Google's define: search feature, to find definitions of a word
-define(){
-  if [ -z "$1" ] ; then echo "Usage example: $FUNCNAME word" ; return 1 ; fi
-  local word=$1
-  wwwdump "http://www.google.co.uk/search?hl=en&q=define%3A${*}" | $PAGER
-}
-
-# gcalc() - Google Calculator
-# FIXME: These bits were assuming a certain layout of the Google pages, and no longer works, since they've changed it.
-# Currency and other conversion using Google
-# gcalc 1 ft in cm, gcalc 140 mph in kph, etc
-# Other examples:
-# 54 miles per imperial gallon in litres per 10 kilometres
-# 54 mpg in litres per 10 kilometres
-# 1 uk gallon in litres
-alias conv=gcalc
-gcalc(){
-  # Needs at least 1 argument - don't be too picky
-  if [ -z "$1" ] ; then echo "Usage example: $FUNCNAME 100 usd in gbp" ; return 1 ; fi
-  local query=`echo "$*" | sed 's/ /+/g'`
-  # echo query: $query
-  wwwget "http://www.google.com/search?q=$query" | grep "/images/calc_img.gif" | sed 's#^.*<b>\(.*\)</b></h2>.*$#\1#' | sed 's/<[^>]*>//g'
-}
-
-# Conversion for some different currencies that I often use
-# TODO: make a master function that splits currency pairs and figures
-# out what to look up. Maybe these can then be made into aliases?
-gbpsek(){
-  if [ -z "$1" ] ; then echo "Usage example: $FUNCNAME 100" ; return 1 ; fi
-  gcalc $1 gbp in sek
-}
-sekgbp(){
-  if [ -z "$1" ] ; then echo "Usage example: $FUNCNAME 100" ; return 1 ; fi
-  gcalc $1 sek in gbp
-}
-usdgbp(){
-  if [ -z "$1" ] ; then echo "Usage example: $FUNCNAME 100" ; return 1 ; fi
-  gcalc $1 usd in gbp
-}
-gbpusd(){
-  if [ -z "$1" ] ; then echo "Usage example: $FUNCNAME 100" ; return 1 ; fi
-  gcalc $1 gbp in usd
+  wwwdump "https://en.wiktionary.org/wiki/${*}" | $PAGER
 }
 
 # Replace CR with LF
