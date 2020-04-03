@@ -1087,37 +1087,48 @@ datedir(){
 # Generates and prints a random PIN number
 # I use this to generate PIN codes for various things
 randpin(){
-  # TODO: Should check for and avoid duplicates
-  perl -w -e'
+  $perl -w - "$@" <<"ENDRANDPINPERL"
   use strict;
   my $pin_length = 4;
   my $quantity = 1;
   my $pin;
   my $_rand;
+  my @usedpins;
 
   # Can give the number of pins as an argument
   if ( $ARGV[0] ) { $quantity = $ARGV[0]; }
+  if ( $ARGV[1] ) { $pin_length = $ARGV[1]; }
 
   my @chars = split(" ", "0 1 2 3 4 5 6 7 8 9");
+
+  print "Generating $quantity PINs with length $pin_length\n";
+
+  # 
+  my $max_pins = 9 * (10**($pin_length-1));
+
+  if ($quantity > $max_pins){
+    die "You can't generate $quantity unique PINs, starting with 1-9 with $pin_length digits (max: $max_pins)\n";
+  }
 
   # Seed the random number generator
   srand;
 
-  for ( my $i=0; $i < $quantity; ) {
+  while (scalar @usedpins < $quantity) {
     $pin = "";
     for (my $j=0; $j < $pin_length ; $j++) {
       $_rand = int(rand ($#chars + 1) );
       $pin .= $chars[$_rand];
      }
-    # PIN must not have any repeated digits, or start with a 0
-    unless ( $pin =~ /(.).*\1/ || $pin =~ /^0/ ) {
+    # PIN must not have any repeated digits, start with a 0, or be repeated
+    unless ( $pin =~ /(.).*\1/ || $pin =~ /^0/ || grep(/$pin/, @usedpins) ) {
         print "$pin\n";
-        $i++; # only increase counter if the pin was used
+        push(@usedpins, $pin);
     }
-    #else { print "Discarding: $pin\n"; }
+    # else { print "Discarding: $pin, generated: " . scalar @usedpins . ", qty: $quantity\n"; }
   }
-  ' $*
+ENDRANDPINPERL
 }
+
 # Generates and prints a random password
 # I use this to generate passwords for new users
 randpass(){
@@ -1127,9 +1138,13 @@ randpass(){
   my $quantity = 1;
   my $password;
   my $_rand;
+  my %used_passwords;
 
   # Can give the number of passwords as an argument
   if ( $ARGV[0] ) { $quantity = $ARGV[0]; }
+  if ( $ARGV[1] ) { $password_length = $ARGV[1]; }
+
+  die "Password has to be at least 8 characters long\n" unless $password_length >= 8;
 
 
   # Do not include characters that can easily be mistaken (e.g. l/1, 0/O)
@@ -1146,17 +1161,17 @@ randpass(){
   # Seed the random number generator
   srand;
 
-  for ( my $i=0; $i < $quantity; ) {
+  while(keys(%used_passwords) < $quantity ) {
     $password = "";
     for (my $j=0; $j < $password_length ; $j++) {
       $_rand = int(rand ($#chars + 1) );
       $password .= $chars[$_rand];
      }
     # Password must include 2 of each uppercase, lowercase, digit, non-alpha otherwise skip
-    # Also must not contain repeated characters, or more than X non-alpha
-    if ( $password =~ /[a-z].*[a-z]/ && $password =~ /[A-Z].*[A-Z]/ && $password =~ /\d.*\d/ && $password =~ /\W.*\W/ && $password !~ /(.).*\1/ ) {
+    # Also must not contain repeated characters (same twice in a row), or more than X non-alpha
+    if ( $password =~ /[a-z].*[a-z]/ && $password =~ /[A-Z].*[A-Z]/ && $password =~ /\d.*\d/ && $password =~ /\W.*\W/ && $password !~ /(.).*\1/ && ! $used_passwords{$password} == 1) {
         print "$password\n";
-        $i++; # only increase counter if the password was used
+        $used_passwords{$password}=1;
     }
     #else { print "REJECTING: $password\n"; }
   }
