@@ -159,7 +159,7 @@ screen_session_picker(){
   elif [ "$REPLY" = "l" ]; then
     screen_active_session_picker
   elif [ -z "$_screen_session" ] ; then
-    echo "Invalid selection"
+    echo "No valid selection, quitting"
   else
     echo "Running selected: $_screen_session"
     $_screen_session
