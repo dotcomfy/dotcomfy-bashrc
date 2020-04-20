@@ -145,6 +145,7 @@ ENDCOLOUR="\e[m"
 ### These need to be listed early, to make them accessible to others
 
 # Picks a screen session to load/start, based on some commons screen session names, as configured in $screen_session_alternatives (set this in .local_shellrc)
+# I use this on some of my servers where I have different named screen sessions, with different environments, for different dev projects
 screen_session_picker(){
   echo "Please choose one of the following screen sessions"
   echo "For a generic session for this host, choose 0 or 1"
