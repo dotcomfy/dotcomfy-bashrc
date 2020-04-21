@@ -3173,7 +3173,7 @@ mergemaster(){
 
 
 git_clean_branches(){
-  echo "Cleaning out LOCAL copies of branches. This will not delete anything from Github."
+  echo "Cleaning out LOCAL copies of branches. This will not delete anything from remote repo"
   for branch in $(git branch  | grep -v '^*' | grep -v -E ' master$' | grep -v " uat$" | grep -v " qa$"); do
     echo
     echo -n "Remove $branch? (y/N): "
@@ -3237,8 +3237,6 @@ git_create_remote_branch(){
 gcb(){
   local lastbranchfile=~/.lastgitbranch$(git rev-parse --show-toplevel | sed 's/\W/_/g')
   local new_branch
-  if [ "$1" = "-a" ] ; then local flags='-a' ; shift ; fi # Show remote branches
-
 
   if [ "$1" = "-" ] ; then
     local branches="$(get_git_branches)"
@@ -3248,8 +3246,15 @@ gcb(){
     local branches="$(get_git_branches)"
     new_branch=$1
   else
-    local branches="$(get_git_branches $flags)"
+    local branches="$(get_git_branches)"
     local PS3='Branch (or CTRL-D to quit)#: '
+    echo "Checking if there are remote branches to fetch"
+    if [ "$(git fetch --dry-run)" = "" ] ; then
+      echo "Nothing new to fetch"
+    else
+      echo "New branches available"
+      local PS3="NOTE: You need to run git fetch to include newly added branches\n$PS3"
+    fi
     select new_branch in $branches ; do
       break
     done
@@ -3278,8 +3283,9 @@ gcb(){
 }
 
 get_git_branches(){
-  flags="$*"
-  git branch -a -v $flags | sed -r 's/^\*//' | awk '{print $1}' | sed 's#.*/##'
+  # Get branches, including remote (-a)
+  # NOTE: This does fetch anything from remote, just remote branches that we already know about. You need to run git fetch to find new remote branches.
+  git branch -a -v | sed -r 's/^\*//' | awk '{print $1}' | sed 's#.*/##'
 }
 
 get_current_git_branch(){
