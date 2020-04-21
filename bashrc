@@ -3249,7 +3249,7 @@ gcb(){
     local branches="$(get_git_branches)"
     local PS3='Branch (or CTRL-D to quit)#: '
     echo "Checking if there are remote branches to fetch"
-    if [ "$(git fetch --dry-run)" = "" ] ; then
+    if [ "$(git fetch --dry-run 2>&1)" = "" ] ; then
       echo "Nothing new to fetch"
     else
       echo "New branches available"
