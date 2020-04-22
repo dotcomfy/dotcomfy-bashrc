@@ -388,15 +388,15 @@ alias lowercase="sed -e 's/./\L&/g'"
 
 ###
 ### File fetching aliases
-### (only one remaing, because I never used them)
 # Get the standard .bash_profile
 alias bpget="test -f ~/.bash_profile || wwwget -q \
    $dotprofile_url >> ~/.bash_profile ; cat  ~/.bash_profile"
+
 # Get a skeleton .local_shellrc
-alias lsget="test -f ~/.local_shellrc || wwwget -q \
-   $dlbase/local_shellrc >> ~/.local_shellrc ; cat  ~/.local_shellrc"
-# Get the standard .screenrc
-alias screenrcget="curl -s -S -o ~/.screenrc $githubbase/.screenrc"
+alias lsget="no_source_after_update=true updatefile ~/.local_shellrc $githubbase/local_shellrc"
+
+# Get/update  the standard .screenrc
+alias screenrcget="no_source_after_update=true updatefile ~/.screenrc $githubbase/.screenrc"
 
 ###
 ### Whois aliases, and a bit of DNS
@@ -2240,10 +2240,12 @@ updatefile(){
       rm -f $updatefile_tmp
     fi
   fi
-  # Register that it's updated
-  perl -e 'print time();' > $shrc_age_file
-  # source the current .${SHELL}rc file
-  . $file_home
+  # If it's the bashrc we've updated, then register it
+  if [ "$file_home" = "$shrc_home" ] ; then
+    perl -e 'print time();' > $shrc_age_file
+  fi
+  # Source the newly updated file, unless configured not to
+  [ -z "$no_source_after_update" ] && . $file_home
   return 0
 }
 
