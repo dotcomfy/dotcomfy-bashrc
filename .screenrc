@@ -19,7 +19,7 @@ defencoding utf8
 # enabled if there is no hardstatus setting for your terminal)
 hardstatus on
 hardstatus alwayslastline
-hardstatus string "%{.bW}%-w%{.rW}%n %t%{-}%+w %=%{..G} %H %{..Y} %M %d %c "
+hardstatus string "%{.bW}%-w%{.rW}%n %t%{-}%+w %=%{..G} %H %{.bW}[%S] %{..Y}%M %d %c "
 
 # Some old examples, left for reference, or something
 #hardstatus string "%{-b gk}%-w%{+b kg}%n %t%{-b gk}%+w %h %= %D %d %M %Y %c:%s "
