@@ -3239,21 +3239,18 @@ gcb(){
   local new_branch
 
   if [ "$1" = "-" ] ; then
-    local branches="$(get_git_branches)"
+    local branches="$(git_get_branches)"
     new_branch=$(cat $lastbranchfile)
   elif [ ! -z "$1" ] ; then
     # A branch name was specified
-    local branches="$(get_git_branches)"
+    local branches="$(git_get_branches)"
     new_branch=$1
   else
-    local branches="$(get_git_branches)"
+    local branches="$(git_get_branches)"
     local PS3='Branch (or CTRL-D to quit)#: '
     echo "Checking if there are remote branches to fetch"
-    if [ "$(git fetch --dry-run 2>&1)" = "" ] ; then
-      echo "Nothing new to fetch"
-    else
-      echo "New branches available"
-      local PS3="NOTE: You need to run git fetch to include newly added branches\n$PS3"
+    if git fetch --dry-run 2>&1 | grep 'new branch' ; then
+      local PS3="$(echo 'NOTE: You need to run git fetch to include newly added branches'; echo $PS3) "
     fi
     select new_branch in $branches ; do
       break
@@ -3282,7 +3279,7 @@ gcb(){
   fi
 }
 
-get_git_branches(){
+git_get_branches(){
   # Get branches, including remote (-a)
   # NOTE: This does fetch anything from remote, just remote branches that we already know about. You need to run git fetch to find new remote branches.
   git branch -a -v | sed -r 's/^\*//' | awk '{print $1}' | sed 's#.*/##'
