@@ -3,6 +3,10 @@
 # curl -s -S https://raw.githubusercontent.com/dotcomfy/dotcomfy-bashrc/master/bashrc -o ~/.bashrc
 # Or, if using .bashrc, just run screenrcget
 
+# If I ever feel that I want to spend some spare time switching to Tmux:
+# This tmux config example allegedly makes it a drop in replacement for Gnu Screen
+# https://superuser.com/questions/858657/conditional-values-in-screenrc
+
 # Kill startup message
 startup_message off
 
