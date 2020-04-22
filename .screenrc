@@ -9,6 +9,8 @@
 
 # Kill startup message
 startup_message off
+# Get rid of warnings / etc quickly
+msgwait 2
 
 # Bigger scrollback, default is 100 lines
 defscrollback 40960
