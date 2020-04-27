@@ -341,6 +341,11 @@ please(){
   sudo $runcmd
 }
 
+# Similar to please, but reruns previous command with the "z" (decompressing) version of the previous command
+zplease(){
+  fc -s cat=zcat diff=zdiff less=zless grep=zgrep
+}
+
 
 ###
 ###
