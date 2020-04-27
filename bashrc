@@ -1,4 +1,5 @@
-# The .bashrc from Hell (tm)
+# The .bashrc from Heaven (tm)
+# Previously known as The .bashrc from Hell
 # https://github.com/dotcomfy/dotcomfy-bashrc/
 #
 ###############################################################################
