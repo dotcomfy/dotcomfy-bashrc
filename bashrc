@@ -336,6 +336,8 @@ please(){
     runcmd="$(fc -n -l -2 -2 | sed 's/^\s*//')"
     echo "Rerunning with sudo: $runcmd"
   fi
+  # Rewrite history, so that the previous command is the sudo command, rather than "please"
+  history -s sudo $runcmd
   sudo $runcmd
 }
 
