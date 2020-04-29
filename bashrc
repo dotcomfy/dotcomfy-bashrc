@@ -348,6 +348,16 @@ zplease(){
 }
 
 
+
+# Use RCS to check out all files in current directory (if under version control)
+alias coall="rcsall co -l"
+alias ciall="rcsall ci -u"
+alias diffall="rcsall rcsdiff"
+
+rcsall(){
+  $* $(find RCS -type f)
+}
+
 ###
 ###
 ##### Command aliases
