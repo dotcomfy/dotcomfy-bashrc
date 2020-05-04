@@ -2134,6 +2134,7 @@ vigreylist(){
 viaccess(){
   local mapfile=/etc/mail/access
   sudoedit $mapfile && sudo makemap -v hash $mapfile <$mapfile > /dev/null
+  ls -l $mapfile*
 }
 
 vivirt(){
