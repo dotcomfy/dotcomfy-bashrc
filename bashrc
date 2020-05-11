@@ -194,7 +194,7 @@ add_watched_profile_files(){
 add_profile_files(){
   local _file
   for _file in $*; do
-    . $_file
+    [ -f $_file ] && . $_file
   done
   add_watched_profile_files $*
 }
