@@ -107,9 +107,12 @@ HISTIGNORE="&:[bf]g:exit" export HISTIGNORE
 HISTSIZE=5000 export HISTSIZE
 # I prefer less as a pager, if it exists
 if [ -z "$PAGER" ] ; then PAGER=less ; export PAGER ; fi
-# Get less to display a useful prompt, and quit if there's only one screen
-# -R makes it handle escape characters - ANSI colours, etc
-LESS="-M -F -R"
+# Override some standard settings for less
+# -M gives a more verbose prompt
+# -F display the contents and quit if contents fit within terminal height
+# -R handle escape characters - ANSI colours, etc
+# -X stops less from redrawing on quit, so that output remains on terminal
+LESS="-M -F -R -X"
 export LESS
 # Set USER and HOSTNAME if they aren't set
 if [ -z "$USER" -a ! -z "$LOGNAME" ] ; then
