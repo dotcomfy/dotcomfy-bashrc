@@ -174,7 +174,7 @@ screen_session_picker(){
 
 screen_auto_attacher(){
   # If we're not already in screen, and the "s" alias is defined, then reattach screen
-  if [ -z "$STY" -a "$screen_auto_attach" = "yes" ] ; then
+  if [ -z "$STY" -a -z "$first_load_of_dotcomfy_bashrc_completed" -a "$screen_auto_attach" = "yes" ] ; then
     $screen_alias
   fi
 }
@@ -3367,6 +3367,8 @@ fi
 # But only do this for the first shell, not sub shells
 [ -f ~/.motd -a -z "$motd_done" ] && cat ~/.motd
 motd_done=1 ; export motd_done
+
+first_load_of_dotcomfy_bashrc_completed=true
 
 # Source .local_shellrc if existent, last in file, to override globals
 [ -f ~/.local_shellrc ] && . ~/.local_shellrc
