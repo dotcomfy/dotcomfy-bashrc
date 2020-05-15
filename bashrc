@@ -2078,6 +2078,8 @@ vi(){
   command $vicmd $@;
   xbacktitle
   set_screen_title $SCREEN_TITLE
+  # Reset background colour, since in some terminals, the terminal will otherwise stay shaded after vi exits
+  tput sgr0
 }
 
 make(){
