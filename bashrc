@@ -171,6 +171,14 @@ screen_session_picker(){
   fi
 }
 
+
+screen_auto_attacher(){
+  # If we're not already in screen, and the "s" alias is defined, then reattach screen
+  if [ -z "$STY" -a "$screen_auto_attach" = "yes" ] ; then
+    $screen_alias
+  fi
+}
+
 # Picks one of the current running screen sessions, and loads it
 screen_active_session_picker(){
   local _selected_session
@@ -497,12 +505,15 @@ local_shellrc_run=1
 # This depends on $screen_session_alternatives, which may be set in local shellrc
 # Screen alias - if we're not in screen
 if [ ! -z "$STY" ] ; then
-  alias s="echo 'You ARE already in screen!'"
-elif [ -z "$screen_session_alternatives" ] ; then
-  alias s="$gnu_screen_base_cmd -R"
+  screen_alias="echo 'You ARE already in screen!'"
+elif [ -n "$screen_session_alternatives" ] ; then
+  screen_alias="screen_session_picker"
 else
-  alias s="screen_session_picker"
+  screen_alias="$gnu_screen_base_cmd -R"
 fi
+alias s="$screen_alias"
+# Reattach, if enabled
+screen_auto_attacher
 
 ###
 ###
@@ -1126,7 +1137,6 @@ randpin(){
 
   print "Generating $quantity PINs with length $pin_length\n";
 
-  # 
   my $max_pins = 9 * (10**($pin_length-1));
 
   if ($quantity > $max_pins){
