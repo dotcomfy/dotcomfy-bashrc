@@ -3325,7 +3325,9 @@ get_current_git_branch(){
   git symbolic-ref HEAD 2>/dev/null | sed 's#refs/heads/##'
 }
 
-if [ "$(id -u 2>&1)" = "0" ] ; then
+if [ -n "$custom_psch" ] ; then
+  psch="$custom_psch"
+elif [ "$(id -u 2>&1)" = "0" ] ; then
   psch='#'
 else
   psch='$'
