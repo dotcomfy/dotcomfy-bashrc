@@ -28,11 +28,42 @@ ibus exit
 
 ## Other keyboard settings
 Use gnome-tweak-tool
+
 Under Additional Layout Options, you can disable caps lock
+
 This also contains lots of other keyboard options
 
+## Make things like visudo use the right editor (they ignore $EDITOR and use nano instead)
+```
+sudo update-alternatives --config editor
+```
 
-## Stuff to install
+## Enable hibernate/suspend to disk
+
+Unless you install uswsusp, then hibernate just shuts down
+```
+sudo apt install uswsusp
+```
+
+If swap has changed, then a new initrd needs to be generated:
+```
+sudo update-initramfs  -k '5.4.0-29-generic' -v -u
+```
+
+You also need to set the resume parameter for the kernel, which in turn sets /sys/power/resume
+
+To enable it right away:
+Use `lsblk` to find the swap device minor:major, then: `echo 259:7 > /sys/power/resume`
+
+For kernel param, find the UUID using `blkid`
+Set in /etc/default/grub, then run update-grub
+Example:
+```
+GRUB_CMDLINE_LINUX_DEFAULT="text resume=UUID=b0e3fbc0-309f-41f9-871e-513eef6a2f30"
+
+```
+
+## Various softwares that I tend to use
 ```
 sudo apt-get install gnome-tweak-tool
 sudo apt-get install git
@@ -48,4 +79,6 @@ sudo apt-get install sux
 sudo apt-get install pm-utils
 sudo apt-get install gparted
 sudo apt-get install terminator
+sudo apt-get install cifs-utils
+sudo apt-get install inetutils-traceroute
 ```
