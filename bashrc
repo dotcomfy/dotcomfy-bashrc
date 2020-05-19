@@ -2169,55 +2169,6 @@ vialiases(){
 ### etc of .bashrc
 ### Some of these are also used as general supporting functions
 
-vipmrc(){
-  editfile ~/.procmailrc
-}
-
-# Check time since last successful update of this file
-# Used by the update checker
-shrc_check_age(){
-  local age_seconds
-  local age_days
-  # get date of current .bashrc from age file
-  shrc_date=$(cat $shrc_age_file 2>/dev/null)
-  if [ -z "$shrc_date" ] ; then shrc_date=0 ; fi
-
-  # compare to current date
-  # some strftime(3) implementations don't have %s - so use Perl to get
-  # seconds since epoc
-  let age_seconds=$(perl -e 'print time();')-$shrc_date
-
-  # translate into days
-  let age_days=$age_seconds/68400 # age in days
-
-  echo $age_days
-}
-
-profile_last_loaded_at=$(date +%s)
-shrc_reloader(){
-  if [ "$DCMF_OS" = "osx" -o "$DCMF_OS" = "obsd" ] ; then
-    statcmd="stat -f %m"
-  else
-    statcmd="stat --format %Y"
-  fi
-  profile_files_on_disk_modified_at=$($statcmd $profile_watch_files | sort -rn | head -1)
-  # echo "Comparing $profile_last_loaded_at against $profile_files_on_disk_modified_at"
-  if [ -z "$profile_last_loaded_at" -o $profile_files_on_disk_modified_at -gt $profile_last_loaded_at ]; then
-    echo "Detected change in one of the profile files, reloading dotcomfy bashrc"
-    dotrc
-    profile_last_loaded_at=$(date +%s)
-  fi
-}
-add_watched_profile_files $potential_profile_watch_files
-if ! echo "$PROMPT_COMMAND" | grep shrc_reloader >/dev/null ; then
-  PROMPT_COMMAND="shrc_reloader; $PROMPT_COMMAND"
-fi
-
-# check version of .bashrc
-shrc_check_ver(){
-  grep "Id: \.bashrc" $shrc_home | sed "s/^# //"
-}
-
 # Print general version/age info
 shrcinfo(){
   echo "Age:             `shrc_check_age` days"
@@ -3222,52 +3173,6 @@ git_clean_branches(){
     fi
   done
 }
-
-# Create a branch on Github
-git_create_remote_branch(){
-  # Replace spaces with underscores
-  local new_branch=$(echo $* | sed -r 's/[^a-zA-Z0-9-]/_/g')
-  local from_branch
-  local default_from='master'
-
-  if [ -z "$1" ] ; then
-    echo "Usage: $FUNCNAME <new branch name>"
-    return 1
-  fi
-
-  echo "New branch: $new_branch"
-  echo "Which branch do you want to cut from?"
-  echo "Enter \"c\" for current branch, leave empty to use default ($default_from) or enter branch name"
-  echo -n "From branch: "
-  read from_branch
-  if [ -z "$from_branch" ] ; then
-    from_branch=$default_from
-  elif [ "$from_branch" = "c" ] ; then
-    from_branch=$(get_current_git_branch)
-  fi
-
-  echo "Cutting new branch $new_branch from $from_branch"
-
-  if ! git checkout $from_branch ; then
-    echo "Branch not found: $from_branch, aborting"
-    return 1
-  fi
-
-  if ! git pull --rebase ; then
-    echo
-    echo
-    echo "Something went wrong when trying to pull"
-    echo "Press ENTER to continue and put these changes into the new branch, or CTRL-C to abort, and sort out any conflicts"
-    read foo
-  fi
-
-  echo "Creating and pushing: $new_branch"
-  git checkout -b $new_branch
-  git push -u origin $new_branch
-  echo "Done"
-}
-
-
 
 # Git change branch
 gcb(){
