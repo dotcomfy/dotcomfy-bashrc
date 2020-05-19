@@ -63,6 +63,28 @@ GRUB_CMDLINE_LINUX_DEFAULT="text resume=UUID=b0e3fbc0-309f-41f9-871e-513eef6a2f3
 
 ```
 
+## USB Wake
+Note that you may need to enable wakeup not only for the actual device, but also the parents
+```
+grep .  /sys/bus/usb/devices/*/product
+grep . /sys/bus/usb/devices/*/power/wakeup
+# Find the right devices, then:
+echo enabled > /sys/bus/usb/devices/1-3.3.4/power/wakeup
+echo enabled > /sys/bus/usb/devices/1-3.3/power/wakeup
+echo enabled > /sys/bus/usb/devices/1-3/power/wakeup
+```
+
+If this all works, then put the commands into /etc/rc.local or similar
+
+## L2TP VPN
+Install the required software, and then you can set it up in Settings
+```
+sudo apt-get update
+sudo apt-get install network-manager-l2tp
+sudo apt-get install network-manager-l2tp-gnome
+```
+
+
 ## Various softwares that I tend to use
 ```
 sudo apt-get install gnome-tweak-tool
