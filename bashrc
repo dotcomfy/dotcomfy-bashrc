@@ -1564,22 +1564,6 @@ sinfile(){
   perl -i.old -p -e "$perlcmd" $*
 }
 
-# Set prompt(PS1) to s(hort) or long. Default is long
-# TODO: integrate this with the case statement that sets PS1 according to $SHELL
-# and make it work for shells that can't handle \u, etc
-ps1(){
-  case "$1" in
-    s*)
-      PS1="\u@\h:(\W)\$ "
-      export PS1
-    ;;
-    *)
-      PS1="\u@\h:\w\$ "
-      export PS1
-    ;;
-  esac
-}
-
 # search the OpenBSD ports, locally
 psearch(){
   local oldpwd=`pwd`
@@ -3230,33 +3214,80 @@ get_current_git_branch(){
   git symbolic-ref HEAD 2>/dev/null | sed 's#refs/heads/##'
 }
 
-if [ -n "$custom_psch" ] ; then
-  psch="$custom_psch"
-elif [ "$(id -u 2>&1)" = "0" ] ; then
-  psch='#'
-else
-  psch='$'
-fi
+#####
+##### Prompt settings
+#####
+
+gnome_get_kbd_layout(){
+  # This only seems to work in X, not Wayland
+  # xset -q | grep 'LED mask:' | sed 's/.*LED mask:  //'
+  # This seems to get the same result
+  # dconf read /org/gnome/desktop/input-sources/mru-sources
+  gsettings get org.gnome.desktop.input-sources mru-sources | sed -r "s/\S*\s'([^']+).*/\1/"
+}
+
+# This is intended for desktop use, to remind me that I'm using a non-UK (probably Swedish) layout
+gnome_kbd_layout_prompt(){
+  [ -z "$GNOME_SETUP_DISPLAY" ] && return
+  currlayout=$(gnome_get_kbd_layout)
+  if [ "$currlayout" = "gb" ] ; then
+    printf "[$currlayout]"
+    return
+  else
+    # Usually, I don't want to be using any other keyboard layout on the terminal, so it's highlighted red
+    printf "${RED}[$currlayout]${ENDCOLOUR}"
+  fi
+}
+
+set_primary_prompt(){
+  # Last character of the prompt, can be overridden by setting $custom_psch
+  if [ -n "$custom_psch" ] ; then
+    psch="$custom_psch"
+  elif [ "$(id -u 2>&1)" = "0" ] ; then
+    psch='#'
+  else
+    psch='$'
+  fi
+
+  PS1="\u@\h:\w\$(git_prompt)\$(gnome_kbd_layout_prompt)$psch "
+
+  # Indicate that the shell is running under sudo, if applicable
+  if ! [ -z "$SUDO_USER" ] ; then PS1="(sudo)${PS1}" ;fi
+}
+
+# Set prompt(PS1) to s(hort) or regular.
+# Sometimes, when working in a narrow terminal, the prompt can get a bit long, so it's nice to be able to shorten it
+# Any argument starting with s is interpreted as short
+# Any other orgument is interpreted as regular
+ps1(){
+  case "$1" in
+    s*)
+      PS1="\u@\h:(\W)\$ "
+      export PS1
+    ;;
+    *)
+      set_primary_prompt
+    ;;
+  esac
+}
+
+
+##### And finally...
+##### Actually apply some settings
+
+# Set primary prompt (PS1)
+set_primary_prompt
 
 # Special cases for different shells
+# This list used to be longer...
 case "$SHELL" in
-  */bash)
+  */bash|*/ksh)
     set -o notify
     set -o emacs
-    PS1="\u@\h:\w\$(git_prompt)$psch "
-    ;;
-  */ksh)
-    set -o notify
-    set -o emacs
-    PS1="$USER@$(hostname):\$PWD$psch "
     ;;
   */sh)
-    PS1="$USER@$(hostname):\$PWD$psch "
     ;;
 esac
-
-# Indicate that the shell is running under sudo, if applicable
-if ! [ -z "$SUDO_USER" ] ; then PS1="(sudo)${PS1}" ;fi
 
 # Set the terminal/ssh client title to the default
 xbacktitle
