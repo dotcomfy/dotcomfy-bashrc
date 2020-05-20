@@ -85,8 +85,22 @@ sudo apt-get install network-manager-l2tp-gnome
 ```
 
 
+## Microsoft OneDrive
+There are multiple options for OneDrive sync
+
+Rclone
+Sort of like rsync for cloud storage. Does not do two-way sync, but there are third party tools for this. Useful for backups?
+
+https://www.insynchq.com/ - allegedly works with OneDrive and Team Sites
+
+ExpanDrive
+
+I know that when setting up GNOME. you get asked if you want to log into OneDrive and other online services, but I never used it myself. I have Nextcloud on a v-server and that is all I need.
+
+
 ## Various softwares that I tend to use
 ```
+sudo apt-get install cvs
 sudo apt-get install gnome-tweak-tool
 sudo apt-get install git
 sudo apt-get install net-tools
