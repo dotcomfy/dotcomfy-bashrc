@@ -4,7 +4,7 @@
 #
 ###############################################################################
 #
-# Copyright (c) 1999-2019 Linus / Dotcomfy
+# Copyright (c) 1999-2020 Linus / Dotcomfy
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
