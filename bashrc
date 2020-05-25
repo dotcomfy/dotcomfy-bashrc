@@ -2159,7 +2159,6 @@ vialiases(){
 shrcinfo(){
   echo "Age:             `shrc_check_age` days"
   echo "Update after:    $shrc_max_age days"
-  echo "Current version: `shrc_check_ver`"
   echo "Sections:"
   grep "^##### " $shrc_home | sed 's/^##### / - /'
 }
@@ -2198,14 +2197,11 @@ updatefile(){
   fi
   if diff $file_home $updatefile_tmp ; then
     echo "You already have the most recent version in $file_home"
-    shrc_check_ver
     rm -f $updatefile_tmp
   else
-    echo "Current version: `shrc_check_ver`"
     if askyesno "Update $file_home to newest version, according to diff?" ; then
       mv $updatefile_tmp $file_home
       echo "Updated to most recent version."
-      shrc_check_ver
     else
       echo "OK, will update later"
       rm -f $updatefile_tmp
