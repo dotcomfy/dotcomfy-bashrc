@@ -68,6 +68,8 @@ dotprofile_url="$dlbase/bash_profile" # Download location of .bash_profile
 shrc_age_file="$HOME/.shrc_age_file" # File where a time stamp is stored
 shrc_max_age=7 # Ask for update if .bashrc age is older than this (in days)
 updatefile_tmp="${TMPDIR:-/tmp}/.updatefile_tmp.$LOGNAME.$$"
+# (Gnome) Notify if we're using any other keyboard layout
+default_kbd_layout="gb"
 # Profile files that we watch for changes. Changes to these trigger a reload.
 potential_profile_watch_files="$BASH_SOURCE ~/.local_shellrc ~/.bash_profile ~/.bashrc ~/.profile /etc/profile.d/custom.sh"
 # Normally, with screen, you want to attach to an existing session (-D) and with UTF-8 enabled (-U)
@@ -3230,11 +3232,8 @@ gnome_get_kbd_layout(){
 gnome_kbd_layout_prompt(){
   [ -z "$GNOME_SETUP_DISPLAY" ] && return
   currlayout=$(gnome_get_kbd_layout)
-  if [ "$currlayout" = "gb" ] ; then
-    printf "[$currlayout]"
-    return
-  else
-    # Usually, I don't want to be using any other keyboard layout on the terminal, so it's highlighted red
+  if [ "$currlayout" != "$default_kbd_layout" ] ; then
+    # Anything else gets highlighted
     printf "${RED}[$currlayout]${ENDCOLOUR}"
   fi
 }
