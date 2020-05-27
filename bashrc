@@ -60,9 +60,9 @@ fi
 ### Specific for the usage of the .bashrc and its functions
 ###
 toolsbase="https://t.dotcomfy.net" # location of traceroute, ping, etc tools
-dlbase="https://dl.dotcomfy.net" # where files are downloaded from
+dlbase="https://bashrc.dotcomfy.net" # where files are downloaded from
 githubbase="https://raw.githubusercontent.com/dotcomfy/dotcomfy-bashrc/master"
-shrc_url="https://bashrc.dotcomfy.net/latest/?h=$(hostname)&u=$USER" # download location of .bashrc
+shrc_url="$dlbase/latest/?h=$(hostname)&u=$USER" # download location of .bashrc
 shrc_backup_url="http://www.dotcomfy.net/dotcomfy_bashrc" # For non-SSL clients
 dotprofile_url="$dlbase/bash_profile" # Download location of .bash_profile
 shrc_age_file="$HOME/.shrc_age_file" # File where a time stamp is stored
@@ -428,7 +428,7 @@ alias vilshrc="vi ~/.local_shellrc"
 ###
 ### File fetching aliases
 # Get the standard .bash_profile
-alias bpget="test -f ~/.bash_profile || wwwget -q \
+alias bpget="test -f ~/.bash_profile || curl \
    $dotprofile_url >> ~/.bash_profile ; cat  ~/.bash_profile"
 
 # Get a skeleton .local_shellrc
@@ -1470,7 +1470,7 @@ nullroute(){
 }
 
 dlget(){
-  wwwget -q $dlbase/$1
+  curl $dlbase/$1
 }
 
 sndvol(){
@@ -1781,26 +1781,26 @@ revlookup(){
 myip(){
   local url="$toolsbase/myip"
   if [ $# -gt 0 ] ; then url="${url}$*" ; fi
-  wwwget -q $url
+  curl $url
 }
-# nmap myself from toolsbace
+# nmap myself from toolsbase
 scanme(){
   echo "NOT SUPPORTED" ; return 1
   local url="$toolsbase/scan"
   if [ $# -gt 0 ] ; then url="${url}$*" ; fi
-  wwwget -q $url
+  curl $url
 }
 
 # ping myself from toolsbase
 pingme(){
   local url="$toolsbase/ping"
-  wwwget -q $url
+  curl $url
 }
 
 # trace myself from toolsbase
 traceme(){
   local url="$toolsbase/trace"
-  wwwget -q $url
+  curl $url
 }
 
 # connect to specified routeserver / looking glass
@@ -2099,7 +2099,7 @@ make(){
 
 rfc(){
   xtitle "$USER@$HOSTNAME: reading RFC $@"
-  wwwget -q http://${1}.rfc.dotcomfy.net | $PAGER
+  curl http://${1}.rfc.dotcomfy.net | $PAGER
   xbacktitle
 }
 
