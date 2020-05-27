@@ -74,6 +74,8 @@ default_kbd_layout="gb"
 potential_profile_watch_files="$BASH_SOURCE ~/.local_shellrc ~/.bash_profile ~/.bashrc ~/.profile /etc/profile.d/custom.sh"
 # Normally, with screen, you want to attach to an existing session (-D) and with UTF-8 enabled (-U)
 gnu_screen_base_cmd='screen -D -U'
+# Where is our OneDrive mounted, if we use it
+onedrive_mountpath=/mnt/onedrive-vm
 # The location of this file, probably in the user's home directory
 # During development, the file may be loaded from several locations, and we don't want to override the first one (which is probably the "real" file)
 if [ -n "$shrc_home" ] ; then
@@ -149,6 +151,12 @@ ENDCOLOUR="\e[m"
 ##### Helper functions
 ### Used by other functions throughout the .bashrc
 ### These need to be listed early, to make them accessible to others
+
+# Print something on stderr
+warn(){
+  echo "$@" >&2
+}
+
 
 # Picks a screen session to load/start, based on some commons screen session names, as configured in $screen_session_alternatives (set this in .local_shellrc)
 # I use this on some of my servers where I have different named screen sessions, with different environments, for different dev projects
@@ -360,8 +368,6 @@ zplease(){
   fc -s cat=zcat diff=zdiff less=zless grep=zgrep
 }
 
-
-
 # Use RCS to check out all files in current directory (if under version control)
 alias coall="rcsall co -l"
 alias ciall="rcsall ci -u"
@@ -397,9 +403,7 @@ alias prtdiag='/usr/platform/`uname -i`/sbin/prtdiag' # Diag command on Suns
 alias s_client="openssl s_client -connect" # "ssl telnet"
 # The alias for screen gets set *after* loading local bashrc, since it depends on settings from it
 
-# Disk usage related stuff
-alias sdu="du -sk * | sort -n"
-# allows running functions and aliases with sudo (eg, "runsudo m4mc")
+# Allows running functions and aliases with sudo (eg, "runsudo m4mc")
 alias runsudo="sudo bash -i -c"
 # Set the character set in terminal back to the standard one (useful when screwed up, eg by accidentally viewing a binary file)
 alias unscrew="perl -e 'printf(\"%c\n\", 15); '"
@@ -415,6 +419,10 @@ alias cvs="cvs -q"
 alias scp="scp -C"
 # Convert to lowercase
 alias lowercase="sed -e 's/./\L&/g'"
+# Opens a file manager window in the current directory. Handy only because it does the same thing in Windows command prompt.
+alias start.="nautilus ."
+# Edit .local_shellrc
+alias vilshrc="vi ~/.local_shellrc"
 
 
 ###
@@ -449,7 +457,7 @@ alias gtldns="dig @a.gtld-servers.net ns"
 
 # Only do this if the complete command exists (BASH 2.04 and later, methinks)
 if complete > /dev/null 2>&1 ; then
-  # Used to have a bunch of these, but got annoyed with most of them
+  # I used to have a bunch of these, but got annoyed with most of them, and deleted them one at a time...
   # now only keeping directories for cd, which I guess is kind of handy
   complete -d cd
 fi
@@ -523,6 +531,19 @@ screen_auto_attacher
 ### Some of these are old shell scripts or small perl scripts
 ### that are quite handy to have available on any host I might log in to
 
+# Check that OneDrive is mounted, and go to the relevant folder
+# This assumes that onedrive_mountpath is set correctly, and has an entry in fstab
+onedrive(){
+  if mountpoint -q $onedrive_mountpath ; then
+    echo "OneDrive dir is already mounted"
+  else
+    echo "$onedrive_mountpath is not mounted"
+    sudo mount $onedrive_mountpath
+  fi
+  cd $onedrive_mountpath
+}
+
+# Edit procmailrc, using RCS
 vipmrc(){
   editfile ~/.procmailrc
 }
@@ -2037,6 +2058,8 @@ cdlast(){
 cdup(){
   popd && xtitle $USER@$HOSTNAME:$PWD
 }
+# Short form, just use a single dash as command
+alias -- -=cdup
 
 su(){
   xtitle "root@$HOSTNAME (su from $USER)"
@@ -2217,7 +2240,7 @@ updatefile(){
 }
 
 # Check a file out from RCS, edit, show diff, check back in
-# Used by vishrc
+# Was used by more things way back on the day, but mostly got dropped
 editfile(){
   if [ "$1" == "" ] ; then
     echo "Usage: editfile <file>"
@@ -2396,21 +2419,28 @@ ENDUSAGE
 ENDOFSMTPCLIENTPERL
 } # end of smtpclient() shell function
 
+# Disk usage related stuff
+alias sdu="du -sk * | sort -n"
+
+# I got fed up with all of the nonsense file systems showing up in modern Linux systems (or at least Ubuntu)
+dfh(){
+  df -h | grep -v ^tmpfs | grep -v '^/dev/loop.*/snap/' | grep -v ^udev.*/dev
+}
+
+# dfk.pl - Some Perl script that I found years ago, that formats output in a similar way to df -k
+# Was this something that I used on Suns, because they couldn't format things properly for modern (large) drives?
+# Original by Brian Peasland
 dfk(){
 $perl - "$@" <<"ENDOFDFKPERL"
-# dfk.pl - proper formatting of df -k output
-# Original by Brian Peasland
-
-
 @vol_list = ();               # Array to hold list of volumes
-@head_list = qw(Volume Kbytes Used Avail Capacity); # Array to hold header information
+@head_list = qw(Mountpoint Kbytes Used Avail %); # Array to hold header information
 
 #Set up lengths of columns and format mask for output
 #If the column needs more room (for instance, you just added a 1TB volume), then
 #just increase the variable below and all formatting will hold.
-$vol_len = 20;
-$byte_len = 11;
-$cap_len = 8;
+$vol_len = 24;
+$byte_len = 16;
+$cap_len = 4;
 $fs_len = 0;
 #All output uses this format mask. This makes life nice and formatted for
 #better readability.
@@ -2422,7 +2452,7 @@ $format_mask = "%-".$vol_len."s %".$byte_len."s  %".$byte_len."s  %".$byte_len."
 #
 
 $loop_ctr = 0;
-foreach $_ (`df -lk`) {
+foreach $_ (`df -k | grep -v /dev/loop.*/snap/ | grep -v ^tmpfs | grep -v ^udev.*/dev`) {
    $loop_ctr = $loop_ctr+1;
    #Skip the first line of header information
    if ($loop_ctr > 1) {
@@ -2973,9 +3003,9 @@ if [ "$TERM" = "tgtelnet" ]; then
 #  exit
 fi
 
-#
-## Git stuff
-#
+####
+##### Git stuff
+####
 
 # git commit & push
 alias gpr="git pull --rebase"
@@ -3211,6 +3241,32 @@ git_get_branches(){
 get_current_git_branch(){
   git symbolic-ref HEAD 2>/dev/null | sed 's#refs/heads/##'
 }
+
+###
+###
+##### Spotify control
+### Basic control of Spotify, through dbus, on systems that support it
+###
+spotifyctl(){
+  dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.$1
+}
+
+pause(){
+  spotifyctl Pause
+}
+
+play(){
+  spotifyctl Play
+}
+
+prev(){
+  spotifyctl Previous
+}
+
+next(){
+  spotifyctl Next
+}
+
 
 #####
 ##### Prompt settings
