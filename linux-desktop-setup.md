@@ -66,6 +66,13 @@ GRUB_CMDLINE_LINUX_DEFAULT="text resume=UUID=b0e3fbc0-309f-41f9-871e-513eef6a2f3
 ## USB Wake
 Note that you may need to enable wakeup not only for the actual device, but also the parents
 
+Examples for finding the right devices
+```
+lsusb
+grep .  /sys/bus/usb/devices/*/product
+grep . /sys/bus/usb/devices/*/power/wakeup
+```
+
 If device IDs are not static, but you know which devices to look for:
 ```
 for dev in $(grep .  /sys/bus/usb/devices/*/product | grep -E "Mouse|Keyboard|Hub" | awk -F: '{print $1}' | sed 's/.product$//') ; do
@@ -76,8 +83,6 @@ done
 
 This may work if the devices are static:
 ```
-grep .  /sys/bus/usb/devices/*/product
-grep . /sys/bus/usb/devices/*/power/wakeup
 # Find the right devices, then:
 echo enabled > /sys/bus/usb/devices/1-3.3.4/power/wakeup
 echo enabled > /sys/bus/usb/devices/1-3.3/power/wakeup
@@ -128,3 +133,4 @@ sudo apt-get install terminator
 sudo apt-get install cifs-utils
 sudo apt-get install inetutils-traceroute
 ```
+
