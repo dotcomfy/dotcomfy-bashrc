@@ -66,7 +66,7 @@ shrc_url="$dlbase/latest/?h=$(hostname)&u=$USER" # download location of .bashrc
 shrc_backup_url="http://www.dotcomfy.net/dotcomfy_bashrc" # For non-SSL clients
 dotprofile_url="$dlbase/bash_profile" # Download location of .bash_profile
 shrc_age_file="$HOME/.shrc_age_file" # File where a time stamp is stored
-shrc_max_age=7 # Ask for update if .bashrc age is older than this (in days)
+shrc_max_age=3 # Ask for update if .bashrc age is older than this (in days)
 updatefile_tmp="${TMPDIR:-/tmp}/.updatefile_tmp.$LOGNAME.$$"
 # (Gnome) Notify if we're using any other keyboard layout
 default_kbd_layout="gb"
