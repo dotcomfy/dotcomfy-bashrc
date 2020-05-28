@@ -2077,14 +2077,14 @@ vi(){
 
   if [ -n "$1" ]; then
     fname=$(basename "${@: -1}")
-    set_screen_title "${fname::12}"
+    set_screen_title "vi:${fname::12}"
   else
     set_screen_title "vi"
   fi
 
 
   xtitle "vi $@ - ($USER@$HOSTNAME)";
-  command $vicmd $@;
+  command $vicmd "$@";
   xbacktitle
   set_screen_title $SCREEN_TITLE
   # Reset background colour, since in some terminals, the terminal will otherwise stay shaded after vi exits
