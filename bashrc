@@ -3364,5 +3364,4 @@ first_load_of_dotcomfy_bashrc_completed=true
 # Source .local_shellrc if existent, last in file, to override globals
 [ -f ~/.local_shellrc ] && . ~/.local_shellrc
 
-# This version of the file was downloaded from Github
 # EOF
