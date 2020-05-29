@@ -2055,9 +2055,6 @@ pine(){
   xbacktitle
 }
 
-cd(){
-  builtin cd "$@" && xtitle $USER@$HOSTNAME:$PWD
-}
 
 # Change into the directory of the last file we did something to
 cdlast(){
@@ -3417,20 +3414,33 @@ icd(){
 # What does the "l" in "lcd" stand for? Not sure...
 # Maybe better to use getopt, so options can be combined?
 lcd(){
-  # If there are no arguments, then act as the standard cd command, and cd home
-  if [ $# -eq 0 ]; then builtin pushd ~ >/dev/null; return ; fi
-  if [ "$@" = "-" ] ; then command cd - ; return; fi
-  # If the argument is a directory that we can change into, then do so
-  if builtin pushd "$@" >/dev/null 2>&1; then return ; fi
+  if [ $# -eq 0 ]; then
+    # If there are no arguments, then act as the standard cd command, and cd home
+    builtin pushd ~ >/dev/null
+  elif [ "$@" = "-" ] ; then
+    # cd - goes to previous directory
+    command cd -
+  elif builtin pushd "$@" >/dev/null 2>&1; then
+    # If the argument is a directory that we can change into, then do nothing more...
+    true
+  else
+    lcd_change_to "$(LCD_PARTIAL_MATCH=$LCD_PARTIAL_MATCH lcd_get_matches $@)"
+  fi
+  # Finally, set title according to current working directory
+  xtitle $USER@$HOSTNAME:$PWD
+}
 
+lcd_get_matches(){
   lcd_current_args="$@"
   lcd_setup
   local exact_matches
   exact_matches="$(lcd_exact_matches $*)"
-  # echo "Exact matches: $exact_matches"
-  [ -z "$LCD_PARTIAL_MATCH" -a -n "$exact_matches" ] && lcd_change_to "$exact_matches" && return
-  # echo "Trying partial matches"
-  lcd_change_to "$(lcd_partial_matches "$*")"
+  if [ -z "$LCD_PARTIAL_MATCH" -a -n "$exact_matches" ] ;then
+    # We we got an exact match, no further action needed
+    echo "$exact_matches"
+  else
+    echo "$(lcd_partial_matches "$*")"
+  fi
 }
 
 lcd_partial_matches(){
@@ -3444,14 +3454,15 @@ lcd_exact_matches(){
 }
 
 lcd_change_to(){
-  pushd "$(lcd_pick_from_matches "$*")" >/dev/null
+  d="$(lcd_pick_from_matches "$*")"
+  pushd "$d" >/dev/null
 }
 
 lcd_pick_from_matches(){
   if [ -z "$*" ]; then
     warn "$lcd_current_args: No such file or directory and nothing found in lcd() cache"
   elif [ "$(echo "$*" | wc -l)" -eq 1 ]; then
-    warn "Exact match: $*"
+    warn "Unique match: $*"
     echo "$*"
   else
     # echo "More than one option"
@@ -3465,6 +3476,17 @@ lcd_pick_from_matches(){
 # Brutally replace the builtin cd command
 # If you don't like this, then use your .local_shellrc to unalias it, or use your own alias
 alias cd=lcd
+
+# On the same theme as the nonsense above
+fcd(){
+  local basedir=.
+  if [ $# -gt 1 ] ; then basedir=$1 ; shift ; fi
+  target="$(find -L $basedir -type d -name "$@" -print -quit)"
+  pushd "$target"
+}
+
+
+##### / lcd() end
 
 ##### And finally...
 ##### Actually apply some settings
