@@ -62,8 +62,6 @@ fi
 toolsbase="https://t.dotcomfy.net" # location of traceroute, ping, etc tools
 dlbase="https://bashrc.dotcomfy.net" # where files are downloaded from
 githubbase="https://raw.githubusercontent.com/dotcomfy/dotcomfy-bashrc/master"
-shrc_url="$dlbase/latest/?h=$(hostname)&u=$USER" # download location of .bashrc
-shrc_backup_url="http://www.dotcomfy.net/dotcomfy_bashrc" # For non-SSL clients
 dotprofile_url="$dlbase/bash_profile" # Download location of .bash_profile
 shrc_age_file="$HOME/.shrc_age_file" # File where a time stamp is stored
 shrc_max_age=3 # Ask for update if .bashrc age is older than this (in days)
@@ -120,8 +118,12 @@ LESS="-M -F -R -X"
 export LESS
 # Set USER and HOSTNAME if they aren't set
 if [ -z "$USER" -a ! -z "$LOGNAME" ] ; then
-  USER=$LOGNAME export USER
+  USER=$LOGNAME
+elif [ -z "$USER" ] ; then
+  LOGNAME=$(id -un)
+  USER=$LOGNAME
 fi
+export USER LOGNAME
 if [ -z "$HOSTNAME" ] ; then
   HOSTNAME=$(hostname) export HOSTNAME
 fi
@@ -132,6 +134,9 @@ PS4='$0:$LINENO: ' ; export PS4
 MYSQL_PS1="$(hostname -s):\d> " export MYSQL_PS1
 # Used as the default title on screen windows
 SCREEN_TITLE="$(basename $SHELL)"
+# Download location
+shrc_url="$dlbase/latest/?h=$(hostname)&u=$USER" # download location of .bashrc
+shrc_backup_url="http://www.dotcomfy.net/dotcomfy_bashrc" # For non-SSL clients
 
 
 ###
@@ -2192,7 +2197,13 @@ shrcinfo(){
 
 # Updates the base .bashrc (or whatever it's stored as locally)
 shrcupd(){
-  updatefile $shrc_home $shrc_url || updatefile $shrc_home $shrc_backup_url
+  if ! updatefile $shrc_home $shrc_url ; then
+    echo "Something went wrong when trying to update from $shrc_url"
+    echo "Do you want to try again, without SSL, from $shrc_backup_url?"
+    echo "Press ENTER to continue, or CTRL-C to abort"
+    read foo
+    updatefile $shrc_home $shrc_backup_url
+  fi
 }
 
 # Updates a file from the web repository
