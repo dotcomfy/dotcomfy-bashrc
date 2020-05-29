@@ -1,0 +1,7 @@
+# Example .dcmf-lcd-exclude for a Linux home directory
+.config
+.dropbox
+.mozilla
+.cache
+snap
+
