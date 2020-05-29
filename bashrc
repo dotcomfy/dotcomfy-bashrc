@@ -140,10 +140,14 @@ SCREEN_TITLE="$(basename $SHELL)"
 ###
 BLACK="\033[0;30m"
 RED="\033[0;31m"
+REDWHITE="\033[0;41m"
 GREEN="\033[0;32m"
+GREENWHITE="\033[0;42m"
 YELLOW="\033[0;33m"
 BLUE="\033[0;34m"
 PURPLE="\033[0;35m"
+TEAL="\033[0;36m"
+WHITE="\033[0;37m"
 ENDCOLOUR="\e[m"
 
 
@@ -3025,10 +3029,7 @@ alias git_abort_commit="echo 'Abort commits? ENTER/CTRL-C' && read && git reset 
 alias git_reset_hard_head="echo 'Reset to HEAD? ENTER/CTRL-C' && read && git reset --hard HEAD"
 alias git_reset_hard_origin="echo 'Reset from origin/master? ENTER/CTRL-C' && read && git reset --hard origin/master"
 
-
-
 # Set a prompt for when inside a git repo
-
 git_prompt(){
   if ref=$(git symbolic-ref HEAD 2>/dev/null); then
     gitstatus="$(git status)"
@@ -3300,7 +3301,9 @@ set_primary_prompt(){
     psch='$'
   fi
 
-  PS1="\u@\h:\w\$(git_prompt)\$(gnome_kbd_layout_prompt)$psch "
+  # TODO: Replace git and gnome with prompt_extras, which calls these two functions
+  # Add the same thing for CVS and maybe even RCS?
+  PS1="\u@\h:\w\$(prompt_extras)$psch "
 
   # Indicate that the shell is running under sudo, if applicable
   if ! [ -z "$SUDO_USER" ] ; then PS1="(sudo)${PS1}" ;fi
@@ -3322,6 +3325,29 @@ ps1(){
   esac
 }
 
+prompt_extras(){
+  gnome_kbd_layout_prompt
+  git_prompt
+  cvs_prompt
+  rcs_prompt
+}
+
+rcs_prompt(){
+  [ -d ./RCS ] || return
+  if diffall > /dev/null 2>&1; then
+    c=$GREEN
+  else
+    c=$RED
+  fi
+  printf "$c(rcs)$ENDCOLOUR"
+}
+
+# For CVS, you need to connect to the server to find out if there are modifications
+# So, we just indicate that we're in a CVS repo, so we don't have to wait for potentially slow or disconnected networks
+cvs_prompt(){
+  [ -d ./CVS ] || return
+  printf "$TEAL(cvs)$ENDCOLOUR"
+}
 
 ##### And finally...
 ##### Actually apply some settings
