@@ -73,6 +73,12 @@ potential_profile_watch_files="$BASH_SOURCE ~/.local_shellrc ~/.bash_profile ~/.
 gnu_screen_base_cmd='screen -D -U'
 # Where is our OneDrive mounted, if we use it
 onedrive_mountpath=/mnt/onedrive-vm
+# Settings for lcd() functionality
+dcmf_lcd_grep_flags="-i"
+dcmf_lcd_directories="$HOME"
+dcmf_lcd_cache=~/.dcmf-lcd-cache
+dcmf_lcd_cache_ttl=7200
+
 # The location of this file, probably in the user's home directory
 # During development, the file may be loaded from several locations, and we don't want to override the first one (which is probably the "real" file)
 if [ -n "$shrc_home" ] ; then
@@ -3357,11 +3363,6 @@ cvs_prompt(){
 ### A set of functions for using a local directory cache and changing directory to matches in different ways
 ### The main function is lcd()
 ### Intended to be combined with "alias cd=lcd" to augment the functionality of builtin cd command
-
-dcmf_lcd_grep_flags="-i"
-dcmf_lcd_directories="$HOME /mnt/onedrive-vm"
-dcmf_lcd_cache=~/.dcmf-lcd-cache
-dcmf_lcd_cache_ttl=7200
 
 lcd_build_cache(){
   local _dir
