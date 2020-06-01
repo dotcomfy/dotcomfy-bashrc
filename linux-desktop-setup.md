@@ -132,5 +132,6 @@ sudo apt-get install gparted
 sudo apt-get install terminator
 sudo apt-get install cifs-utils
 sudo apt-get install inetutils-traceroute
+sudo apt-get install whois
 ```
 
