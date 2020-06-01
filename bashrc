@@ -2200,6 +2200,8 @@ shrcupd(){
   local remote_version="$(curl -s "$shrc_url&c=version")"
   if [ "$DCMF_BASHRC_VERSION" = "$remote_version" ]; then
     echo "This is the latest version: $DCMF_BASHRC_VERSION"
+    # Updating age file, to delay next check
+    date '+%s' > $shrc_age_file
   else
     echo "New version detected: $remote_version"
     updatefile $shrc_home $shrc_url
@@ -2249,7 +2251,7 @@ updatefile(){
   fi
   # If it's the bashrc we've updated, then register it
   if [ "$file_home" = "$shrc_home" ] ; then
-    perl -e 'print time();' > $shrc_age_file
+    date '+%s' > $shrc_age_file
   fi
   # Source the newly updated file, unless configured not to
   [ -z "$no_source_after_update" ] && . $file_home
@@ -3517,13 +3519,10 @@ xbacktitle
 
 # Check the age of the file, and suggest updating if it's too old
 shrc_age=`shrc_check_age`
-# $noupdateshrc can be set to 1 in .local_shellrc to disable auto updating
+# $noupdateshrc can be set in .local_shellrc to disable auto updating
 if [ $shrc_age -gt $shrc_max_age -a -z "$noupdateshrc" ] ; then
-  if askyesno "Your .bashrc is $shrc_age days old, do you want to update?" ; then
-    shrcupd
-  else
-    echo "OK, will update later."
-  fi
+  echo "Checking for update to $shrc_home ($shrc_age days since last check)"
+  shrcupd
 fi
 
 # Display user's own motd, if one exists
