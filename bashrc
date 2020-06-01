@@ -2203,6 +2203,7 @@ shrcupd(){
   else
     echo "New version detected: $remote_version"
     updatefile $shrc_home $shrc_url
+    echo "Updated to: $DCMF_BASHRC_VERSION"
   fi
 }
 
