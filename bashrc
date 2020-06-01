@@ -2197,7 +2197,13 @@ shrcinfo(){
 
 # Updates the base .bashrc (or whatever it's stored as locally)
 shrcupd(){
-  updatefile $shrc_home $shrc_url
+  local remote_version="$(curl -s "$shrc_url&c=version")"
+  if [ "$DCMF_BASHRC_VERSION" = "$remote_version" ]; then
+    echo "This is the latest version: $DCMF_BASHRC_VERSION"
+  else
+    echo "New version detected: $remote_version"
+    updatefile $shrc_home $shrc_url
+  fi
 }
 
 # Updates a file from the web repository
