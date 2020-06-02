@@ -1796,26 +1796,26 @@ revlookup(){
 myip(){
   local url="$toolsbase/myip"
   if [ $# -gt 0 ] ; then url="${url}$*" ; fi
-  curl $url
+  curl -s $url
 }
 # nmap myself from toolsbase
 scanme(){
   echo "NOT SUPPORTED" ; return 1
   local url="$toolsbase/scan"
   if [ $# -gt 0 ] ; then url="${url}$*" ; fi
-  curl $url
+  curl -s $url
 }
 
 # ping myself from toolsbase
 pingme(){
   local url="$toolsbase/ping"
-  curl $url
+  curl -s $url
 }
 
 # trace myself from toolsbase
 traceme(){
   local url="$toolsbase/trace"
-  curl $url
+  curl -s $url
 }
 
 # connect to specified routeserver / looking glass
@@ -2111,7 +2111,7 @@ make(){
 
 rfc(){
   xtitle "$USER@$HOSTNAME: reading RFC $@"
-  curl http://${1}.rfc.dotcomfy.net | $PAGER
+  curl -s http://${1}.rfc.dotcomfy.net | $PAGER
   xbacktitle
 }
 
