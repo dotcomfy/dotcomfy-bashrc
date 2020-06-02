@@ -73,11 +73,11 @@ potential_profile_watch_files="$BASH_SOURCE ~/.local_shellrc ~/.bash_profile ~/.
 gnu_screen_base_cmd='screen -D -U'
 # Where is our OneDrive mounted, if we use it
 onedrive_mountpath=/mnt/onedrive-vm
-# Settings for lcd() functionality
-dcmf_lcd_grep_flags="-i"
-dcmf_lcd_directories="$HOME"
-dcmf_lcd_cache=~/.dcmf-lcd-cache
-dcmf_lcd_cache_ttl=7200
+# Settings for ocd() functionality
+dcmf_ocd_grep_flags="-i"
+dcmf_ocd_directories="$HOME"
+dcmf_ocd_cache=~/.dcmf-ocd-cache
+dcmf_ocd_cache_ttl=7200
 
 # The location of this file, probably in the user's home directory
 # During development, the file may be loaded from several locations, and we don't want to override the first one (which is probably the "real" file)
@@ -3365,22 +3365,22 @@ cvs_prompt(){
 }
 
 ###
-##### lcd()
+##### ocd()
 ### A set of functions for using a local directory cache and changing directory to matches in different ways
-### The main function is lcd()
-### Intended to be combined with "alias cd=lcd" to augment the functionality of builtin cd command
+### The main function is ocd()
+### Intended to be combined with "alias cd=ocd" to augment the functionality of builtin cd command
 
-lcd_build_cache(){
+ocd_build_cache(){
   local _dir
   local excludeflags
 
-  touch $dcmf_lcd_cache
-  chmod 600 $dcmf_lcd_cache
+  touch $dcmf_ocd_cache
+  chmod 600 $dcmf_ocd_cache
 
-  for _dir in $dcmf_lcd_directories ; do
-    if [ -f $_dir/.dcmf-lcd-exclude ] ; then
-      warn "Using exclude file: $_dir/.dcmf-lcd-exclude"
-      excludeflags="$(echo $(awk -F'\n' -v dir=$_dir '{print "-not -path " dir "/" $1 "/\*" }' < .dcmf-lcd-exclude ))"
+  for _dir in $dcmf_ocd_directories ; do
+    if [ -f $_dir/.dcmf-ocd-exclude ] ; then
+      warn "Using exclude file: $_dir/.dcmf-ocd-exclude"
+      excludeflags="$(echo $(awk -F'\n' -v dir=$_dir '{print "-not -path " dir "/" $1 "/\*" }' < .dcmf-ocd-exclude ))"
     else
       warn "No exclude file found for $_dir"
       excludeflags=""
@@ -3388,41 +3388,40 @@ lcd_build_cache(){
     # echo "Processing $_dir with exclude flags: $excludeflags" 1>&2
     # Using sh -c to get the quoting/globbing right :)
     sh -c "find $_dir -type d $excludeflags"
-  done | perl -e 'print sort { length($a) <=> length($b) } <>' > $dcmf_lcd_cache
+  done | perl -e 'print sort { length($a) <=> length($b) } <>' > $dcmf_ocd_cache
   # We use perl to sort the file on length, so that short directory matches will be displayed first
 }
 
-lcd_setup(){
-  if [ ! -f "$dcmf_lcd_cache" ] ; then
-    warn "$lcd_current_args doesn't seem to exist."
-    warn "The lcd() function is now building a directory cache ($dcmf_lcd_cache) and will use that for searching."
+ocd_setup(){
+  if [ ! -f "$dcmf_ocd_cache" ] ; then
+    warn "$ocd_current_args doesn't seem to exist."
+    warn "The ocd() function is now building a directory cache ($dcmf_ocd_cache) and will use that for searching."
     warn 'To disable this feature, you can add "unalias cd" to your ~/.local_shellrc'
-    warn 'Search directories (can be overridden by setting $dcmf_lcd_directories):'
-    warn "$dcmf_lcd_directories"
-    warn "You can also add an exclude file, .dcmf-lcd-exclude, listing files/directories to be excluded"
-    lcd_build_cache
-  elif [ `stat --format=%Y "$dcmf_lcd_cache"` -le $(( `date +%s` - $dcmf_lcd_cache_ttl )) ]; then
-    warn "Updating lcd() cache (TTL: $dcmf_lcd_cache_ttl)"
-    # ls -l $dcmf_lcd_cache
-    lcd_build_cache
+    warn 'Search directories (can be overridden by setting $dcmf_ocd_directories):'
+    warn "$dcmf_ocd_directories"
+    warn "You can also add an exclude file, .dcmf-ocd-exclude, listing files/directories to be excluded"
+    ocd_build_cache
+  elif [ `stat --format=%Y "$dcmf_ocd_cache"` -le $(( `date +%s` - $dcmf_ocd_cache_ttl )) ]; then
+    warn "Updating ocd() cache (TTL: $dcmf_ocd_cache_ttl)"
+    # ls -l $dcmf_ocd_cache
+    ocd_build_cache
   fi
 }
 
 pcd(){
-  LCD_PARTIAL_MATCH=true lcd $*
+  OCD_PARTIAL_MATCH=true ocd $*
 }
 
 icd(){
-  dcmf_lcd_grep_flags="-i" lcd $*
+  dcmf_ocd_grep_flags="-i" ocd $*
 }
 
 
 #
 # TODO:
-# flcd() could pick the first decent looking match (LCD_FIRST_MATCH)
-# What does the "l" in "lcd" stand for? Not sure...
+# focd() could pick the first decent looking match (OCD_FIRST_MATCH)
 # Maybe better to use getopt, so options can be combined?
-lcd(){
+ocd(){
   if [ $# -eq 0 ]; then
     # If there are no arguments, then act as the standard cd command, and cd home
     builtin pushd ~ >/dev/null
@@ -3433,43 +3432,43 @@ lcd(){
     # If the argument is a directory that we can change into, then do nothing more...
     true
   else
-    lcd_change_to "$(LCD_PARTIAL_MATCH=$LCD_PARTIAL_MATCH lcd_get_matches $@)"
+    ocd_change_to "$(OCD_PARTIAL_MATCH=$OCD_PARTIAL_MATCH ocd_get_matches $@)"
   fi
   # Finally, set title according to current working directory
   xtitle $USER@$HOSTNAME:$PWD
 }
 
-lcd_get_matches(){
-  lcd_current_args="$@"
-  lcd_setup
+ocd_get_matches(){
+  ocd_current_args="$@"
+  ocd_setup
   local exact_matches
-  exact_matches="$(lcd_exact_matches $*)"
-  if [ -z "$LCD_PARTIAL_MATCH" -a -n "$exact_matches" ] ;then
+  exact_matches="$(ocd_exact_matches $*)"
+  if [ -z "$OCD_PARTIAL_MATCH" -a -n "$exact_matches" ] ;then
     # We we got an exact match, no further action needed
     echo "$exact_matches"
   else
-    echo "$(lcd_partial_matches "$*")"
+    echo "$(ocd_partial_matches "$*")"
   fi
 }
 
-lcd_partial_matches(){
+ocd_partial_matches(){
   # There should be no slashes after the end of the directory name, otherwise we would include sub directories of the relevant results
-  echo "$(grep $dcmf_lcd_grep_flags -E -- "$*[^/]*\$" $dcmf_lcd_cache)"
+  echo "$(grep $dcmf_ocd_grep_flags -E -- "$*[^/]*\$" $dcmf_ocd_cache)"
 }
 
-lcd_exact_matches(){
+ocd_exact_matches(){
   # The directory name should end with end-of-line
-  grep $dcmf_lcd_grep_flags -E -- "/$*\$" $dcmf_lcd_cache
+  grep $dcmf_ocd_grep_flags -E -- "/$*\$" $dcmf_ocd_cache
 }
 
-lcd_change_to(){
-  d="$(lcd_pick_from_matches "$*")"
+ocd_change_to(){
+  d="$(ocd_pick_from_matches "$*")"
   pushd "$d" >/dev/null
 }
 
-lcd_pick_from_matches(){
+ocd_pick_from_matches(){
   if [ -z "$*" ]; then
-    warn "$lcd_current_args: No such file or directory and nothing found in lcd() cache"
+    warn "$ocd_current_args: No such file or directory and nothing found in ocd() cache"
   elif [ "$(echo "$*" | wc -l)" -eq 1 ]; then
     warn "Unique match: $*"
     echo "$*"
@@ -3484,7 +3483,7 @@ lcd_pick_from_matches(){
 
 # Brutally replace the builtin cd command
 # If you don't like this, then use your .local_shellrc to unalias it, or use your own alias
-alias cd=lcd
+alias cd=ocd
 
 # On the same theme as the nonsense above
 fcd(){
@@ -3495,7 +3494,7 @@ fcd(){
 }
 
 
-##### / lcd() end
+##### / ocd() end
 
 ##### And finally...
 ##### Actually apply some settings
