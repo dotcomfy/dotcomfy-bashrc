@@ -3427,6 +3427,7 @@ icd(){
 # focd() could pick the first decent looking match (OCD_FIRST_MATCH)
 # Maybe better to use getopt, so options can be combined?
 ocd(){
+  ocd_current_args="$@"
   if [ $# -eq 0 ]; then
     # If there are no arguments, then act as the standard cd command, and cd home
     builtin pushd ~ >/dev/null
@@ -3437,33 +3438,32 @@ ocd(){
     # If the argument is a directory that we can change into, then do nothing more...
     true
   else
-    ocd_change_to "$(OCD_PARTIAL_MATCH=$OCD_PARTIAL_MATCH ocd_get_matches $@)"
+    ocd_change_to "$(OCD_PARTIAL_MATCH=$OCD_PARTIAL_MATCH ocd_get_matches)"
   fi
   # Finally, set title according to current working directory
   xtitle $USER@$HOSTNAME:$PWD
 }
 
 ocd_get_matches(){
-  ocd_current_args="$@"
   ocd_setup
   local exact_matches
-  exact_matches="$(ocd_exact_matches $*)"
+  exact_matches="$(ocd_exact_matches)"
   if [ -z "$OCD_PARTIAL_MATCH" -a -n "$exact_matches" ] ;then
     # We we got an exact match, no further action needed
     echo "$exact_matches"
   else
-    echo "$(ocd_partial_matches "$*")"
+    echo "$(ocd_partial_matches)"
   fi
 }
 
 ocd_partial_matches(){
   # There should be no slashes after the end of the directory name, otherwise we would include sub directories of the relevant results
-  echo "$(grep $dcmf_ocd_grep_flags -E -- "$*[^/]*\$" $dcmf_ocd_cache)"
+  echo "$(grep $dcmf_ocd_grep_flags -E -- "$ocd_current_args[^/]*\$" $dcmf_ocd_cache)"
 }
 
 ocd_exact_matches(){
   # The directory name should end with end-of-line
-  grep $dcmf_ocd_grep_flags -E -- "/$*\$" $dcmf_ocd_cache
+  grep $dcmf_ocd_grep_flags -E -- "/$ocd_current_args\$" $dcmf_ocd_cache
 }
 
 ocd_change_to(){
