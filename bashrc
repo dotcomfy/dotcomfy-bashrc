@@ -46,6 +46,7 @@
 # As of Dec 2010, it is on github
 # Last RCS version:
 # $Header: /home/linus/RCS/.bashrc,v 1.338 2010/12/22 13:29:51 linus Exp $
+DCMF_BASHRC_VERSION=""
 
 # Source custom stuff, if it's there
 [ -f /etc/profile.d/custom.sh ] && . /etc/profile.d/custom.sh
