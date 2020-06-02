@@ -3384,9 +3384,9 @@ ocd_build_cache(){
   for _dir in $dcmf_ocd_directories ; do
     if [ -f $_dir/.dcmf-ocd-exclude ] ; then
       warn "Using exclude file: $_dir/.dcmf-ocd-exclude"
-      excludeflags="$(echo $(awk -F'\n' -v dir=$_dir '{print "-not -path " dir "/" $1 "/\*" }' < .dcmf-ocd-exclude ))"
+      excludeflags="$(echo $(awk -F'\n' -v dir=$_dir '{print "-not -path " dir "/" $1 "/\*" }' < $_dir/.dcmf-ocd-exclude ))"
     else
-      warn "No exclude file found for $_dir"
+      warn "No exclude file found for $_dir, processing whole directory"
       excludeflags=""
     fi
     # echo "Processing $_dir with exclude flags: $excludeflags" 1>&2
