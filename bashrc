@@ -2197,7 +2197,8 @@ shrcinfo(){
 
 # Updates the base .bashrc (or whatever it's stored as locally)
 shrcupd(){
-  local remote_version="$(curl -s "$shrc_url&c=version")"
+  local remote_version="$(curl --max-time 5 -S -s "$shrc_url&c=version")"
+  if [ $? -gt 0 -o "$remote_version" = "" ] ; then warn "Update check failed" ; return ; fi
   if [ "$DCMF_BASHRC_VERSION" = "$remote_version" ]; then
     echo "This is the latest version: $DCMF_BASHRC_VERSION"
     # Updating age file, to delay next check
