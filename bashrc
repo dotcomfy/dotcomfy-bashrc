@@ -77,7 +77,6 @@ gnu_screen_base_cmd='screen -D -U'
 # Where is our OneDrive mounted, if we use it
 onedrive_mountpath=/mnt/onedrive-vm
 # Settings for ocd() functionality
-dcmf_ocd_grep_flags="-i"
 dcmf_ocd_directories="$HOME"
 dcmf_ocd_cache=~/.dcmf-ocd-cache
 dcmf_ocd_cache_ttl=7200
@@ -545,6 +544,21 @@ screen_auto_attacher
 ##### Functions / utils
 ### Some of these are old shell scripts or small perl scripts
 ### that are quite handy to have available on any host I might log in to
+
+# Hibernate and suspend functions
+# This can be combined with defining a piece of code to run prior to suspend/hibernate, for example
+# presuspend='echo "Pausing Spotify"; pause'
+pmhibernate(){
+  eval $_dcmf_presuspend
+  sudo systemctl hibernate
+}
+
+pmsuspend(){
+  eval $_dcmf_presuspend
+  sudo systemctl suspend
+}
+
+
 
 # Check that OneDrive is mounted, and go to the relevant folder
 # This assumes that onedrive_mountpath is set correctly, and has an entry in fstab
@@ -2977,9 +2991,7 @@ top="top"
 ### OpenBSD
 if echo $OSTYPE | grep "openbsd" > /dev/null ; then
   DCMF_OS=obsd
-  # This is getting replaced by /etc/installurl, and Sunet have removed their OpenBSD mirror
-  # PKG_PATH=ftp://ftp.sunet.se/pub/OpenBSD/`uname -r`/packages/`uname -m`/
-  # export PKG_PATH
+  # OpenBSD used to be my main OS, but I rarely use it these days, so no special cases :(
 fi
 ### Android
 if [ "$OSTYPE" = "linux-android" ] ; then
