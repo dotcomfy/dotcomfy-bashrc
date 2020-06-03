@@ -3404,7 +3404,7 @@ ocd_build_cache(){
     fi
     warn "Processing $_dir with exclude flags: $excludeflags"
     # Using sh -c to get the quoting/globbing right :)
-    sh -c "find $_dir -type d $excludeflags"
+    sh -c "find $_dir -type d -print $excludeflags"
   done | perl -e 'print sort { length($a) <=> length($b) } <>' > $dcmf_ocd_cache
   # We use perl to sort the file on length, so that short directory matches will be displayed first
 }
