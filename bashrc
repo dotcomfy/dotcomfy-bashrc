@@ -3396,13 +3396,13 @@ ocd_build_cache(){
   for _dir in $dcmf_ocd_directories ; do
     if [ -f $_dir/.dcmf-ocd-exclude ] ; then
       warn "Using exclude file: $_dir/.dcmf-ocd-exclude"
-      excludeflags="$(echo $(awk -F'\n' -v dir=$_dir '{print "-not -path " dir "/" $1 "/\\*" }' < $_dir/.dcmf-ocd-exclude ))"
+      # Example exclude file: -path /space/netbackup -prune -o -path /space/lost+found -prune
+      excludeflags="$(cat $_dir/.dcmf-ocd-exclude)"
     else
       warn "No exclude file found for $_dir, processing whole directory"
       excludeflags=""
     fi
-    warn "Exclude: $excludeflags"
-    # echo "Processing $_dir with exclude flags: $excludeflags" 1>&2
+    warn "Processing $_dir with exclude flags: $excludeflags"
     # Using sh -c to get the quoting/globbing right :)
     sh -c "find $_dir -type d $excludeflags"
   done | perl -e 'print sort { length($a) <=> length($b) } <>' > $dcmf_ocd_cache
