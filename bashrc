@@ -150,14 +150,19 @@ shrc_url="$dlbase/latest/?h=$(hostname)&u=$USER" # download location of .bashrc
 ### used in prompts, etc
 ###
 BLACK="\033[0;30m"
+BLACKWHITE="\033[0;40m"
 RED="\033[0;31m"
 REDWHITE="\033[0;41m"
 GREEN="\033[0;32m"
 GREENWHITE="\033[0;42m"
 YELLOW="\033[0;33m"
+YELLOWWHITE="\033[0;43m"
 BLUE="\033[0;34m"
+BLUEWHITE="\033[0;44m"
 PURPLE="\033[0;35m"
+PURPLEWHITE="\033[0;45m"
 TEAL="\033[0;36m"
+TEALWHITE="\033[0;46m"
 WHITE="\033[0;37m"
 ENDCOLOUR="\e[m"
 
@@ -3366,11 +3371,11 @@ prompt_extras(){
 rcs_prompt(){
   [ -d ./RCS ] || return
   if diffall > /dev/null 2>&1; then
-    c=$GREEN
+    rcscolour=$GREEN
   else
-    c=$RED
+    rcscolour=$RED
   fi
-  printf "$c(rcs)$ENDCOLOUR"
+  printf "${rcscolour}(rcs)${ENDCOLOUR}"
 }
 
 # For CVS, you need to connect to the server to find out if there are modifications
