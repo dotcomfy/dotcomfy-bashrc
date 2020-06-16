@@ -127,7 +127,6 @@ sudo apt-get install xev
 sudo apt-get install x11-utils
 sudo apt-get install dropbox
 sudo apt-get install sux
-sudo apt-get install pm-utils
 sudo apt-get install gparted
 sudo apt-get install terminator
 sudo apt-get install cifs-utils
