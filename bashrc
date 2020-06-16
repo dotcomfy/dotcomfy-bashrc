@@ -555,11 +555,13 @@ screen_auto_attacher
 # presuspend='echo "Pausing Spotify"; pause'
 pmhibernate(){
   eval $_dcmf_presuspend
+  echo "Hibernating at $(date)"
   sudo systemctl hibernate
 }
 
 pmsuspend(){
   eval $_dcmf_presuspend
+  echo "Suspending at $(date)"
   sudo systemctl suspend
 }
 
