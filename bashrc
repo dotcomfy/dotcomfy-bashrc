@@ -3339,8 +3339,6 @@ set_primary_prompt(){
     psch='$'
   fi
 
-  # TODO: Replace git and gnome with prompt_extras, which calls these two functions
-  # Add the same thing for CVS and maybe even RCS?
   PS1="\u@\h:\w\$(prompt_extras)$psch "
 
   # Indicate that the shell is running under sudo, if applicable
