@@ -119,6 +119,7 @@ sudo apt-get install cvs
 sudo apt-get install gnome-tweak-tool
 sudo apt-get install git
 sudo apt-get install net-tools
+sudo apt-get install traceroute
 sudo apt-get install iperf3
 sudo apt-get install passwordsafe
 sudo apt-get install vim
