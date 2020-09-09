@@ -48,7 +48,7 @@
 # $Header: /home/linus/RCS/.bashrc,v 1.338 2010/12/22 13:29:51 linus Exp $
 #
 # Populated by commit hook
-DCMF_BASHRC_VERSION=""
+DCMF_BASHRC_VERSION='20200909.134438.linus.531553701edf40f80d14a0584330336e'
 
 # Source custom stuff, if it's there
 [ -f /etc/profile.d/custom.sh ] && . /etc/profile.d/custom.sh
@@ -3369,7 +3369,7 @@ prompt_extras(){
 }
 
 rcs_prompt(){
-  [ -d ./RCS ] || return
+  timeout 1 [ -d ./RCS ] || return
   if diffall > /dev/null 2>&1; then
     rcscolour=$GREEN
   else
@@ -3381,7 +3381,7 @@ rcs_prompt(){
 # For CVS, you need to connect to the server to find out if there are modifications
 # So, we just indicate that we're in a CVS repo, so we don't have to wait for potentially slow or disconnected networks
 cvs_prompt(){
-  [ -d ./CVS ] || return
+  timeout 1 [ -d ./CVS ] || return
   printf "$TEAL(cvs)$ENDCOLOUR"
 }
 
