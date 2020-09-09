@@ -575,7 +575,7 @@ onedrive(){
     echo "$onedrive_mountpath is not mounted"
     sudo mount $onedrive_mountpath
   fi
-  cd $onedrive_mountpath
+  nautilus $onedrive_mountpath
 }
 
 # Edit procmailrc, using RCS
