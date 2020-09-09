@@ -59,7 +59,7 @@ if ! tty >/dev/null ; then
 fi
 
 ###
-##### Settings
+##### SETTINGS
 ### Specific for the usage of the .bashrc and its functions
 ###
 toolsbase="https://t.dotcomfy.net" # location of traceroute, ping, etc tools
@@ -95,7 +95,7 @@ else
 fi
 
 ###
-##### Shell variables
+##### SHELL VARIABLES
 ### Stuff used by various commands/applications, or the shell itself
 # Locale, doesn't work on Termux in Android
 if [ "$OSTYPE" != "linux-android" ] ; then
@@ -146,7 +146,7 @@ shrc_url="$dlbase/latest/?h=$(hostname)&u=$USER" # download location of .bashrc
 
 
 ###
-##### Colours
+##### COLOURS
 ### used in prompts, etc
 ###
 BLACK="\033[0;30m"
@@ -168,7 +168,7 @@ ENDCOLOUR="\e[m"
 
 
 ###
-##### Helper functions
+##### HELPER FUNCTIONS
 ### Used by other functions throughout the .bashrc
 ### These need to be listed early, to make them accessible to others
 
@@ -176,7 +176,6 @@ ENDCOLOUR="\e[m"
 warn(){
   echo "$@" >&2
 }
-
 
 # Picks a screen session to load/start, based on some commons screen session names, as configured in $screen_session_alternatives (set this in .local_shellrc)
 # I use this on some of my servers where I have different named screen sessions, with different environments, for different dev projects
@@ -399,7 +398,7 @@ rcsall(){
 
 ###
 ###
-##### Command aliases
+##### COMMAND ALIASES
 ### General command aliases - includes a few default flags and stuff
 ###
 alias dyndns="sudo reason=manual_config sh /etc/dhcp/dhclient-exit-hooks"
@@ -471,7 +470,7 @@ alias gtldns="dig @a.gtld-servers.net ns"
 
 
 ###
-##### Programmable command completion
+##### PROGRAMMABLE COMMAND COMPLETION
 ###
 
 # Only do this if the complete command exists (BASH 2.04 and later, methinks)
@@ -482,7 +481,7 @@ if complete > /dev/null 2>&1 ; then
 fi
 
 ###
-##### Stuff that's required by local shellrc
+##### STUFF REQUIRED BY LOCAL SHELLRC
 ###
 
 # Function to save some typing when adding stuff to $PATH
@@ -546,7 +545,7 @@ screen_auto_attacher
 
 ###
 ###
-##### Functions / utils
+##### FUNCTIONS / UTILS
 ### Some of these are old shell scripts or small perl scripts
 ### that are quite handy to have available on any host I might log in to
 
@@ -3046,7 +3045,7 @@ if [ "$TERM" = "tgtelnet" ]; then
 fi
 
 ####
-##### Git stuff
+##### GIT STUFF
 ####
 
 # git commit & push
@@ -3069,8 +3068,9 @@ alias git_reset_hard_origin="echo 'Reset from origin/master? ENTER/CTRL-C' && re
 
 # Set a prompt for when inside a git repo
 git_prompt(){
-  if ref=$(git symbolic-ref HEAD 2>/dev/null); then
-    gitstatus="$(git status)"
+  # We use a timeout, to avoid hanging if CWD is unavailable
+  if ref=$(timeout 2 git symbolic-ref HEAD 2>/dev/null); then
+    gitstatus="$(timeout 2 git status)"
     if echo "$gitstatus" | grep -E 'Changes|Changed|Untracked' >/dev/null; then
       COLOUR=$RED;
     elif echo "$gitstatus" | grep -E 'Your branch is ahead' >/dev/null; then
@@ -3283,7 +3283,7 @@ get_current_git_branch(){
 
 ###
 ###
-##### Spotify control
+##### SPOTIFY CONTROL
 ### Basic control of Spotify, through dbus, on systems that support it
 ###
 spotifyctl(){
@@ -3308,7 +3308,7 @@ next(){
 
 
 #####
-##### Prompt settings
+##### PROMPT SETTINGS
 #####
 
 gnome_get_kbd_layout(){
@@ -3386,7 +3386,7 @@ cvs_prompt(){
 }
 
 ###
-##### ocd()
+##### OCD / ocd()
 ### A set of functions for using a local directory cache and changing directory to matches in different ways
 ### The main function is ocd()
 ### Intended to be combined with "alias cd=ocd" to augment the functionality of builtin cd command
