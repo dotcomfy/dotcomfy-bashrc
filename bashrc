@@ -570,9 +570,9 @@ pmsuspend(){
 # This assumes that onedrive_mountpath is set correctly, and has an entry in fstab
 onedrive(){
   if mountpoint -q $onedrive_mountpath ; then
-    echo "OneDrive dir is already mounted"
+    echo "OneDrive is already mounted at $onedrive_mountpath"
   else
-    echo "$onedrive_mountpath is not mounted"
+    echo "Mounting OneDrive at $onedrive_mountpath"
     sudo mount $onedrive_mountpath
   fi
   nautilus $onedrive_mountpath
