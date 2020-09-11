@@ -420,6 +420,8 @@ alias suidfind="find / -perm -4000 -or -perm -2000"
 alias calentool="calentool -D 2 -e" # ISO date format and week starts on monday
 alias prtdiag='/usr/platform/`uname -i`/sbin/prtdiag' # Diag command on Suns
 alias s_client="openssl s_client -connect" # "ssl telnet"
+unset ps1 >/dev/null 2>&1
+alias ps1="set_primary_prompt"
 # The alias for screen gets set *after* loading local bashrc, since it depends on settings from it
 
 # Allows running functions and aliases with sudo (eg, "runsudo m4mc")
@@ -3329,6 +3331,12 @@ gnome_kbd_layout_prompt(){
   fi
 }
 
+# TODO: Also add "trunc" (t*) as an option, which doesn't show username, and only up to X characters of $PWD?
+# Set prompt(PS1) to s(hort), supershort, truncated or regular.
+# Sometimes, when working in a narrow terminal, the prompt can get a bit long, so it's nice to be able to shorten it
+# Any argument starting with s is interpreted as short
+# Any other orgument is interpreted as regular
+
 set_primary_prompt(){
   # Last character of the prompt, can be overridden by setting $custom_psch
   if [ -n "$custom_psch" ] ; then
@@ -3339,26 +3347,39 @@ set_primary_prompt(){
     psch='$'
   fi
 
-  PS1="\u@\h:\w\$(prompt_extras)$psch "
+  # Defaults
+  promptbase="\u@\h:\w\$(prompt_extras)"
+  PS1="${promptbase}${psch} "
+  unset PROMPT_DIRTRIM
+
+  case "$1" in
+    ss)
+      # Super Short
+      echo "Super Short"
+      PS1='\h:($(basename $PWD | cut -c 1-16))\$ '
+    ;;
+    s)
+      # Short
+      echo "Short"
+      PS1="\u@\h:(\W)\$ "
+    ;;
+    # Trim directories, only show 2 path components, or as specified in a second argument
+    dt)
+      PROMPT_DIRTRIM=${2:-2}
+      echo "Dir Trim: $PROMPT_DIRTRIM"
+    ;;
+    # Fold, dual line
+    fo*|dl)
+      echo "Fold / Dual Line"
+      PS1="\n$promptbase\n$psch "
+    ;;
+    *)
+    ;;
+  esac
 
   # Indicate that the shell is running under sudo, if applicable
   if ! [ -z "$SUDO_USER" ] ; then PS1="(sudo)${PS1}" ;fi
-}
-
-# Set prompt(PS1) to s(hort) or regular.
-# Sometimes, when working in a narrow terminal, the prompt can get a bit long, so it's nice to be able to shorten it
-# Any argument starting with s is interpreted as short
-# Any other orgument is interpreted as regular
-ps1(){
-  case "$1" in
-    s*)
-      PS1="\u@\h:(\W)\$ "
-      export PS1
-    ;;
-    *)
-      set_primary_prompt
-    ;;
-  esac
+  export PS1 PROMPT_DIRTRIM
 }
 
 prompt_extras(){
