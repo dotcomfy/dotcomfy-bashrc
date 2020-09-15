@@ -551,6 +551,11 @@ screen_auto_attacher
 ### Some of these are old shell scripts or small perl scripts
 ### that are quite handy to have available on any host I might log in to
 
+# Sort, uniq with a count, and sort again, to see how many times each line occurs in input
+groupby(){
+  sort | uniq -c | sort -n
+}
+
 # Hibernate and suspend functions
 # This can be combined with defining a piece of code to run prior to suspend/hibernate, for example
 # presuspend='echo "Pausing Spotify"; pause'
