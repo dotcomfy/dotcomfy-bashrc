@@ -556,6 +556,15 @@ groupby(){
   sort | uniq -c | sort -n
 }
 
+# Convert IP address to network address, used when faffing with FW rules and stuff
+# 192.168.1.1 > 192.168.0.0
+ipto16(){
+  sed 's/[^.]*\.[^.]*$/0.0/'
+}
+ipto24(){
+  sed 's/[^.]*$/0/'
+}
+
 # Hibernate and suspend functions
 # This can be combined with defining a piece of code to run prior to suspend/hibernate, for example
 # presuspend='echo "Pausing Spotify"; pause'
