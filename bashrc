@@ -556,6 +556,10 @@ groupby(){
   sort | uniq -c | sort -n
 }
 
+# Find the IP address in a string, which contains only one IP in the first place
+findip(){
+  sed -r 's/.*([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+).*/\1/'
+}
 # Convert IP address to network address, used when faffing with FW rules and stuff
 # 192.168.1.1 > 192.168.0.0
 ipto16(){
