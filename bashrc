@@ -809,6 +809,12 @@ audioconcat(){
 # Print info about the host you're on, who you're logged in as, etc
 wtf(){
   firstcolumn=20
+  if type inxi >/dev/null> /dev/null 2>&1;then
+    inxi
+    inxi -S
+    inxi -B
+    inxi -D
+  fi
   echo "Hostname:     $(hostname)"
   echo "OS:           $(uname -a)"
   echo "IP:           $(ifconfig -a | grep inet | grep -v 127.0.0.1 | grep -v inet6 | sed 's/\s*//')"
@@ -819,7 +825,7 @@ wtf(){
   echo "Memory:      $(free -m | grep buffers/cache | awk '{ print "used: " $3 "M, free: " $4 "M"}')"
   echo "Processor:   $(grep ^processor /proc/cpuinfo | wc -l) CPU(s); $(grep '^model name' /proc/cpuinfo  | sort -u | sed 's/.*: //')"
   echo "Disk usage:"
-  echo "$(df -h -T -x tmpfs -x devtmpfs | grep /)"
+  dfh
   if [ $(uname -s) = "Linux" ] ; then
     echo
     echo "Linux Release info:"
@@ -2487,7 +2493,7 @@ alias sdu="du -sk * | sort -n"
 
 # I got fed up with all of the nonsense file systems showing up in modern Linux systems (or at least Ubuntu)
 dfh(){
-  df -h | grep -v ^tmpfs | grep -v '^/dev/loop.*/snap/' | grep -v ^udev.*/dev
+  df -T -h | grep -v ^tmpfs | grep -v '^/dev/loop.*/snap/' | grep -v ^udev.*/dev
 }
 
 # dfk.pl - Some Perl script that I found years ago, that formats output in a similar way to df -k
