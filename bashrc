@@ -99,11 +99,11 @@ fi
 ### Stuff used by various commands/applications, or the shell itself
 # Locale, doesn't work on Termux in Android
 if [ "$OSTYPE" != "linux-android" ] ; then
-  LANG=en_GB export LANG
-  LANGUAGE=en_GB export LANGUAGE # Only used by Perl?
+  LANG=en_GB.utf8 export LANG
+  LANGUAGE=en_GB.utf8 export LANGUAGE # Only used by Perl?
   LC_TIME=en_GB export LC_TIME
   LC_NUMERIC=en_GB export LC_NUMERIC
-  LC_ALL=en_GB export LC_ALL
+  LC_ALL=en_GB.utf8 export LC_ALL
 fi
 
 # The One True Text Editor (TM)
