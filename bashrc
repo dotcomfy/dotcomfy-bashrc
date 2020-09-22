@@ -563,10 +563,10 @@ findip(){
 # Convert IP address to network address, used when faffing with FW rules and stuff
 # 192.168.1.1 > 192.168.0.0
 ipto16(){
-  sed 's/[^.]*\.[^.]*$/0.0/'
+  sed 's/[^.]*\.[^.]*$/0.0\/16/'
 }
 ipto24(){
-  sed 's/[^.]*$/0/'
+  sed 's/[^.]*$/0\/24/'
 }
 
 # Hibernate and suspend functions
