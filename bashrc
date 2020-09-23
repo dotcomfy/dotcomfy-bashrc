@@ -1116,11 +1116,11 @@ dosh(){
   local cmd=$*
   echo "Will run '$cmd' for every line entered"
   echo "Exit with EOF (normally CTRL-D) or CTRL-C"
-  printf '> '
-  while read input ; do
-    # as long as $input isn't an empty string
-    [ "$input" = "" ] || $cmd "$input"
-  printf '> '
+  while read -p '> ' input ; do
+    # As long as $input isn't an empty string
+    [ "$input" == "" ] && continue
+    echo "<<$cmd $input>>"
+    $cmd "$input"
   done
   echo
 }
