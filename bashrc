@@ -561,12 +561,16 @@ findip(){
   perl -pe 's/.*?([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+).*/\1/'
 }
 # Convert IP address to network address, used when faffing with FW rules and stuff
-# 192.168.1.1 > 192.168.0.0
+# Assumes input that it just an IP address, or at least at the end of a line
+# Example for ipto16: 192.168.1.1 --> 192.168.0.0/16
+ipto8(){
+  sed -r 's/(\.[0-9]+){3}$/.0.0.0\/8/'
+}
 ipto16(){
-  sed 's/[^.]*\.[^.]*$/0.0\/16/'
+  sed -r 's/(\.[0-9]+){2}$/.0.0\/16/'
 }
 ipto24(){
-  sed 's/[^.]*$/0\/24/'
+  sed -r 's/(\.[0-9]+){1}$/.0\/24/'
 }
 
 # Hibernate and suspend functions
