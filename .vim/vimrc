@@ -45,3 +45,7 @@ set laststatus=2
 set encoding=utf-8
 set fileencoding=utf-8
 setglobal fileencoding=utf-8
+
+
+" In case there's code using tabs
+set tabstop=4
