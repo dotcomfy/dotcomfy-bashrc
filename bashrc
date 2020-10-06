@@ -3380,13 +3380,14 @@ set_primary_prompt(){
   PS1="${promptbase}${psch} "
   unset PROMPT_DIRTRIM
 
+  # If a format was specified
   case "$1" in
     ss)
       # Super Short
       echo "Super Short"
-      PS1='\h:($(basename $PWD | cut -c 1-16))\$ '
+      PS1='\h:($(basename "$PWD" | cut -c 1-16))\$ '
     ;;
-    s)
+    s|sh*)
       # Short
       echo "Short"
       PS1="\u@\h:(\W)\$ "
@@ -3401,7 +3402,8 @@ set_primary_prompt(){
       echo "Fold / Dual Line"
       PS1="\n$promptbase\n$psch "
     ;;
-    *)
+    h*)
+      echo "Usage: $FUNCNAME s(hort)|ss(supershort)|dt(dirtrim)|fold/dl(dual-line)"
     ;;
   esac
 
