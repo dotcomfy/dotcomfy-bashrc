@@ -2351,7 +2351,7 @@ my $heloname;                      # Name I use in HELO
 my %opts;                          # Command line options
 
 # Get command-line options.
-getopts('bhH:p:s:', \%opts);
+getopts('bhH:p:P:s:U:', \%opts);
 
 my $port = $opts{'p'} || 25;                     # Default SMTP port
 
@@ -2419,6 +2419,17 @@ $sock->autoflush(1);
 $response = &get_resp($sock);
 print_sock ($sock, "HELO $heloname$CRLF");
 $response = &get_resp($sock);
+if ( $opts{U} ) {
+  use MIME::Base64;
+  print_sock ($sock, "AUTH LOGIN$CRLF");
+  $response = &get_resp($sock);
+  print "--- User: $opts{U} " . encode_base64($opts{U});
+  print_sock ($sock, encode_base64($opts{U}));
+  $response = &get_resp($sock);
+  print "--- Pass: $opts{P} " . encode_base64($opts{P});
+  print_sock ($sock, encode_base64($opts{P}));
+  $response = &get_resp($sock);
+}
 print_sock ($sock, "MAIL FROM: <$mailfrom>$CRLF");
 $response = &get_resp($sock);
 print_sock ($sock, "RCPT TO: <$rcptto>$CRLF");
