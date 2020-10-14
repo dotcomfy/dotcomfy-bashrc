@@ -3420,7 +3420,7 @@ set_primary_prompt(){
 
   # Indicate that the shell is running under sudo, if applicable
   if ! [ -z "$SUDO_USER" ] ; then PS1="(sudo)${PS1}" ;fi
-  export PS1 PROMPT_DIRTRIM
+  export PROMPT_DIRTRIM
 }
 
 prompt_extras(){
