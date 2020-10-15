@@ -2214,7 +2214,7 @@ viregex(){
 }
 
 vigreylist(){
-  sudoedit /etc/mail/greylist.conf && echo "Restarting daemon and tailing log file" && sudo service milter-greylist restart && sudo tail -f /var/log/maillog | grep greylist
+  sudoedit /etc/mail/greylist.conf && sudo service milter-greylist restart && echo && echo "Tailing log file"  && sudo tail -f /var/log/maillog | grep greylist
 }
 
 viaccess(){
