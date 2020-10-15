@@ -2326,6 +2326,12 @@ editfile(){
   if ! ci -u $file ; then echo "Can't ci $file" ; return 1 ; fi
 }
 
+testmail(){
+  if [ -z "$testmailcount" ] ; then testmailcount=0; fi
+  let testmailcount=$testmailcount+1
+  (hostname;date;echo "Shell PID: $$") | mail -s "Test $$/$testmailcount from $(hostname) on $(date)" $1
+}
+
 ### Quite large Perl snipplets, wrapped as shell functions
 ### These are best off stuffed away at the bottom of the .bashrc
 ###
