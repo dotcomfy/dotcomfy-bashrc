@@ -2122,6 +2122,8 @@ cdup(){
 }
 # Short form, just use a single dash as command
 alias -- -=cdup
+alias -- --="-&&-"
+alias -- ---="-&&-&&-"
 
 su(){
   xtitle "root@$HOSTNAME (su from $USER)"
