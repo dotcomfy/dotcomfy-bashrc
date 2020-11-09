@@ -562,7 +562,7 @@ pmlog(){
   else
     echo "$pmlog is empty"
   fi
-  mailstat $pmlog | $PAGER
+  mailstat -l $pmlog | $PAGER
 }
 
 # Sort, uniq with a count, and sort again, to see how many times each line occurs in input
