@@ -550,7 +550,7 @@ screen_auto_attacher
 ### Some of these are old shell scripts or small perl scripts
 ### that are quite handy to have available on any host I might log in to
 
-unalias pmlog 2>&1 >/dev/null
+unalias pmlog >/dev/null 2>&1
 pmlog(){
   pmdir="$HOME/.pm"
   pmlog="$pmdir/procmail.log"
