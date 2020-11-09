@@ -559,6 +559,7 @@ pmlog(){
   if [ -s $pmlog ] ; then
     cp $pmlog $pmbak
     gzip $pmbak
+    echo "Saved $pmbak.gz"
   else
     echo "$pmlog is empty"
   fi
