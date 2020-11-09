@@ -412,7 +412,6 @@ alias ls="ls -F"
 alias ll="ls -lF"
 alias la="ls -aF"
 alias lt="ls -lt"
-alias pmlog="mailstat ~/.pm/procmail.log | $PAGER"
 alias xvbg="xv -root -rmode 5 -maxpect -quit" # set X background with xv
 alias dotrc=". $shrc_home"
 alias linusping="ping -p 6c696e7573" # sends "linus" as byte padding in packet
@@ -550,6 +549,21 @@ screen_auto_attacher
 ##### FUNCTIONS / UTILS
 ### Some of these are old shell scripts or small perl scripts
 ### that are quite handy to have available on any host I might log in to
+
+unalias pmlog 2>&1 >/dev/null
+pmlog(){
+  pmdir="$HOME/.pm"
+  pmlog="$pmdir/procmail.log"
+  pmbak="$pmdir/procmail.log-$(date '+%Y%m%d-%H%M%S')"
+  [ -f "$pmlog" ] || (echo "No procmail log file: $pmlog" ; return)
+  if [ -s $pmlog ] ; then
+    cp $pmlog $pmbak
+    gzip $pmbak
+  else
+    echo "$pmlog is empty"
+  fi
+  mailstat $pmlog | $PAGER
+}
 
 # Sort, uniq with a count, and sort again, to see how many times each line occurs in input
 groupby(){
