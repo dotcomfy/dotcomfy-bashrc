@@ -550,6 +550,24 @@ screen_auto_attacher
 ### Some of these are old shell scripts or small perl scripts
 ### that are quite handy to have available on any host I might log in to
 
+# When recovering a file from a crashed vi session, or after a reboot, there are too many manual steps
+virecover(){
+  local orgfile="$1"
+  local swpfile="$(dirname $orgfile)/$(basename $orgfile | sed -r 's/^([^\.])/.\1/').swp"
+  echo "Details of original file and swap file"
+  if [ ! -f "$swpfile" ] ; then
+    echo "No swapfile, let's just edit"
+    vi "$orgfile"
+    return
+  fi
+  ls -l "$orgfile" "$swpfile"
+  vi -r "$orgfile"
+  echo "If you're happy with recovery, please press ENTER to remove $swpfile and begin editing"
+  read foo
+  rm "$swpfile"
+  vi "$orgfile"
+}
+
 unalias pmlog >/dev/null 2>&1
 pmlog(){
   pmdir="$HOME/.pm"
