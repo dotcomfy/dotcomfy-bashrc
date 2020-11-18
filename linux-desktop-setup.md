@@ -63,6 +63,18 @@ GRUB_CMDLINE_LINUX_DEFAULT="text resume=UUID=b0e3fbc0-309f-41f9-871e-513eef6a2f3
 
 ```
 
+## Boot background
+In /etc/grub/default
+```
+GRUB_CMDLINE_LINUX_DEFAULT="quiet splash resume=UUID=b0e3fbc0-309f-41f9-871e-513eef6a2f30"
+GRUB_CMDLINE_LINUX=""
+GRUB_BACKGROUND="/home/linus/.grub-background.jpg"
+```
+You can also replace wallpaper.png in /usr/share/plymouth/themes/xubuntu-logo, and then run:
+```
+sudo update-initramfs  -u
+```
+
 ## USB Wake
 Note that you may need to enable wakeup not only for the actual device, but also the parents
 
