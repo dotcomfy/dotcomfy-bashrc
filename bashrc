@@ -1711,7 +1711,7 @@ psgrep(){
   if [ $# -lt 1 ] ; then
     echo "Usage: psgrep pattern" ; return 1
   fi
-  psoutput="$(fullps)"
+  local psoutput="$(fullps)"
   # First, produce a header line
   echo "$psoutput" | head -1
   # Then produce the output
