@@ -48,7 +48,7 @@
 # $Header: /home/linus/RCS/.bashrc,v 1.338 2010/12/22 13:29:51 linus Exp $
 #
 # Populated by commit hook
-DCMF_BASHRC_VERSION='20200909.134438.linus.531553701edf40f80d14a0584330336e'
+DCMF_BASHRC_VERSION='Git version'
 
 # Source custom stuff, if it's there
 [ -f /etc/profile.d/custom.sh ] && . /etc/profile.d/custom.sh
@@ -439,8 +439,8 @@ alias cvs="cvs -q"
 alias scp="scp -C"
 # Convert to lowercase
 alias lowercase="sed -e 's/./\L&/g'"
-# Opens a file manager window in the current directory. Handy only because it does the same thing in Windows command prompt.
-alias start.="nautilus ."
+# Opens a file manager window in the current directory. Handy only because it does the same thing in Windows command prompt, which has become a habit of mine.
+alias start.="thunar ."
 # Edit .local_shellrc
 alias vilshrc="vi ~/.local_shellrc"
 
