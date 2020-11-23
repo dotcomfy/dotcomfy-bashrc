@@ -147,3 +147,21 @@ sudo apt-get install inetutils-traceroute
 sudo apt-get install whois
 ```
 
+
+## Num Lock
+Regardless of settings made in settings manager, Num Lock usually gets turned off whenever the system has been in suspend mode
+Setting status to on here, might help:
+/etc/X11/Xsession.d/55numlockx
+
+There are also many documented tricks, which do not seem to work
+
+One suggestion is to create /usr/share/lightdm/lightdm.conf.d/99-numlockx.conf
+with the following content:
+```
+[SeatDefaults]
+greeter-setup-script=/usr/bin/numlockx on
+```
+But, the first line should maybe be:
+```
+[Seat:*]
+```
