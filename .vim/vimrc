@@ -49,3 +49,7 @@ setglobal fileencoding=utf-8
 
 " In case there's code using tabs
 set tabstop=4
+
+" Opening help whenever you fumble f1 (trying to hit Escape) is just a pain
+map <F1> <Esc>
+imap <F1> <Esc>
