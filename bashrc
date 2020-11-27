@@ -80,6 +80,8 @@ onedrive_mountpath=/mnt/onedrive-vm
 dcmf_ocd_directories="$HOME"
 dcmf_ocd_cache=~/.dcmf-ocd-cache
 dcmf_ocd_cache_ttl=7200
+# GUI file manager used on unix-like systems. Could be set to "true" as a no-op
+unixish_gui_file_manager=thunar
 
 # The location of this file, probably in the user's home directory
 # During development, the file may be loaded from several locations, and we don't want to override the first one (which is probably the "real" file)
@@ -440,7 +442,7 @@ alias scp="scp -C"
 # Convert to lowercase
 alias lowercase="sed -e 's/./\L&/g'"
 # Opens a file manager window in the current directory. Handy only because it does the same thing in Windows command prompt, which has become a habit of mine.
-alias start.="thunar ."
+alias start.="$unixish_gui_file_manager ."
 # Edit .local_shellrc
 alias vilshrc="vi ~/.local_shellrc"
 
@@ -632,7 +634,7 @@ onedrive(){
     echo "Mounting OneDrive at $onedrive_mountpath"
     sudo mount $onedrive_mountpath
   fi
-  nautilus $onedrive_mountpath
+  $unixish_gui_file_manager $onedrive_mountpath
 }
 
 # Edit procmailrc, using RCS
