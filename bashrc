@@ -632,9 +632,9 @@ onedrive(){
     echo "OneDrive is already mounted at $onedrive_mountpath"
   else
     echo "Mounting OneDrive at $onedrive_mountpath"
-    sudo mount $onedrive_mountpath
+    sudo mount $onedrive_mountpath || echo "Mount failed"
   fi
-  $unixish_gui_file_manager $onedrive_mountpath
+  mountpoint -q $onedrive_mountpath && $unixish_gui_file_manager $onedrive_mountpath
 }
 
 # Edit procmailrc, using RCS
