@@ -627,7 +627,7 @@ pmsuspend(){
 
 # Check that OneDrive is mounted, and go to the relevant folder
 # This assumes that onedrive_mountpath is set correctly, and has an entry in fstab
-onedrive(){
+onedrivemnt(){
   if mountpoint -q $onedrive_mountpath ; then
     echo "OneDrive is already mounted at $onedrive_mountpath"
   else
