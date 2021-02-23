@@ -2439,9 +2439,11 @@ $headers{'Subject'} = $opts{s} || $maildesc;
 chomp ( $heloname = $opts{H} || `hostname` || "foo" );
 
 if ( $opts{b} ) {
-    print "Enter mail, end with EOF (CTRL-D)\n";
-    @mailbody = <STDIN>;
-    print "\nOk, full mail recieved, will now try to send it\n\n";
+    # Why is this? Not sure, but I also haven't needed this for a million years, so never mind.
+    warn "\n\nREADING FROM STDIN DOESN'T WORK IN THE BASHRC VERSION OF SMTPCLIENT\n\n";
+    # print "Enter mail, end with EOF (CTRL-D)\n";
+    # @mailbody = <STDIN>;
+    # print "\nOk, full mail recieved, will now try to send it\n\n";
 }
 else {
     $mailbody[0] = $maildesc;
@@ -2538,7 +2540,9 @@ Options:
 -h           Prints this help screen
 -H <name>    Sets the name used in HELO
 -p <port>    Sets a different SMTP port
+-P <passwd>  Password for SMTP AUTH LOGIN
 -s <subject> Specifies the subject line.
+-U <user>    Username for SMTP AUTH LOGIN
 
 ENDUSAGE
     exit(0);
