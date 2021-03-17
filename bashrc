@@ -788,6 +788,15 @@ mysql_dump_csv(){
   mysql --table --column-names $mysql_args -e "$mysql_query" | csvify_table
 }
 
+# Resize images, using imagemagick "convert"
+resizeimg(){
+  for file in "$@"; do
+    echo "Converting $file to 1280"
+    convert "$file" -resize 1280 "resized-$file"
+  done
+}
+
+
 # A function for concatenating audio files. Supports any input formats that Sox supports, such as wav and MP3
 # Works by converting all input files into raw format, concatenating the raw files,
 # and then converting to the desired format
