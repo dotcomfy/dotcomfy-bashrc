@@ -792,7 +792,7 @@ mysql_dump_csv(){
 resizeimg(){
   for file in "$@"; do
     echo "Converting $file to 1280"
-    convert "$file" -resize 1280 "resized-$file"
+    convert "$file" -resize 1280 -strip "resized-$file"
   done
 }
 
