@@ -793,7 +793,7 @@ resizeimg(){
   local newres="${RES:-1440}"
   for file in "$@"; do
     echo "Converting $file to $newres"
-    convert "$file" -resize $newres -strip "resized-$file"
+    convert "$file" -resize $newres -strip "resized-${newres}p-$file"
   done
 }
 
