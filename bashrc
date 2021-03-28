@@ -790,9 +790,10 @@ mysql_dump_csv(){
 
 # Resize images, using imagemagick "convert"
 resizeimg(){
+  local newres="${RES:-1440}"
   for file in "$@"; do
-    echo "Converting $file to 1280"
-    convert "$file" -resize 1280 -strip "resized-$file"
+    echo "Converting $file to $newres"
+    convert "$file" -resize $newres -strip "resized-$file"
   done
 }
 
