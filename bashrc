@@ -792,8 +792,10 @@ mysql_dump_csv(){
 resizeimg(){
   local newres="${RES:-1440}"
   for file in "$@"; do
-    echo "Converting $file to $newres"
-    convert "$file" -resize $newres -strip "resized-${newres}p-$file"
+    origfile="preresize-$file"
+    mv -i $file $origfile
+    echo "Converting $file to $newres, keeping $origfile"
+    convert "$origfile" -resize $newres -strip "$file"
   done
 }
 
