@@ -793,7 +793,7 @@ resizeimg(){
   local newres="${RES:-1440}"
   for file in "$@"; do
     origfile="preresize-$file"
-    mv -i $file $origfile
+    mv -i "$file" "$origfile"
     echo "Converting $file to $newres, keeping $origfile"
     convert "$origfile" -resize $newres -strip "$file"
   done
