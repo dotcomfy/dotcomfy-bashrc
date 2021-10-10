@@ -563,7 +563,6 @@ gather_windows(){
   # Get the current desktop size
   desktop=$(wmctrl -d | awk '{print $9}')
   IFS=x read dt_x dt_y <<< $(echo $desktop)
-  echo "Desktop: $desktop / $dt_x x $dt_y"
   # Remove a little bit, since windows seem to take up a tiny bit more space than expected
   let dt_y=$dt_y-27
   let dt_x=$dt_x-10
@@ -572,8 +571,10 @@ gather_windows(){
     # Move only non-sticky windows
     [ $sticky  -eq 0 ] || continue
     # echo "Window: <$win_title>, x: $offset_x, y: $offset_y, $curr_w, $curr_y"
+    # If window is taller or wider than desktop, then shrink it to the desktop size
     new_width=$(( curr_w < dt_x ?  curr_w : dt_x))
     new_height=$(( curr_h < dt_y ?  curr_h : dt_y))
+    # Move to top left corner, and resize if applicable
     wmctrl -i -r $id -e 0,$offset_x,$offset_y,$new_width,$new_height
   done
 }
