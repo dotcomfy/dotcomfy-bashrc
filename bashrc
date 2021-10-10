@@ -552,6 +552,72 @@ screen_auto_attacher
 ### Some of these are old shell scripts or small perl scripts
 ### that are quite handy to have available on any host I might log in to
 
+
+# Snippet for bringing all windows to the viewable desktop area in X
+# Works on Ubuntu 21.04 / XFCE
+gather_windows(){
+  # Offsets, to allow for menu bars etc
+  local offset_x=70
+  local offset_y=0
+
+  # Get the current desktop size
+  desktop=$(wmctrl -d | awk '{print $9}')
+  IFS=x read dt_x dt_y <<< $(echo $desktop)
+  echo "Desktop: $desktop / $dt_x x $dt_y"
+  # Remove a little bit, since windows seem to take up a tiny bit more space than expected
+  let dt_y=$dt_y-27
+  let dt_x=$dt_x-10
+
+  wmctrl -l -G | while read id sticky curr_x curr_y curr_w curr_h host win_title; do
+    # Move only non-sticky windows
+    [ $sticky  -eq 0 ] || continue
+    # echo "Window: <$win_title>, x: $offset_x, y: $offset_y, $curr_w, $curr_y"
+    new_width=$(( curr_w < dt_x ?  curr_w : dt_x))
+    new_height=$(( curr_h < dt_y ?  curr_h : dt_y))
+    wmctrl -i -r $id -e 0,$offset_x,$offset_y,$new_width,$new_height
+  done
+}
+
+# Simillar to above, but maximise all instead
+maximise_windows(){
+  wmctrl -i | while read id sticky foo ; do
+    [ $sticky  -eq 0 ] || continue
+    wmctrl -i -r $id -b add,maximized_horz,maximized_vert
+  done
+}
+
+# Snippet for bringing all windows to the viewable desktop area in X
+# Works on Ubuntu 21.04 / XFCE
+gather_windows(){
+  # Offsets, to allow for menu bars etc
+  local offset_x=70
+  local offset_y=0
+
+  # Get the current desktop size
+  desktop=$(wmctrl -d | awk '{print $9}')
+  IFS=x read dt_x dt_y <<< $(echo $desktop)
+  echo "Desktop: $desktop / $dt_x x $dt_y"
+  # Remove a little bit, since windows seem to take up a tiny bit more space than expected
+  let dt_y=$dt_y-27
+  let dt_x=$dt_x-10
+
+  wmctrl -l -G | while read id sticky curr_x curr_y curr_w curr_h host win_title; do
+    # Move only non-sticky windows
+    [ $sticky  -eq 0 ] || continue
+    # echo "Window: <$win_title>, x: $offset_x, y: $offset_y, $curr_w, $curr_y"
+    new_width=$(( curr_w < dt_x ?  curr_w : dt_x))
+    new_height=$(( curr_h < dt_y ?  curr_h : dt_y))
+    wmctrl -i -r $id -e 0,$offset_x,$offset_y,$new_width,$new_height
+  done
+}
+
+maximise_windows(){
+  wmctrl -i | while read id sticky foo ; do
+    [ $sticky  -eq 0 ] || continue
+    wmctrl -i -r $id -b add,maximized_horz,maximized_vert
+  done
+}
+
 # When recovering a file from a crashed vi session, or after a reboot, there are too many manual steps
 virecover(){
   local orgfile="$1"
@@ -3677,5 +3743,3 @@ first_load_of_dotcomfy_bashrc_completed=true
 
 # Source .local_shellrc if existent, last in file, to override globals
 [ -f ~/.local_shellrc ] && . ~/.local_shellrc
-
-# EOF
