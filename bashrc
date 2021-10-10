@@ -580,39 +580,7 @@ gather_windows(){
 
 # Simillar to above, but maximise all instead
 maximise_windows(){
-  wmctrl -i | while read id sticky foo ; do
-    [ $sticky  -eq 0 ] || continue
-    wmctrl -i -r $id -b add,maximized_horz,maximized_vert
-  done
-}
-
-# Snippet for bringing all windows to the viewable desktop area in X
-# Works on Ubuntu 21.04 / XFCE
-gather_windows(){
-  # Offsets, to allow for menu bars etc
-  local offset_x=70
-  local offset_y=0
-
-  # Get the current desktop size
-  desktop=$(wmctrl -d | awk '{print $9}')
-  IFS=x read dt_x dt_y <<< $(echo $desktop)
-  echo "Desktop: $desktop / $dt_x x $dt_y"
-  # Remove a little bit, since windows seem to take up a tiny bit more space than expected
-  let dt_y=$dt_y-27
-  let dt_x=$dt_x-10
-
-  wmctrl -l -G | while read id sticky curr_x curr_y curr_w curr_h host win_title; do
-    # Move only non-sticky windows
-    [ $sticky  -eq 0 ] || continue
-    # echo "Window: <$win_title>, x: $offset_x, y: $offset_y, $curr_w, $curr_y"
-    new_width=$(( curr_w < dt_x ?  curr_w : dt_x))
-    new_height=$(( curr_h < dt_y ?  curr_h : dt_y))
-    wmctrl -i -r $id -e 0,$offset_x,$offset_y,$new_width,$new_height
-  done
-}
-
-maximise_windows(){
-  wmctrl -i | while read id sticky foo ; do
+  wmctrl -l | while read id sticky foo ; do
     [ $sticky  -eq 0 ] || continue
     wmctrl -i -r $id -b add,maximized_horz,maximized_vert
   done
