@@ -313,13 +313,6 @@ xbacktitle(){
   xtitle "$USER@$HOSTNAME:$PWD"
 }
 
-# Seriously pointless. Used by ssh() function
-welcomeback(){
-  echo
-  echo "Back on `hostname` on `date`"
-  echo
-}
-
 # Ask for yes or no answer - return 1 unless answer contains n|N
 askyesno(){
   echo -n "$@ [Y|n] " ; read yesno
@@ -584,6 +577,14 @@ maximise_windows(){
   wmctrl -l | while read id sticky foo ; do
     [ $sticky  -eq 0 ] || continue
     wmctrl -i -r $id -b add,maximized_horz,maximized_vert
+  done
+}
+
+# Probably obvious by now?
+unmaximise_windows(){
+  wmctrl -l | while read id sticky foo ; do
+    [ $sticky  -eq 0 ] || continue
+    wmctrl -i -r $id -b remove,maximized_horz,maximized_vert
   done
 }
 
