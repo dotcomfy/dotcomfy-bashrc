@@ -904,15 +904,6 @@ wtf(){
   fi
   echo "Hostname:     $(hostname)"
   echo "OS:           $(uname -a)"
-  echo "IP:           $(ifconfig -a | grep inet | grep -v 127.0.0.1 | grep -v inet6 | sed 's/\s*//')"
-  echo "External IP:  $(myip | tail -1 | sed 's/.*: //')"
-  # echo "Netname:     $(whois -h whois.ripe.net $external_ip | grep ^netname: | awk '{print $2}')"
-  echo
-  echo "Uptime:      $(uptime | sed 's/^ *//')"
-  echo "Memory:      $(free -m | grep buffers/cache | awk '{ print "used: " $3 "M, free: " $4 "M"}')"
-  echo "Processor:   $(grep ^processor /proc/cpuinfo | wc -l) CPU(s); $(grep '^model name' /proc/cpuinfo  | sort -u | sed 's/.*: //')"
-  echo "Disk usage:"
-  dfh
   if [ $(uname -s) = "Linux" ] ; then
     echo
     echo "Linux Release info:"
@@ -929,12 +920,21 @@ wtf(){
     fi
   fi
   echo
+  echo "Uptime:      $(uptime | sed 's/^ *//')"
+  echo "Memory:      $(free -m | grep buffers/cache | awk '{ print "used: " $3 "M, free: " $4 "M"}')"
+  echo "Processor:   $(grep ^processor /proc/cpuinfo | wc -l) CPU(s); $(grep '^model name' /proc/cpuinfo  | sort -u | sed 's/.*: //')"
+  echo "Disk usage:"
+  dfh
+  echo
   echo "You:"
   if [ ! -z "$SSH_TTY" ] ; then
     last -i | grep $(echo $SSH_TTY|sed 's/^\/dev\///') | grep still.logged.in
   else
     who am i
   fi
+  echo "IP:           $(ifconfig -a | grep inet | grep -v 127.0.0.1 | grep -v inet6 | sed 's/\s*//')"
+  echo "External IP:  $(myip | tail -1 | sed 's/.*: //')"
+  # echo "Netname:     $(whois -h whois.ripe.net $external_ip | grep ^netname: | awk '{print $2}')"
 }
 
 # Do a sum of a bunch of numbers. Numbers are expected to be on per line.
