@@ -344,12 +344,14 @@ checklockf(){
 # Lock a file, and edit it with sudo.
 # The locking stuff is kind of overkill, I suppose, as long as I always use vi
 # But could be useful for others
-sudoedit(){
+# This used to be called sudoedit, but now that's a symlink to sudo, at least on Ubuntu
+sudoeditor(){
   local file=$1
+  if [ ! -f "$file" ] ; then echo "File does not exist: $file" ; return 1 ; fi
   local name=$(basename $file)
   local lockfile=${TMPDIR:-/tmp}/.$name.lock
   local md5before=$(sudo md5sum $file)
-  if [ ! -f $file ] ; then echo "File does not exist: $file" ; return 1 ; fi
+  echo "Running sudo editor"
   if ! checklockf $lockfile $file ; then return 1 ; fi
   sudo $EDITOR $file
   rm -f $lockfile
@@ -2284,7 +2286,7 @@ m4mc(){
 
 viregex(){
   local _configfile=/etc/mail/milter-regex.conf
-  sudoedit $_configfile || return
+  sudoeditor $_configfile || return
   if sudo milter-regex -d -t -c $_configfile ; then
     echo "Config seems to be OK, restarting daemon"
     sudo service milter-regex restart
@@ -2300,22 +2302,22 @@ viregex(){
 }
 
 vigreylist(){
-  sudoedit /etc/mail/greylist.conf && sudo service milter-greylist restart && echo && echo "Tailing log file"  && sudo tail -f /var/log/maillog | grep greylist
+  sudoeditor /etc/mail/greylist.conf && sudo service milter-greylist restart && echo && echo "Tailing log file"  && sudo tail -f /var/log/maillog | grep greylist
 }
 
 viaccess(){
   local mapfile=/etc/mail/access
-  sudoedit $mapfile && sudo makemap -v hash $mapfile <$mapfile > /dev/null
+  sudoeditor $mapfile && sudo makemap -v hash $mapfile <$mapfile > /dev/null
   ls -l $mapfile*
 }
 
 vivirt(){
   local mapfile=/etc/mail/virtusertable
-  sudoedit $mapfile && echo "Updating map" && sudo makemap -v hash $mapfile < $mapfile > /dev/null
+  sudoeditor $mapfile && echo "Updating map" && sudo makemap -v hash $mapfile < $mapfile > /dev/null
 }
 
 vialiases(){
-  sudoedit /etc/mail/aliases && echo "Updating map" && sudo newaliases
+  sudoeditor /etc/mail/aliases && echo "Updating map" && sudo newaliases
 }
 
 # End of root/sudo specific functions
