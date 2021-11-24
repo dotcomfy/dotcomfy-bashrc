@@ -349,6 +349,7 @@ sudoedit(){
   local name=$(basename $file)
   local lockfile=${TMPDIR:-/tmp}/.$name.lock
   local md5before=$(sudo md5sum $file)
+  if [ ! -f $file ] ; then echo "File does not exist: $file" ; return 1 ; fi
   if ! checklockf $lockfile $file ; then return 1 ; fi
   sudo $EDITOR $file
   rm -f $lockfile
