@@ -1446,8 +1446,9 @@ wclock(){
   echo -n "UTC:        " ; tclock UTC
   echo -n "London:     " ; tclock Europe/London
   echo -n "Stockholm:  " ; tclock Europe/Stockholm
-  echo -n "Calcutta:   " ; tclock Asia/Calcutta
-  echo -n "Tokyo:      " ; tclock Asia/Tokyo
+  # echo -n "Calcutta:   " ; tclock Asia/Calcutta
+  # echo -n "Tokyo:      " ; tclock Asia/Tokyo
+  echo -n "Melbourne   " ; tclock Australia/Melbourne
   echo -n "Auckland:   " ; tclock Pacific/Auckland
 }
 
