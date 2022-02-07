@@ -100,7 +100,7 @@ fi
 ##### SHELL VARIABLES
 ### Stuff used by various commands/applications, or the shell itself
 # Locale, doesn't work on Termux in Android
-if [ "$OSTYPE" != "linux-android" ] ; then
+if [ "$OSTYPE" = "linux-gnu" ] ; then
   LANG=en_GB.utf8 export LANG
   LANGUAGE=en_GB.utf8 export LANGUAGE # Only used by Perl?
   LC_TIME=en_GB export LC_TIME
@@ -259,6 +259,7 @@ wwwdump(){
 # Make ssh aliases - takes a list of host names and creates ssh aliases for them
 # Helper function to be used from .local_shellrc
 # Example: mksshalias -s "foo bar.example.com baz"
+# To specify a username, use: MKSSHALIAS_USER=user@
 mksshalias(){
   local shorten="N"
   local hostname
@@ -281,7 +282,7 @@ mksshalias(){
       shortcut=$hostname
     fi
    title=$shortcut
-   alias $shortcut="screen_ssh $hostname $title"
+   alias $shortcut="screen_ssh $MKSSHALIAS_USER$hostname $title"
    done
 }
 
