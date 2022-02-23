@@ -4,7 +4,7 @@
 #
 ###############################################################################
 #
-# Copyright (c) 1999-2020 Linus / Dotcomfy
+# Copyright (c) 1999-2022 Linus / Dotcomfy
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -146,6 +146,16 @@ SCREEN_TITLE="$(basename $SHELL)"
 # Download location
 shrc_url="$dlbase/latest/?h=$(hostname)&u=$USER" # download location of .bashrc
 
+
+###
+##### Shell options,
+### Changing a few defaults
+###
+shopt -s histappend
+shopt -s dirspell
+shopt -s cdspell
+shopt -s autocd
+shopt -s histreedit
 
 ###
 ##### COLOURS
