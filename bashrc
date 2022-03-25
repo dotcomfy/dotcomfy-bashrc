@@ -559,6 +559,10 @@ screen_auto_attacher
 ### Some of these are old shell scripts or small perl scripts
 ### that are quite handy to have available on any host I might log in to
 
+# Find a file (or many files, or all files) and edit it in vi
+vifind(){
+  vi $(find . -name '*'$*'*' -type f)
+}
 
 # Snippet for bringing all windows to the viewable desktop area in X
 # Works on Ubuntu 21.04 / XFCE
