@@ -1428,23 +1428,43 @@ sssh(){
 # eg: alias foo="screen_ssh foo"
 # alias foo="screen_ssh foo.example.com foo"
 # If running under screen, the ssh comand will be launched in a new window
-# if not, it'll just run in the current shell
+# if not, it will just run in the current shell
 # if title is set, it will be used as the window title. otherwise,
 # the hostname will be used as the title
 screen_ssh(){
   if [ -z "$1" ] ; then
-    echo "Usage: screen_ssh host [title [ssh flags]]"
+    echo "Usage: screen_ssh dest [title [ssh flags]]"
+    echo "Optional setting, to enable connection check (in case of changed host key)"
+    echo "screen_ssh_test_connection=yes"
     return 1
   fi
-  local host=$1 ; shift
-  if [ ! -z "$1" ] ; then title=$1 ; shift ; else title=$host ; fi
+  local dest=$1 ; shift
+  local host=$(echo $dest | sed 's/.*@//')
+  if [ ! -z "$1" ] ; then title=$1 ; shift ; else title=$dest ; fi
   # Any arguments after hostname and title are passed on to ssh
   sshflags="-C -o ServerAliveInterval=30 $*"
   # STY is set by screen if it's running
   if [ -z "$STY" ] ; then
-    ssh $sshflags $host
+    ssh $sshflags $dest
   else
-    screen -t $title ssh $sshflags $host
+  # When running SSH in a screen session, you don't get to see the error if the command fails, because the screen will close too fast.
+  # So, we do a little bit of error checking/handling
+  # To enable this test, set $screen_ssh_test_connection=yes
+  # This is useful for VMs that get frequently recreated, meaning that the host key for the same IP address keeps changing
+  if [ "$screen_ssh_test_connection" = "yes" ] && ! ssh $dest true ; then
+    echo
+    echo "Looks like there's a connection problem, maybe a host key issue?"
+    echo "WARNING: If you're not expecting this issue, check what's happened before just accepting a new host key"
+    echo -n "Would you like to remove the key for $host? (y/N): "
+    read _ans
+    if [ "$_ans" = "y" ] ; then
+  	ssh-keygen -R $host
+    else
+  	echo "Aborting: ssh $dest"
+  	return 1
+    fi
+  fi
+  screen -t $title ssh $sshflags $dest
   fi
 }
 
