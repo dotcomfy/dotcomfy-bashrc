@@ -3245,24 +3245,24 @@ alias git_reset_hard_origin="echo 'Reset from origin/master? ENTER/CTRL-C' && re
 # Set a prompt for when inside a git repo
 git_prompt(){
   # We use a timeout, to avoid hanging if CWD is unavailable
-  if ref=$(timeout 2 git symbolic-ref HEAD 2>/dev/null); then
-    gitstatus="$(timeout 2 git status)"
+  if ref=$(timeout 1 git symbolic-ref HEAD 2>/dev/null); then
+    gitstatus="$(timeout 1 git status)"
     if echo "$gitstatus" | grep -E 'Changes|Changed|Untracked' >/dev/null; then
-      COLOUR=$RED;
+      COLOUR="$RED"
     elif echo "$gitstatus" | grep -E 'Your branch is ahead' >/dev/null; then
       ahead_by=":$(echo "$gitstatus" | grep 'Your branch is ahead' | sed 's/.*by \(.*\) commit.*/\1/')"
-      COLOUR=$YELLOW;
+      COLOUR="$YELLOW"
     elif echo "$gitstatus" | grep -E 'Unmerged paths' >/dev/null; then
-      COLOUR=$PURPLE;
+      COLOUR="$PURPLE"
     elif echo "$gitstatus" | grep -E 'working (directory|tree) clean' >/dev/null; then
-      COLOUR=$GREEN;
+      COLOUR="$GREEN"
     else
       # Unknown status
-      COLOUR=$LIGHT_BLUE;
+      COLOUR="$LIGHT_BLUE"
     fi
-    printf "$COLOUR("${ref#refs/heads/}"${ahead_by})$ENDCOLOUR";
+    echo -ne "[$COLOUR("${ref#refs/heads/}"${ahead_by})$ENDCOLOUR]"
   else
-    return 1;
+    return 1
   fi
 }
 
@@ -3522,7 +3522,9 @@ set_primary_prompt(){
   fi
 
   # Defaults
-  promptbase="\u@\h:\w\$(prompt_extras)"
+  # This isn't quite right, we\re wrapping all of prompt extras in \[\], but it should only be the non-printable colour stuff. However, this seems to work :)
+  # An alternative might be to split out prompt extras colour into its own function, and wrap only that
+  promptbase="\u@\h:\w\[\$(prompt_extras)\]"
   PS1="${promptbase}${psch} "
   unset PROMPT_DIRTRIM
 
@@ -3559,7 +3561,7 @@ set_primary_prompt(){
 }
 
 prompt_extras(){
-  gnome_kbd_layout_prompt
+  # gnome_kbd_layout_prompt
   git_prompt
   cvs_prompt
   rcs_prompt
