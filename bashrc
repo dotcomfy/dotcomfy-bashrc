@@ -314,7 +314,7 @@ set_screen_title(){
 xtitle(){
   case $TERM in
    *term* | *color | rxvt | vt100 | vt220 | cygwin | screen* )
-      echo -n -e "\033]0;${xtitle1}${*}${xtitle2}\007" ;;
+      echo -n -e "\033]0;${xtitle_prefix}${xtitle1}${*}${xtitle2}\007" ;;
    *)  ;;
      esac
 }
