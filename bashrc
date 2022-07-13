@@ -3260,7 +3260,7 @@ git_prompt(){
       # Unknown status
       COLOUR="$LIGHT_BLUE"
     fi
-    echo -ne "[$COLOUR("${ref#refs/heads/}"${ahead_by})$ENDCOLOUR]"
+    echo -ne "[$COLOUR${ref#refs/heads/}${ahead_by}$ENDCOLOUR]"
   else
     return 1
   fi
@@ -3522,9 +3522,13 @@ set_primary_prompt(){
   fi
 
   # Defaults
-  # This isn't quite right, we\re wrapping all of prompt extras in \[\], but it should only be the non-printable colour stuff. However, this seems to work :)
-  # An alternative might be to split out prompt extras colour into its own function, and wrap only that
-  promptbase="\u@\h:\w\[\$(prompt_extras)\]"
+  # TODO: Figure out how we can fix wrapping and line editing with the coloured prompts
+  # https://tldp.org/HOWTO/Bash-Prompt-HOWTO/nonprintingchars.html
+  # This, for example, works:
+  # ara_env_colour=$CYAN
+  # PS1="\[${ara_env_colour}\][$ara_env]\[${ENDCOLOUR}\][\u@\h \W]\[${ara_psch_colour}\]\\$\[${ENDCOLOUR}\] "
+  # Should the various prompt extras methods just set prompt_extras_colour and promt_extras_content?
+  promptbase="\u@\h:\w\$(prompt_extras)"
   PS1="${promptbase}${psch} "
   unset PROMPT_DIRTRIM
 
@@ -3562,6 +3566,7 @@ set_primary_prompt(){
 
 prompt_extras(){
   # gnome_kbd_layout_prompt
+  # TODO: If one of these returns a value, then abort the rest?
   git_prompt
   cvs_prompt
   rcs_prompt
