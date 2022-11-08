@@ -2913,7 +2913,7 @@ sub fetchurl {
                                             Proto    => 'tcp',
                                             SSL_use_cert => 0,
                                             SSL_verify_mode => 0x00,
-                                            SSL_passwd_cb => sub { return "opossum" }) ) {
+                                            ) ) {
             warn "Couldn't open socket ($url->{remote_host}): $!\n", &IO::Socket::SSL::errstr, "\n";
             return;
         }
@@ -2931,7 +2931,7 @@ sub fetchurl {
     $http_host = $opts{H} || $url->{remote_host};
 
     # Only print headers and stuff in normal (non-quiet) mode
-    unless ($quiet) { print "Client request:\n\n"; }
+    unless ($quiet) { print "Connected: $url->{remote_host}:$url->{remote_port}; SSL: $url->{do_ssl}\nRequest:\n\n"; }
 
     # Print the HTTP request, on STDOUT and on the socket.
     print_socket("$request_method $url->{path} HTTP/$protocol_version$CRLF");
@@ -2951,7 +2951,7 @@ sub fetchurl {
     }
     print_socket("$CRLF$CRLF");
 
-    unless ( $quiet ){ print "Server response:\n\n"; }
+    unless ( $quiet ){ print "Response:\n\n"; }
     while ($server_response = <$socket>) {
         # if -q option is used, make sure not to print the header...
         if ( $header_finished || ! $quiet ) { print "$server_response"; }
