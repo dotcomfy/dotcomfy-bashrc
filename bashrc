@@ -2376,12 +2376,12 @@ shrcinfo(){
 shrcupd(){
   local remote_version="$(curl --max-time 5 -S -s "$shrc_url&c=version")"
   if [ $? -gt 0 -o "$remote_version" = "" ] ; then warn "Update check failed" ; return ; fi
-  if [ "$DCMF_BASHRC_VERSION" = "$remote_version" ]; then
+  if [ "$DCMF_BASHRC_VERSION" = "$remote_version" -a ! "$1" = "force" ]; then
     echo "This is the latest version: $DCMF_BASHRC_VERSION"
     # Updating age file, to delay next check
     date '+%s' > $shrc_age_file
   else
-    echo "New version detected: $remote_version"
+    echo "New version detected or update forced: $remote_version"
     updatefile $shrc_home $shrc_url
     echo "Updated to: $DCMF_BASHRC_VERSION"
   fi
@@ -3658,6 +3658,11 @@ ocd(){
   elif builtin pushd "$@" >/dev/null 2>&1; then
     # If the argument is a directory that we can change into, then do nothing more...
     true
+  elif [ -e "$@" -a ! -d "$@" ] && pushd "$(dirname "$@")" > /dev/null ; then
+    # If the argument is a non-directory, but we can cd into its parent directory, then we're happy
+    # Useful for example if you've been editing a file, and wants to cd into its directory
+    # Instead of "cd $(dirname !$)" you can now just do "cd !$"
+    echo "Changed to dirname of $@: $(pwd)"
   else
     ocd_change_to "$(OCD_PARTIAL_MATCH=$OCD_PARTIAL_MATCH ocd_get_matches)"
   fi
@@ -3712,6 +3717,8 @@ ocd_pick_from_matches(){
 alias cd=ocd
 
 # On the same theme as the nonsense above
+# Find a directory under current directory, with the given name, then cd into it
+# Should this use wildcards when finding?
 fcd(){
   local basedir=.
   if [ $# -gt 1 ] ; then basedir=$1 ; shift ; fi
