@@ -428,8 +428,8 @@ alias suidfind="find / -perm -4000 -or -perm -2000"
 alias calentool="calentool -D 2 -e" # ISO date format and week starts on monday
 alias prtdiag='/usr/platform/`uname -i`/sbin/prtdiag' # Diag command on Suns
 alias s_client="openssl s_client -connect" # "ssl telnet"
-unset ps1 >/dev/null 2>&1
 alias ps1="set_primary_prompt"
+alias nom=npm # For Tin <3
 # The alias for screen gets set *after* loading local bashrc, since it depends on settings from it
 
 # Allows running functions and aliases with sudo (eg, "runsudo m4mc")
