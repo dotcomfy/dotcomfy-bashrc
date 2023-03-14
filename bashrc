@@ -1900,7 +1900,7 @@ fstr(){
     sed "s/$1/$SMSO$1$RMSO/gI"
 }
 
-repeat(){
+repeatcmd(){
   # repeat n times command
   if [ $# -lt 2 ] ; then echo "Usage: repeat N command" ; return 1 ; fi
   local i max
