@@ -151,11 +151,13 @@ shrc_url="$dlbase/latest/?h=$(hostname)&u=$USER" # download location of .bashrc
 ##### Shell options,
 ### Changing a few defaults
 ###
-shopt -s histappend
-shopt -s dirspell
-shopt -s cdspell
-shopt -s autocd
-shopt -s histreedit
+if [ -n "$BASH" ] ; then
+  shopt -s histappend
+  shopt -s dirspell
+  shopt -s cdspell
+  shopt -s autocd
+  shopt -s histreedit
+fi
 
 ###
 ##### COLOURS
