@@ -736,7 +736,7 @@ shrc_reloader(){
 }
 add_watched_profile_files $potential_profile_watch_files
 if ! echo "$PROMPT_COMMAND" | grep shrc_reloader >/dev/null ; then
-  PROMPT_COMMAND="shrc_reloader; $PROMPT_COMMAND"
+  PROMPT_COMMAND="shrc_reloader; reset_term_titles; $PROMPT_COMMAND"
 fi
 
 # check version of .bashrc
@@ -2274,10 +2274,16 @@ vi(){
 
   xtitle "vi $@ - ($USER@$HOSTNAME)";
   command $vicmd "$@";
-  xbacktitle
-  set_screen_title "$SCREEN_TITLE"
+  # This is now moot, since we set titles in PROMPT_COMMANDS, but leaving it here for reference in case I change my mind
+  # xbacktitle
+  # set_screen_title "$SCREEN_TITLE"
   # Reset background colour, since in some terminals, the terminal will otherwise stay shaded after vi exits
   tput sgr0
+}
+
+reset_term_titles(){
+  xbacktitle
+  set_screen_title "$(dirs | awk '{ print $1 }')"
 }
 
 make(){
