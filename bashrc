@@ -2274,7 +2274,7 @@ vi(){
   xtitle "vi $@ - ($USER@$HOSTNAME)";
   command $vicmd "$@";
   xbacktitle
-  set_screen_title $SCREEN_TITLE
+  set_screen_title "$SCREEN_TITLE"
   # Reset background colour, since in some terminals, the terminal will otherwise stay shaded after vi exits
   tput sgr0
 }
