@@ -142,7 +142,8 @@ PS4='$0:$LINENO: ' ; export PS4
 # MySQL prompt, hostname:databasename
 MYSQL_PS1="$(hostname -s):\d> " export MYSQL_PS1
 # Used as the default title on screen windows
-SCREEN_TITLE="$(basename $SHELL)"
+# For new screens, it's allso affected by shelltitle in .screenrc
+SCREEN_TITLE=" "
 # Download location
 shrc_url="$dlbase/latest/?h=$(hostname)&u=$USER" # download location of .bashrc
 
