@@ -2284,7 +2284,14 @@ vi(){
 
 reset_term_titles(){
   xbacktitle
-  set_screen_title "$(dirs | awk '{ print $1 }')"
+  local _cwd="$(dirs | awk '{ print $1 }')"
+  # First, if there are too many directory elements in the path, we truncate it showing the first and last only, using "[/]" to indicate the truncation
+  local _cwd_trunc="$(echo $_cwd  | awk -F/ '{ if (NF > 3) { print $1 "/" $2 "[/]" $NF } else { print $0 } }')"
+  # If truncating directory names wasn't enough, then just truncate the middle of the path
+  if [ ${#_cwd_trunc} -gt 21 ] ; then
+    _cwd_trunc="$(echo $_cwd | awk '{print substr($0, 1, 7) "[.]" substr($0, length($0)-9)}')"
+  fi
+  set_screen_title "$_cwd_trunc"
 }
 
 make(){
