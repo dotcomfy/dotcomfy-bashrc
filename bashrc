@@ -55,7 +55,7 @@ DCMF_BASHRC_VERSION='Git version'
 
 # Not much point in doing any of this stuff unless we're on a tty, is it?
 # Ansible requests a TTY but sets TERM to "dumb", so we abort for that, too
-if ! tty >/dev/null -o [ "$TERM" = "dumb" ]; then
+if ! tty >/dev/null || [ "$TERM" = "dumb" ]; then
   return
 fi
 
