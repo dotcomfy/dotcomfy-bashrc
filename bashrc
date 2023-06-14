@@ -54,6 +54,7 @@ DCMF_BASHRC_VERSION='Git version'
 [ -f /etc/profile.d/custom.sh ] && . /etc/profile.d/custom.sh
 
 # Not much point in doing any of this stuff unless we're on a tty, is it?
+# Ansible requests a TTY but sets TERM to "dumb", so we abort for that, too
 if ! tty >/dev/null -o [ "$TERM" = "dumb" ]; then
   return
 fi
