@@ -56,7 +56,7 @@ DCMF_BASHRC_VERSION='Git version'
 # Not much point in doing any of this stuff unless we're on a tty, is it?
 # In some cases, there will be a TTY for a non-interactive shell, hence the additional check for -i
 # The -i check should maybe only be done for bash, but I'll worry about that if I need to...
-if ! tty >/dev/null || [ "${-#*i}" == "$-" ] ; then return fi
+if ! tty >/dev/null || [ "${-#*i}" == "$-" ] ; then return ; fi
 
 ###
 ##### SETTINGS
