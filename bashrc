@@ -2520,6 +2520,9 @@ if ( $rcptto   =~ /<(.+)>/ ) { $rcptto   = $1 };
 # Wrap from and to for headers, if they are just bare addresses
 unless ( $from =~ /<(.+)>/ ) { $from = "<$from>" };
 unless ( $to   =~ /<(.+)>/ ) { $to   = "<$to>"   };
+# For message-id, we want the fromaddr without <>
+my $bare_from = $from;
+$bare_from =~ s/[<>]//g;
 
 # Constants:
 my $CRLF       = "\015\012";
@@ -2531,7 +2534,7 @@ my %headers = (
     'To'           => "$to",
     'X-Mailer'     => "$me ($version)",
     'Date'         => "$date GMT",
-    'Message-ID'   => "<$me." . time() . ".$from>",
+    'Message-ID'   => "<$me." . time() . ".$bare_from>",
     'Content-Type' => "text/plain; charset=us-ascii",
 );
 
