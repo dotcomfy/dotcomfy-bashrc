@@ -146,6 +146,8 @@ MYSQL_PS1="$(hostname -s):\d> " export MYSQL_PS1
 SCREEN_TITLE=" "
 # Download location
 shrc_url="$dlbase/latest/?h=$(hostname)&u=$USER" # download location of .bashrc
+# Not prompt related, but handy place for stuff we want automated
+PROMPT_COMMAND="shrc_reloader; reset_term_titles"
 
 
 ###
@@ -735,9 +737,6 @@ shrc_reloader(){
   fi
 }
 add_watched_profile_files $potential_profile_watch_files
-if ! echo "$PROMPT_COMMAND" | grep shrc_reloader >/dev/null ; then
-  PROMPT_COMMAND="shrc_reloader; reset_term_titles; $PROMPT_COMMAND"
-fi
 
 # check version of .bashrc
 
@@ -2274,7 +2273,7 @@ vi(){
 
   xtitle "vi $@ - ($USER@$HOSTNAME)";
   command $vicmd "$@";
-  # This is now moot, since we set titles in PROMPT_COMMANDS, but leaving it here for reference in case I change my mind
+  # This is now moot, since we set titles in PROMPT_COMMAND, but leaving it here for reference in case I change my mind
   # xbacktitle
   # set_screen_title "$SCREEN_TITLE"
   # Reset background colour, since in some terminals, the terminal will otherwise stay shaded after vi exits
