@@ -3764,7 +3764,7 @@ git_prompt(){
   fi
 }
 
-# Create a branch on Github
+# Create a branch on remote (Github/Gitlab/Bitbucket/Whatevs)
 git_create_remote_branch(){
   # Replace spaces with underscores
   local new_branch=$(echo $* | sed -r 's/[^a-zA-Z0-9-]/_/g')
@@ -3902,17 +3902,26 @@ git_clean_branches(){
 # Git change branch
 gcb(){
   local lastbranchfile=~/.lastgitbranch$(git rev-parse --show-toplevel | sed 's/\W/_/g')
-  local new_branch
+  local new_branch=$1
+  local previous_branch=$(get_current_git_branch)
 
-  if [ "$1" = "-" ] ; then
-    local branches="$(git_get_branches)"
-    new_branch=$(cat $lastbranchfile)
-  elif [ ! -z "$1" ] ; then
-    # A branch name was specified
-    local branches="$(git_get_branches)"
-    new_branch=$1
+  if [ "$new_branch" = "$previous_branch" ] ; then
+    echo "Already on $new_branch, aborting..." ; return
+  elif [ "$new_branch" = "-" ] && git checkout $(cat $lastbranchfile) ; then
+    true
+  elif [ -n "$new_branch" ] && git checkout $new_branch 2>/dev/null; then
+    # A branch name was specified and we checked it out - done
+    echo "Switched to branch $new_branch"
   else
+
     local branches="$(git_get_branches)"
+
+    # $new_branch wasn't an exact match, so we filter the list by that string instead - so you could do "gcb ma" and find both master and main
+    if [ -n "$new_branch" ] ; then
+      branches="$(echo "$branches" | grep $new_branch)"
+      # If there's only one branch, then recurse to change to it
+      if [ $(echo "$branches" | wc -l) = 1 ] ; then echo "Just one match: $branches" ;  gcb $branches; return ; fi
+    fi
     local PS3='Branch (or CTRL-D to quit)#: '
     echo "Checking if there are remote branches to fetch"
     if git fetch --dry-run 2>&1 | grep 'new branch' ; then
@@ -3921,34 +3930,17 @@ gcb(){
     select new_branch in $branches ; do
       break
     done
+    git checkout $new_branch || return
   fi
 
-  if [ -z "$new_branch" ] ; then
-    echo "No branch selected, aborting"
-  else
-    get_current_git_branch > $lastbranchfile
-    chmod go-rwx $lastbranchfile
-    if echo "$branches" | grep "^$new_branch$" > /dev/null ;then
-      echo "Exact match, checking out: $new_branch"
-      git checkout $new_branch
-    else
-      # There wasn't an exact match, so we try partial match.
-      echo "Trying to find branch that matches $new_branch"
-      found_branch=$(echo "$branches" | grep $new_branch | head -1)
-      if [ -z "$found_branch" ]; then
-        echo "No branch found matching $new_branch (try -a to include remote branches)"
-      else
-        echo "Found: $found_branch"
-        git checkout $found_branch
-      fi
-    fi
-  fi
+  echo $previous_branch > $lastbranchfile
+  chmod go-rwx $lastbranchfile
 }
 
 git_get_branches(){
   # Get branches, including remote (-a)
   # NOTE: This does fetch anything from remote, just remote branches that we already know about. You need to run git fetch to find new remote branches.
-  git branch -a -v | sed -r 's/^\*//' | awk '{print $1}' | sed 's#.*/##'
+  git branch -a -v | sed -r 's/^\*//' | awk '{print $1}' | sed 's#.*/##' | sort -u
 }
 
 get_current_git_branch(){
