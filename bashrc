@@ -301,14 +301,31 @@ mksshalias(){
    done
 }
 
+reset_term_titles(){
+  xbacktitle
+  local _cwd="$(dirs | awk '{ print $1 }')"
+  # First, if there are too many directory elements in the path, we truncate it showing the first and last only, using "[/]" to indicate the truncation
+  local _cwd_trunc="$(echo $_cwd  | awk -F/ '{ if (NF > 3) { print $1 "/" $2 "[/]" $NF } else { print $0 } }')"
+  # If truncating directory names wasn't enough, then just truncate the middle of the path
+  if [ ${#_cwd_trunc} -gt 21 ] ; then
+    _cwd_trunc="$(echo $_cwd | awk '{print substr($0, 1, 7) "[.]" substr($0, length($0)-9)}')"
+  fi
+  set_screen_title "$_cwd_trunc"
+}
+
+
 set_screen_title(){
   # To make screen titles get set, one of these conditions needs to be met:
   # screen_title_prefix - for example, on host1.example.com, I may set this to "host1:", so if I'm editing some_script.sh, screen title gets set to host1:some_script.sh
   # $STY - this gets set on the server that screen runs on, usually bouncer
   # For any other server that I ssh to, the screen title gets set to the hostname of the server, when I launch the SSH command. This makes for shorter titles.
-  [ -z "$STY" ] && [ -z "$screen_title_prefix" ] && return
+  # I can't remember why I had all of these conditions, was there ever an issue trying to set it in some terminals?
+  [ -z "$STY" -a -z "$screen_title_prefix" -a "$TERM" != "screen" ] && return
+  if [ -z "$STY" -a -z "$screen_title_prefix" ] ; then
+    # STY is blank (IE, we've logged in to another server), and no prefix set, set prefix to username@hostname
+    screen_title_prefix="$(hostname -s)"
+  fi
   local newtitle="${screen_title_prefix}${1}"
-  [ -z "$newtitle" ] && newtitle=$(hostname -s)
   echo -ne "\ek$newtitle\e\\"
 }
 
@@ -2031,7 +2048,6 @@ routeserver(){
   xtitle "routeserver: $USER@$server"
   echo "Server set to $server"
   command telnet $server
-  xbacktitle
 }
 
 
@@ -2218,7 +2234,6 @@ sdlist(){
 screen(){
   xtitle "$HOSTNAME: $USER (screen)"
   command screen $@
-  xbacktitle
 }
 
 pine(){
@@ -2229,7 +2244,6 @@ pine(){
     pine=pine
   fi
   command $pine -i $*
-  xbacktitle
 }
 
 
@@ -2252,7 +2266,6 @@ alias -- ---="-&&-&&-"
 su(){
   xtitle "root@$HOSTNAME (su from $USER)"
   command su "$@"
-  xbacktitle
 }
 
 # In case there's an alias, get rid of it
@@ -2273,47 +2286,28 @@ vi(){
 
   xtitle "vi $@ - ($USER@$HOSTNAME)";
   command $vicmd "$@";
-  # This is now moot, since we set titles in PROMPT_COMMAND, but leaving it here for reference in case I change my mind
-  # xbacktitle
-  # set_screen_title "$SCREEN_TITLE"
   # Reset background colour, since in some terminals, the terminal will otherwise stay shaded after vi exits
   tput sgr0
-}
-
-reset_term_titles(){
-  xbacktitle
-  local _cwd="$(dirs | awk '{ print $1 }')"
-  # First, if there are too many directory elements in the path, we truncate it showing the first and last only, using "[/]" to indicate the truncation
-  local _cwd_trunc="$(echo $_cwd  | awk -F/ '{ if (NF > 3) { print $1 "/" $2 "[/]" $NF } else { print $0 } }')"
-  # If truncating directory names wasn't enough, then just truncate the middle of the path
-  if [ ${#_cwd_trunc} -gt 21 ] ; then
-    _cwd_trunc="$(echo $_cwd | awk '{print substr($0, 1, 7) "[.]" substr($0, length($0)-9)}')"
-  fi
-  set_screen_title "$_cwd_trunc"
 }
 
 make(){
   xtitle "$USER@$HOSTNAME: make $@ in $PWD"
   command make $@
-  xbacktitle
 }
 
 rfc(){
   xtitle "$USER@$HOSTNAME: reading RFC $@"
   curl -s http://${1}.rfc.dotcomfy.net | $PAGER
-  xbacktitle
 }
 
 man(){
   xtitle "$USER@$HOSTNAME: reading the manual for $@"
   command man $@
-  xbacktitle
 }
 
 top(){
   xtitle "Processes on $HOSTNAME"
   command $top $@
-  xbacktitle
 }
 
 
