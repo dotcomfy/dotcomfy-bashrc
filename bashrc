@@ -323,7 +323,7 @@ set_screen_title(){
   [ -z "$STY" -a -z "$screen_title_prefix" -a "$TERM" != "screen" ] && return
   if [ -z "$STY" -a -z "$screen_title_prefix" ] ; then
     # STY is blank (IE, we've logged in to another server), and no prefix set, set prefix to username@hostname
-    screen_title_prefix="$(hostname -s)"
+    screen_title_prefix="$(hostname -s):"
   fi
   local newtitle="${screen_title_prefix}${1}"
   echo -ne "\ek$newtitle\e\\"
