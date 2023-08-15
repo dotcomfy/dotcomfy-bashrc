@@ -581,11 +581,82 @@ screen_auto_attacher
 ### Some of these are old shell scripts or small perl scripts
 ### that are quite handy to have available on any host I might log in to
 
+# If a server has been reinstalled with the same name, then we should remove all known hosts entries for the old one
+removesshhost(){
+  kh=~/.ssh/known_hosts
+  newkh=$kh.new.$$
+  key=$(grep "^$1 " $kh | awk '{ print $3}')
+  if [ -z "$key" ] ; then
+    echo "No key found for $1 in $kh" ; return
+  fi
+
+  grep -v "$key" $kh > $newkh
+  diff $kh $newkh
+  if askyesno "Accept new $kh?" ; then
+    cat $newkh > $kh
+  else
+    echo "OK, then"
+  fi
+  rm -f $newkh
+}
+
 # Find a file (or many files, or all files) and edit it in vi
 vifind(){
   vi $(find . -name '*'$*'*' -type f)
 }
 
+
+# Grep recursively for a specific pattern in files, grab the first file, edit, and search for the first occurrance of the pattern
+vigrep(){
+  _pattern="$*"
+  vim -c "silent! /$_pattern" "$(grep -r -I -l "$_pattern" | head -1)"
+}
+
+# Do a long listing on each of the components of a directory/file and the path above it.
+lspath(){
+  if [ "$1" = "-s" ] ; then local SUDO=sudo ; shift ; fi
+  _currpath="$1"
+  # Special for handling . and .., expand it to actual dir name
+  [ "$_currpath" = "." -o "$_currpath" = ".." ] && _currpath="$(realpath "$_currpath")"
+  _targets=()
+  while [ "$_currpath" != "/" ] ; do
+    _targets+=("$_currpath")
+    # If it's symlink, then follow it, otherwise go to parent dir - this way we expose symlinks in the listing
+    if readlink $_currpath >/dev/null; then
+      _currpath="$(readlink "$_currpath")"
+    else
+      _currpath="$(dirname "$_currpath")"
+    fi
+  done
+
+  $SUDO ls -ldU "${_targets[@]}"
+}
+
+# Recurively delete empty directories using rmdir - safer than using rm -rf, since it'll skip any directories containing files
+rmpath(){
+  _target="$1"
+  echo "Path before:"
+  find "$_target" -ls
+  if [ -z "$_target" ] ; then
+    echo "Usage: $FUNCNAME <target>"
+    echo "Deletes empty directories under target, including target itself, if empty "
+    return
+  fi
+  # This needs to be in a loop, since deleting a directory will make the parent empty, and we then need to keep going until there are no more empty dirs
+  while [ -d "$_target" -a -n "$(find "$_target" -type d -empty 2>/dev/null)" ] ; do
+    find "$_target" -depth -type d -empty -print0 | xargs -0 -I {} /bin/rmdir "{}"
+  done
+  echo ; echo "Path after:"
+  if [ -d "$_target" ] ; then find "$_target" -ls ; else echo "Nothing left" ; fi
+}
+
+
+# Context recursive grep - grep for string, and include ten lines above/below
+cgrep(){
+  context=10
+  if [ "$1" = "-c" ] ; then context=$2 ; shift ; shift ; fi
+  grep -r -A $context -B $context $*
+}
 # Snippet for bringing all windows to the viewable desktop area in X
 # Works on Ubuntu 21.04 / XFCE
 gather_windows(){
@@ -4250,5 +4321,3 @@ first_load_of_dotcomfy_bashrc_completed=true
 
 # Source .local_shellrc if existent, last in file, to override globals
 [ -f ~/.local_shellrc ] && . ~/.local_shellrc
-
-
