@@ -62,11 +62,11 @@ if ! tty >/dev/null || [ "${-#*i}" == "$-" ] ; then return ; fi
 ##### SETTINGS
 ### Specific for the usage of the .bashrc and its functions
 ###
-toolsbase="https://t.dotcomfy.net" # location of traceroute, ping, etc tools
-dlbase="https://bashrc.dotcomfy.net" # where files are downloaded from
+toolsbase="https://t.dotcomfy.net"   # Location of traceroute, ping, etc tools
+dlbase="https://bashrc.dotcomfy.net" # Where files are downloaded from
 githubbase="https://raw.githubusercontent.com/dotcomfy/dotcomfy-bashrc/master"
 shrc_age_file="$HOME/.shrc_age_file" # File where a time stamp is stored
-shrc_max_age=3 # Ask for update if .bashrc age is older than this (in days)
+shrc_max_age=30                      # Check for update if .bashrc is older than X days
 updatefile_tmp="${TMPDIR:-/tmp}/.updatefile_tmp.$LOGNAME.$$"
 # (Gnome) Notify if we're using any other keyboard layout
 default_kbd_layout="gb"
