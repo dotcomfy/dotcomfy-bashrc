@@ -699,6 +699,24 @@ unmaximise_windows(){
   done
 }
 
+# Mostly useful on Linux laptops, I guess? Print info on batteries, including wireless peripherals.
+alias battery_info=power_info
+power_info(){
+  if ! type -t upower > /dev/null; then
+    echo "Need the 'upower' command for this to work"
+    return 1
+  fi
+  local devices=$(upower --enumerate | grep /battery_)
+  for device in $devices ; do
+    echo -n "Device: "
+    echo "$device" | sed 's#.*/##'
+    upower --show-info $device | grep --color=no -e model: -e percentage: -e state:
+    echo
+  done
+  echo "For more detailed info, run 'upower --dump'"
+}
+
+
 # When recovering a file from a crashed vi session, or after a reboot, there are too many manual steps
 virecover(){
   local orgfile="$1"
