@@ -452,6 +452,7 @@ alias prtdiag='/usr/platform/`uname -i`/sbin/prtdiag' # Diag command on Suns
 alias s_client="openssl s_client -connect" # "ssl telnet"
 alias ps1="set_primary_prompt"
 alias nom="echo 'Nom nom!' ; npm" # For Tin <3
+alias stmux='tmux source-file ~/.tmux.conf'
 # The alias for screen gets set *after* loading local bashrc, since it depends on settings from it
 
 # Allows running functions and aliases with sudo (eg, "runsudo m4mc")
@@ -580,6 +581,26 @@ screen_auto_attacher
 ##### FUNCTIONS / UTILS
 ### Some of these are old shell scripts or small perl scripts
 ### that are quite handy to have available on any host I might log in to
+
+# Load existing tmux session, or create one if it doesn't already exist
+t(){
+  SESSION_NAME="$LOGNAME_$(hostname)"
+
+  # Check if session already exists
+  if ! [ tmux has-session -t $SESSION_NAME 2>/dev/null ]; then
+    # Create a new session with window 0 (default window)
+    env -u TMOUT tmux new-session -d -s $SESSION_NAME -n 'bash'
+    # Create windows 1-4
+    tmux new-window -t $SESSION_NAME:1 -n 'bash'
+    tmux new-window -t $SESSION_NAME:2 -n 'bash'
+    tmux new-window -t $SESSION_NAME:3 -n 'bash'
+    tmux new-window -t $SESSION_NAME:4 -n 'bash'
+  fi
+
+  # Attach to the session
+  tmux attach-session -t $SESSION_NAME
+}
+
 
 # If a server has been reinstalled with the same name, then we should remove all known hosts entries for the old one
 removesshhost(){
