@@ -148,6 +148,8 @@ SCREEN_TITLE=" "
 shrc_url="$dlbase/latest/?h=$(hostname)&u=$USER" # download location of .bashrc
 # Not prompt related, but handy place for stuff we want automated
 PROMPT_COMMAND="shrc_reloader; reset_term_titles"
+# Default session name in tmux
+TMUX_SESSION_NAME="${LOGNAME}_$(hostname)"
 
 
 ###
@@ -584,21 +586,19 @@ screen_auto_attacher
 
 # Load existing tmux session, or create one if it doesn't already exist
 t(){
-  SESSION_NAME="$LOGNAME_$(hostname)"
-
   # Check if session already exists
-  if ! [ tmux has-session -t $SESSION_NAME 2>/dev/null ]; then
+  if ! [ tmux has-session -t $TMUX_SESSION_NAME 2>/dev/null ]; then
     # Create a new session with window 0 (default window)
-    env -u TMOUT tmux new-session -d -s $SESSION_NAME -n 'bash'
+    env -u TMOUT tmux new-session -d -s $TMUX_SESSION_NAME -n 'bash'
     # Create windows 1-4
-    tmux new-window -t $SESSION_NAME:1 -n 'bash'
-    tmux new-window -t $SESSION_NAME:2 -n 'bash'
-    tmux new-window -t $SESSION_NAME:3 -n 'bash'
-    tmux new-window -t $SESSION_NAME:4 -n 'bash'
+    tmux new-window -t $TMUX_SESSION_NAME:1 -n 'bash'
+    tmux new-window -t $TMUX_SESSION_NAME:2 -n 'bash'
+    tmux new-window -t $TMUX_SESSION_NAME:3 -n 'bash'
+    tmux new-window -t $TMUX_SESSION_NAME:4 -n 'bash'
   fi
 
   # Attach to the session
-  tmux attach-session -t $SESSION_NAME
+  tmux attach-session -t $TMUX_SESSION_NAME
 }
 
 
