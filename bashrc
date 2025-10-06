@@ -2876,7 +2876,7 @@ my $mark_newbits = 0;
 my $print_bits = 1;
 my $print_only_class = 0;
 
-my $qcolor = "\033[34m"; # dotted quads, blue
+my $qcolor = "\033[36m"; # dotted quads, cyan, readable on black background
 my $ncolor = "\033[m";   # normal, black
 my $bcolor = "\033[33m"; # binary, yellow
 my $mcolor = "\033[31m"; # netmask, red
