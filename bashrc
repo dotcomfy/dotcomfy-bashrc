@@ -4,7 +4,7 @@
 #
 ###############################################################################
 #
-# Copyright (c) 1999-2022 Linus / Dotcomfy
+# Copyright (c) 1999 onwards - Linus / Dotcomfy
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,9 @@
 #
 # To see the different sections in this file, run: shrcinfo
 #
-# Despite the name, this code should also work with other Bourne style shells.
-# I've used it in plain old Bourne Shell, Korn, and probably others,
-# but it's been a few years, and I might have added something that's
-# incompatible
+# Some years ago, this used to all work well in plain old Bourne Shell
+# These days, I'm not sure, sincei I haven't used it for anything but bash
+# since probably 2008, and stopped caring.
 #
 # Local customizations are done in .local_shellrc
 #
