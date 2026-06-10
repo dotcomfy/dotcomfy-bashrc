@@ -2492,7 +2492,7 @@ shrcinfo(){
 
 # Updates the base .bashrc (or whatever it's stored as locally)
 shrcupd(){
-  local remote_version="$(curl --max-time 5 -S -s "$shrc_url&c=version")"
+  local remote_version="$(curl $dcmf_curl_opts --max-time 5 -S -s "$shrc_url&c=version")"
   if [ $? -gt 0 -o "$remote_version" = "" ] ; then warn "Update check failed" ; return ; fi
   if [ "$DCMF_BASHRC_VERSION" = "$remote_version" -a ! "$1" = "force" ]; then
     echo "This is the latest version: $DCMF_BASHRC_VERSION"
@@ -2519,7 +2519,7 @@ updatefile(){
     . $file_home
     return 1
   fi
-  curl  -sL -o $updatefile_tmp $file_www
+  curl $dcmf_curl_opts -sL -o $updatefile_tmp $file_www
   if [ $? -ne 0 ] ; then
     echo "cURL failed retrieving file, will try wget"
     wget  -q -O $updatefile_tmp $file_www
