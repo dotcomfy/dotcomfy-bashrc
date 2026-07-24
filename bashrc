@@ -148,7 +148,7 @@ shrc_url="$dlbase/latest/?h=$(hostname)&u=$USER" # download location of .bashrc
 # Not prompt related, but handy place for stuff we want automated
 PROMPT_COMMAND="shrc_reloader; reset_term_titles"
 # Default session name in tmux
-TMUX_SESSION_NAME="${LOGNAME}_$(hostname)"
+TMUX_SESSION_NAME="${LOGNAME}_$(hostname | sed 's/\./_/g')"
 
 
 ###
