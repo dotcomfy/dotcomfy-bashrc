@@ -146,7 +146,8 @@ MYSQL_PS1="$(hostname -s):\d> " export MYSQL_PS1
 # For new screens, it's allso affected by shelltitle in .screenrc
 SCREEN_TITLE=" "
 # Download location
-shrc_url="$dlbase/latest/?h=$(hostname)&u=$USER" # download location of .bashrc
+# shrc_url="$dlbase/latest/?h=$(hostname)&u=$USER" # download location of .bashrc
+shrc_url="$dlbase/latest/" # download location of .bashrc
 # Not prompt related, but handy place for stuff we want automated
 PROMPT_COMMAND="shrc_reloader; reset_term_titles"
 # Default session name in tmux
@@ -2494,7 +2495,8 @@ shrcinfo(){
 
 # Updates the base .bashrc (or whatever it's stored as locally)
 shrcupd(){
-  local remote_version="$(curl $dcmf_curl_opts --max-time 5 -S -s "$shrc_url&c=version")"
+  #local remote_version="$(curl $dcmf_curl_opts --max-time 5 -S -s "$shrc_url&c=version")"
+  local remote_version="$(curl $dcmf_curl_opts --max-time 5 -S -s "$shrc_url/bashrc.latest.version")"
   if [ $? -gt 0 -o "$remote_version" = "" ] ; then warn "Update check failed" ; return ; fi
   if [ "$DCMF_BASHRC_VERSION" = "$remote_version" -a ! "$1" = "force" ]; then
     echo "This is the latest version: $DCMF_BASHRC_VERSION"
