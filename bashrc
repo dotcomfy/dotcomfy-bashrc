@@ -82,7 +82,7 @@ dcmf_ocd_cache_ttl=7200
 # GUI file manager used on unix-like systems. Could be set to "true" as a no-op
 unixish_gui_file_manager=thunar
 # Default curl options.
-dmcf_curl_opts="-L"
+dcmf_curl_opts="-L"
 
 # The location of this file, probably in the user's home directory
 # During development, the file may be loaded from several locations, and we don't want to override the first one (which is probably the "real" file)
