@@ -489,8 +489,14 @@ alias bpget="updatefile ~/.bash_profile $githubbase/bash_profile"
 # Get a skeleton .local_shellrc
 alias lsget="updatefile ~/.local_shellrc $githubbase/local_shellrc"
 
-# Get/update  the standard .screenrc
+# Get/update the standard .screenrc
 alias screenrcget="no_source_after_update=true updatefile ~/.screenrc $githubbase/.screenrc"
+
+# Get/update the standard tmux conf
+alias tmuxconfget="no_source_after_update=true updatefile ~/.tmux.conf $githubbase/tmux.conf"
+
+# Get/update the standard vimrc
+alias vimrcget="no_source_after_update=true updatefile ~/.vimrc $githubbase/vimrc"
 
 ###
 ### Whois aliases, and a bit of DNS
@@ -2380,12 +2386,14 @@ su(){
   command su "$@"
 }
 
-# In case there's an alias, get rid of it
+# In case there's an alias, get rid of it, to override it with the overkill function
 unalias vi >/dev/null 2>&1
 vi(){
   local vicmd=vi
   if [ -f ~/.vim/vimrc ] && type -P vim>/dev/null ; then
     vicmd="vim -u ~/.vim/vimrc"
+  elif [ -f ~/.vimrc ] && type -P vim>/dev/null ; then
+    vicmd="vim"
   fi
 
   if [ -n "$1" ]; then
