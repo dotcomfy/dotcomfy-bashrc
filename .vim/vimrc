@@ -1,3 +1,4 @@
+" NOTE: I think I stopped using this... dot-vimrc from the parent directory is probably more useful
 " My standard ~/.vim directory, lives in Github
 
 set nocompatible
