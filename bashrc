@@ -630,15 +630,37 @@ removesshhost(){
 }
 
 # Find a file (or many files, or all files) and edit it in vi
+# Enters both the expanded vi command and the vifind command into history
 vifind(){
-  vi $(find . -name '*'$*'*' -type f)
+  local pattern="$*"
+  local -a files
+
+  mapfile -d '' -t files < <(find . -type f -name "*${pattern}*" -print0)
+
+  ((${#files[@]})) || return
+
+  printf -v history_command '%q ' vi "${files[@]}"
+  #echo history command: "${history_command}"
+  #echo files:"${files[@]}"
+  history -s "$FUNCNAME $*"
+  history -s "$history_command"
+
+  vi "${files[@]}"
 }
 
-
 # Grep recursively for a specific pattern in files, grab the first file, edit, and search for the first occurrance of the pattern
+# History fernagling just like vifind
 vigrep(){
-  _pattern="$*"
-  vim -c "silent! /$_pattern" "$(grep -r -I -l "$_pattern" | head -1)"
+  local pattern="$*"
+  local file
+  file=$(grep -r -I -l -- "$pattern" . | head -1)
+  [[ -n $file ]] || return
+
+  printf -v history_command '%q ' vim -c "silent! /$pattern" "$file"
+  history -s "$FUNCNAME $*"
+  history -s "$history_command"
+
+  vim -c "silent! /$pattern" "$file"
 }
 
 # Do a long listing on each of the components of a directory/file and the path above it.
