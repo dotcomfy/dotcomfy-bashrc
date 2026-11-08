@@ -492,7 +492,7 @@ alias lsget="updatefile ~/.local_shellrc $githubbase/local_shellrc"
 # Get/update the standard .screenrc
 alias screenrcget="no_source_after_update=true updatefile ~/.screenrc $githubbase/.screenrc"
 
-# Get/update the standard tmux conf
+# Get/update the standard tmux.conf
 alias tmuxconfget="no_source_after_update=true updatefile ~/.tmux.conf $githubbase/tmux.conf"
 
 # Get/update the standard vimrc
