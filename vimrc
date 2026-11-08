@@ -1,3 +1,5 @@
+" .vimrc - git version
+
 " Undecided - do I want this?
 " set nohlsearch
 
