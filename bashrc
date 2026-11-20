@@ -101,7 +101,11 @@ fi
 ##### SHELL VARIABLES
 ### Stuff used by various commands/applications, or the shell itself
 # Locale, doesn't work on Termux in Android
-if [ "$OSTYPE" = "linux-gnu" ] ; then
+if [[ "$OSTYPE" =~ ^openbsd ]] ; then
+  # Yay, we're running OpenBSD!
+  # Was going to do some locale stuff here, but it doesn't seem necessary.
+  true
+elif [ "$OSTYPE" = "linux-gnu" ] ; then
   LANG=en_GB.utf8 export LANG
   LANGUAGE=en_GB.utf8 export LANGUAGE # Only used by Perl?
   LC_TIME=en_GB export LC_TIME
