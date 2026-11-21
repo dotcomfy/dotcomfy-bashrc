@@ -19,6 +19,9 @@ syn on
 " This might not be the full story for true 256-color support
 set t_Co=256
 colorscheme desert
+" Desert has been "improved" in vim 9, and is now unreadable
+" Other ones to try are ron and murphy
+" Or just grab a copy of the desert colorscheme from vim 8
 
 " Highlight trailing space (treat it as a todo)
 match Todo /\s\+$/
