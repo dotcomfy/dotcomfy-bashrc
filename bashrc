@@ -599,7 +599,7 @@ screen_auto_attacher
 # Load existing tmux session, or create one if it doesn't already exist
 t(){
   # Check if session already exists
-  if ! [ tmux has-session -t $TMUX_SESSION_NAME 2>/dev/null ]; then
+  if ! tmux has-session -t $TMUX_SESSION_NAME 2>/dev/null ; then
     # Create a new session with window 0 (default window)
     env -u TMOUT tmux new-session -d -s $TMUX_SESSION_NAME -n 'bash'
     # Create windows 1-4
